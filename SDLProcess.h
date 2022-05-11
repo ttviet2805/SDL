@@ -4,6 +4,7 @@
 #include <SDL_image.h>
 #include <stdio.h>
 #include <string>
+#include <iostream>
 
 using namespace std;
 
@@ -30,3 +31,10 @@ SDL_Texture* loadTexture(SDL_Renderer* &gRenderer, string path);
 
 //Loads media
 bool loadMedia(SDL_Texture* &gTexture, SDL_Renderer* &gRenderer, string imageFileName);
+
+SDL_Point getMousePos();
+
+//return 0 if no click or right click
+//return 1 if left click
+//return 2 if hover
+int isMouseClick(SDL_Event* event, SDL_Rect* button);
