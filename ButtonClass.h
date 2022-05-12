@@ -9,6 +9,7 @@ struct Button {
     int boder, padding;
     SDL_Color OutlineCol;
     SDL_Color FillCol;
+    string Content;
 
     Button() {
         bImage = NULL;
@@ -17,12 +18,13 @@ struct Button {
         OutlineCol = {0, 0, 0, 0};
         FillCol = {0, 0, 0, 0};
     }
-    Button(int bx, int by, int bw, int bh, int _boder, int _padding, SDL_Color _OutlineCol, SDL_Color _FillCol) {
+    Button(int bx, int by, int bw, int bh, int _boder, int _padding, SDL_Color _OutlineCol, SDL_Color _FillCol, string _Content) {
         bRect = {bx, by, bw, bh};
         boder = _boder;
         padding = _padding;
         OutlineCol = _OutlineCol;
         FillCol = _FillCol;
+        Content = _Content;
     }
 
     void Display(SDL_Renderer* &renderer) {

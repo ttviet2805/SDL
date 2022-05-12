@@ -22,7 +22,7 @@ void systemProcess() {
 
         SDL_RenderClear(renderer);
 
-        Button TestButton = {SCREEN_WIDTH / 2 - 50, SCREEN_HEIGHT / 2 - 20, 100, 40, 4, 4, {0, 0, 0, 255}, {255, 255, 255, 255}};
+        Button TestButton = {SCREEN_WIDTH / 2 - 50, SCREEN_HEIGHT / 2 - 20, 100, 40, 4, 4, BLACK, WHITE, ""};
         TestButton.Display(renderer);
 
         SDL_RenderPresent(renderer);
@@ -35,12 +35,18 @@ void systemProcess() {
                     break;
                 }
                 int MouseType = isMouseClick(&event, &TestButton.bRect);
+                TestButton.FillCol = WHITE;
                 if(MouseType == 1) {
                     printf("left\n");
+                    TestButton.FillCol = BLACK;
                 }
                 else if(MouseType == 2) {
                     printf("hover\n");
+                    TestButton.FillCol = RED;
                 }
+                TestButton.Display(renderer);
+
+                SDL_RenderPresent(renderer);
             }
         }
     }
