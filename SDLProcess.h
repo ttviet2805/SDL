@@ -2,6 +2,7 @@
 
 #include <SDL.h>
 #include <SDL_image.h>
+#include <SDL_ttf.h>
 #include <stdio.h>
 #include <string>
 #include <iostream>
@@ -9,6 +10,7 @@
 using namespace std;
 
 #include "Const.h"
+#include "TextSolve.h"
 
 /*
 //The window we'll be rendering to
@@ -26,15 +28,12 @@ SDL_Surface* gXOut = NULL;
 //Starts up SDL and creates window
 bool init(SDL_Window* &gWindow, SDL_Renderer* &gRenderer, string Title);
 
-//Loads individual image as texture
-SDL_Texture* loadTexture(SDL_Renderer* &gRenderer, string path);
+SDL_Texture* loadTexture(SDL_Renderer* &gRenderer, string path );
 
-//Loads media
-bool loadMedia(SDL_Texture* &gTexture, SDL_Renderer* &gRenderer, string imageFileName);
+bool loadImage(SDL_Renderer* &gRenderer, SDL_Texture* &gTexture, string fileName);
 
-SDL_Point getMousePos();
-
+bool loadText(SDL_Renderer* &gRenderer, TTF_Font* gFont, TextOutput* &gTextOutput, SDL_Color textColor, string fileName, int textSize);
 //return 0 if no click or right click
 //return 1 if left click
 //return 2 if hover
-int isMouseClick(SDL_Event* event, SDL_Rect* button);
+//int isMouseClick(SDL_Event* event, SDL_Rect* button);

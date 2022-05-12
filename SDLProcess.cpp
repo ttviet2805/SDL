@@ -3,7 +3,6 @@
 bool init(SDL_Window* &gWindow, SDL_Renderer* &gRenderer, string Title) {
 	//Initialization flag
 	bool success = true;
-
 	//Initialize SDL
 	if( SDL_Init( SDL_INIT_VIDEO ) < 0 )
 	{
@@ -46,6 +45,13 @@ bool init(SDL_Window* &gWindow, SDL_Renderer* &gRenderer, string Title) {
 					printf( "SDL_image could not initialize! SDL_image Error: %s\n", IMG_GetError() );
 					success = false;
 				}
+
+				 //Initialize SDL_ttf
+				if( TTF_Init() == -1 )
+				{
+					printf( "SDL_ttf could not initialize! SDL_ttf Error: %s\n", TTF_GetError() );
+					success = false;
+				}
 			}
 		}
 	}
@@ -53,59 +59,60 @@ bool init(SDL_Window* &gWindow, SDL_Renderer* &gRenderer, string Title) {
 	return success;
 }
 
-SDL_Texture* loadTexture(SDL_Renderer* &gRenderer, string path)
+SDL_Texture* loadTexture(SDL_Renderer* &gRenderer, string path )
 {
-	//The final texture
-	SDL_Texture* newTexture = NULL;
+    //The final texture
+    SDL_Texture* newTexture = NULL;
 
-	//Load image at specified path
-	SDL_Surface* loadedSurface = IMG_Load( path.c_str() );
-	if( loadedSurface == NULL )
-	{
-		printf( "Unable to load image %s! SDL_image Error: %s\n", path.c_str(), IMG_GetError() );
-	}
-	else
-	{
-		//Create texture from surface pixels
+    //Load image at specified path
+    SDL_Surface* loadedSurface = IMG_Load( path.c_str() );
+    if( loadedSurface == NULL )
+    {
+        printf( "Unable to load image %s! SDL_image Error: %s\n", path.c_str(), IMG_GetError() );
+    }
+    else
+    {
+        //Create texture from surface pixels
         newTexture = SDL_CreateTextureFromSurface( gRenderer, loadedSurface );
-		if( newTexture == NULL )
-		{
-			printf( "Unable to create texture from %s! SDL Error: %s\n", path.c_str(), SDL_GetError() );
-		}
+        if( newTexture == NULL )
+        {
+            printf( "Unable to create texture from %s! SDL Error: %s\n", path.c_str(), SDL_GetError() );
+        }
 
-		//Get rid of old loaded surface
-		SDL_FreeSurface( loadedSurface );
-	}
+        //Get rid of old loaded surface
+        SDL_FreeSurface( loadedSurface );
+    }
 
-	return newTexture;
+    return newTexture;
 }
 
-bool loadMedia(SDL_Texture* &gTexture, SDL_Renderer* &gRenderer, string imageFileName) {
-	//Loading success flag
-	bool success = true;
+bool loadImage(SDL_Renderer* &gRenderer, SDL_Texture* &gTexture, string fileName)
+{
+    //Loading success flag
+    bool success = true;
 
-	//Load PNG texture
-	gTexture = loadTexture(gRenderer, imageFileName );
-	if( gTexture == NULL )
-	{
-		printf( "Failed to load texture image!\n" );
-		success = false;
-	}
+    //Load PNG texture
+    gTexture = loadTexture( gRenderer, fileName );
+    if( gTexture == NULL )
+    {
+        printf( "Failed to load texture image!\n" );
+        success = false;
+    }
 
-	return success;
+    return success;
 }
 
 //return 0 if no click or right click
 //return 1 if left click
 //return 2 if hover
-int isMouseClick(SDL_Event* event, SDL_Rect* button) {
-    if(event->type != SDL_MOUSEMOTION && event->type != SDL_MOUSEBUTTONDOWN) return 0;
-    if(event->button.button == SDL_BUTTON_RIGHT) return 0;
-    int type = 2;
-    if(event->button.button == SDL_BUTTON_LEFT) type = 1;
-    int x, y;
-    SDL_GetMouseState(&x, &y);
-    if(x < button->x || y < button->y || x > button->x + button->w || y > button->y + button->h) return 0;
-    return type;
-}
+//int isMouseClick(SDL_Event* event, SDL_Rect* button) {
+//    if(event->type != SDL_MOUSEMOTION && event->type != SDL_MOUSEBUTTONDOWN) return 0;
+//    if(event->button.button == SDL_BUTTON_RIGHT) return 0;
+//    int type = 2;
+//    if(event->button.button == SDL_BUTTON_LEFT) type = 1;
+//    int x, y;
+//    SDL_GetMouseState(&x, &y);
+//    if(x < button->x || y < button->y || x > button->x + button->w || y > button->y + button->h) return 0;
+//    return type;
+//}
 
