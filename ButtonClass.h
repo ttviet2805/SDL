@@ -7,23 +7,33 @@ struct Button {
     SDL_Rect bRect;
     SDL_Texture* bImage;
     int boder, padding;
+    SDL_Color InitCol;
     SDL_Color OutlineCol;
     SDL_Color FillCol;
+    SDL_Color HoverCol;
+    SDL_Color PressCol;
     string Content;
 
     Button() {
         bImage = NULL;
         boder = 0;
         padding = 0;
+        InitCol = {0, 0, 0, 0};
         OutlineCol = {0, 0, 0, 0};
         FillCol = {0, 0, 0, 0};
+        HoverCol = {0, 0, 0, 0};
+        PressCol = {0, 0, 0, 0};
+        Content = "";
     }
-    Button(int bx, int by, int bw, int bh, int _boder, int _padding, SDL_Color _OutlineCol, SDL_Color _FillCol, string _Content) {
+    Button(int bx, int by, int bw, int bh, int _boder, int _padding, SDL_Color _OutlineCol, SDL_Color _FillCol, SDL_Color _HoverCol, SDL_Color _PressCol, string _Content) {
         bRect = {bx, by, bw, bh};
         boder = _boder;
         padding = _padding;
         OutlineCol = _OutlineCol;
+        InitCol = _FillCol;
         FillCol = _FillCol;
+        HoverCol = _HoverCol;
+        PressCol = _PressCol;
         Content = _Content;
     }
 
