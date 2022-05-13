@@ -156,10 +156,13 @@ void addANewAccount(Account* newAccount) {
 
 // -------------------------------------------------------------------------------- //
 
-void loginWindow() {
+Account* loginWindow() {
     SDL_Window* gWindow = NULL;
     SDL_Renderer* gRenderer = NULL;
     SDL_Event event;
+
+    Account* allAccount = nullptr;
+    loadAllAccountData(allAccount, accountFileName);
 
     const string backgroundPath = "Data/Image/LoginBackground.jpg";
 
@@ -170,8 +173,30 @@ void loginWindow() {
         SDL_RenderClear(gRenderer);
 
         SDL_Texture* background_Image = nullptr;
-
         loadImage(gRenderer, background_Image, backgroundPath);
+
+        Button userNameButton = Button((SCREEN_WIDTH - 300) / 2, 250, 300, 35, 2, BLACK, WHITE, WHITE, GREY, "", 20);
+        userNameButton.TypeBox = 1;
+        userNameButton.padding_hoz = 10;
+
+        Button passwordButton = Button((SCREEN_WIDTH - 300) / 2, 350, 300, 35, 2, BLACK, WHITE, WHITE, GREY, "", 20);
+        passwordButton.TypeBox = 1;
+        passwordButton.padding_hoz = 10;
+
+        TextOutput userNameText = TextOutput(BLACK, 22);
+        userNameText.loadText(gRenderer, "Username", FONTDIR);
+
+        TextOutput passwordText = TextOutput(BLACK, 22);
+        passwordText.loadText(gRenderer, "Password", FONTDIR);
+
+        TextOutput warningText = TextOutput(RED, 22);
+        warningText.loadText(gRenderer, "Incorrect username or password!", FONTDIR);
+
+        Button loginButton = Button((SCREEN_WIDTH - 100) / 2, 450, 100, 30, 2, BLACK, LIGHTBLUE, RED, RED, "LOGIN", 19);
+
+        string curUsername = "", curPassword = "";
+
+        bool isLogin = false;
 
         bool quit = false;
         while(!quit) {
@@ -181,7 +206,53 @@ void loginWindow() {
                     break;
                 }
 
+                SDL_RenderClear(gRenderer);
+
                 SDL_RenderCopy(gRenderer, background_Image, NULL, NULL);
+
+                int loginButtonState = loginButton.isMouseClick(&event);
+                if(loginButtonState == 1) {
+                    loginButton.FillCol = loginButton.PressCol;
+
+                    Account* curAccount = allAccount;
+
+                    while(curAccount) {
+                        if(curAccount->username == curUsername && curAccount->password == curPassword) {
+                            cout << "Login successful";
+                            return curAccount;
+                        }
+
+                        curAccount = curAccount->Next;
+                    }
+
+
+                    cout << "Fail to login" << '\n';
+                    isLogin = true;
+                }
+                else if(loginButtonState == 2) {
+                    loginButton.FillCol = loginButton.HoverCol;
+                }
+                else {
+                    loginButton.FillCol = loginButton.InitCol;
+                }
+
+                // Display
+                userNameButton.Display(gRenderer);
+                passwordButton.Display(gRenderer);
+                loginButton.Display(gRenderer);
+
+                userNameText.Display(gRenderer, (SCREEN_WIDTH - 300) / 2, 222);
+                passwordText.Display(gRenderer, (SCREEN_WIDTH - 300) / 2, 322);
+
+                if(isLogin) {
+                    warningText.Display(gRenderer, (SCREEN_WIDTH - warningText.mWidth) / 2, 485);
+                }
+
+                userNameButton.isTextBox(gRenderer, &event);
+                curUsername = userNameButton.Text;
+
+                passwordButton.isTextBox(gRenderer, &event);
+                curPassword = passwordButton.Text;
 
                 SDL_RenderPresent(gRenderer);
             }

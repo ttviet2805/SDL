@@ -41,7 +41,7 @@ void addANewAccount(Account* newAccount);
 
 //Front End
 
-void loginWindow();
+Account* loginWindow();
 
 
 

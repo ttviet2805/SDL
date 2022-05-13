@@ -78,6 +78,7 @@ struct Button {
 
     bool isTextBox(SDL_Renderer* &gRenderer, SDL_Event* event) {
         if(isMouseClick(event) != 1) return false;
+        FillCol = PressCol;
         Display(gRenderer);
         //Enable text input
         SDL_StartTextInput();
@@ -108,7 +109,7 @@ struct Button {
                     }
                     else if(e.key.keysym.scancode == SDL_SCANCODE_RETURN) {
                         quit = true;
-                        return true;
+                        break;
                     }
                 }
                 else if(e.type == SDL_TEXTINPUT) {
@@ -136,7 +137,7 @@ struct Button {
                 SDL_RenderPresent(gRenderer);
             }
         }
-
+        FillCol = InitCol;
         return true;
     }
 };
