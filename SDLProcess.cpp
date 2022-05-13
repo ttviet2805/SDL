@@ -101,18 +101,3 @@ bool loadImage(SDL_Renderer* &gRenderer, SDL_Texture* &gTexture, string fileName
 
     return success;
 }
-
-//return 0 if no click or right click
-//return 1 if left click
-//return 2 if hover
-//int isMouseClick(SDL_Event* event, SDL_Rect* button) {
-//    if(event->type != SDL_MOUSEMOTION && event->type != SDL_MOUSEBUTTONDOWN) return 0;
-//    if(event->button.button == SDL_BUTTON_RIGHT) return 0;
-//    int type = 2;
-//    if(event->button.button == SDL_BUTTON_LEFT) type = 1;
-//    int x, y;
-//    SDL_GetMouseState(&x, &y);
-//    if(x < button->x || y < button->y || x > button->x + button->w || y > button->y + button->h) return 0;
-//    return type;
-//}
-
