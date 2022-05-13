@@ -63,6 +63,6 @@ StudentScore* createAStudentScore(string CourseID, float MidTerm, float Final, f
 
 //Front End
 
-void studentEditProfileWindow(Student* &curStudent);
+void studentEditProfileWindow(Student* curStudent);
 
-void studentWindow(Student* &curStudent);
+void studentWindow(Student* curStudent);

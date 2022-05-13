@@ -194,7 +194,7 @@ StudentScore* createAStudentScore(string CourseID, float MidTerm, float Final, f
 
 // --------------------------------------------------------------------------- //
 
-void studentEditProfileWindow(Student* &curStudent) {
+void studentEditProfileWindow(Student* tmpStudent) {
     SDL_Window* gWindow = NULL;
     SDL_Renderer* gRenderer = NULL;
     SDL_Event event;
@@ -206,6 +206,11 @@ void studentEditProfileWindow(Student* &curStudent) {
     const int plusX = 240;
     const int plusY = 55;
 
+    Student* allStudent = nullptr;
+    loadAllStudentData(allStudent, studentFileName);
+
+    Student* curStudent = findStudentByID(allStudent, tmpStudent->Info->ID);
+
     const string backgroundPath = "Data/Image/StudentBackground.jpg";
 
     if(!init(gWindow, gRenderer, "Profile")) {
@@ -216,6 +221,9 @@ void studentEditProfileWindow(Student* &curStudent) {
 
         SDL_Texture* backgroundImage = nullptr;
         loadImage(gRenderer, backgroundImage, backgroundPath);
+
+        TextOutput saveText = TextOutput(RED, 22);
+        saveText.loadText(gRenderer, "You have save your data", FONTDIR);
 
         vector <Button> listTextbox(8);
 
@@ -307,8 +315,9 @@ void studentEditProfileWindow(Student* &curStudent) {
             listText.push_back(tmp);
         }
 
-        Button saveButton = Button((SCREEN_WIDTH - 100) / 2, 550, 100, 30, 2, BLACK, LIGHTBLUE, RED, RED, "Save", 19);
+        bool isSave = false;
 
+        Button saveButton = Button((SCREEN_WIDTH - 100) / 2, 550, 100, 30, 2, BLACK, LIGHTBLUE, RED, RED, "Save", 19);
 
         while(!quit) {
             while(SDL_PollEvent(&event) != 0) {
@@ -335,6 +344,23 @@ void studentEditProfileWindow(Student* &curStudent) {
                 for(int i = 0; i < 8; i++)
                     listTextbox[i].isTextBox(gRenderer, &event);
 
+                int saveButtonState = saveButton.isMouseClick(&event);
+                if(saveButtonState == 1) {
+                    saveButton.FillCol = saveButton.PressCol;
+                    saveAllStudentData(allStudent, studentFileName);
+                    isSave = true;
+                }
+                else if(saveButtonState == 2) {
+                    saveButton.FillCol = saveButton.HoverCol;
+                }
+                else {
+                    saveButton.FillCol = saveButton.InitCol;
+                }
+
+                if(isSave) {
+                    saveText.Display(gRenderer, (SCREEN_WIDTH - saveText.mWidth) / 2, 550 + saveButton.bRect.h + 10);
+                }
+
                 SDL_RenderPresent(gRenderer);
             }
         }
@@ -354,7 +380,7 @@ void studentEditProfileWindow(Student* &curStudent) {
     }
 }
 
-void studentWindow(Student* &curStudent) {
+void studentWindow(Student* curStudent) {
     SDL_Window* gWindow = NULL;
     SDL_Renderer* gRenderer = NULL;
     SDL_Event event;
