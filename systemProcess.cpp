@@ -11,7 +11,9 @@ void systemProcess() {
     else {
         SDL_RenderClear(gRenderer);
 
-        Button TestButton = {300, 200, 100, 700, 4, BLACK, LIGHTBLUE, RED, BLACK, "a a a a a a a a a a aass a asss as as", 28};
+        Button TestButton = {300, 200, 500, 50, 4, BLACK, LIGHTBLUE, RED, BLACK, " ", 28};
+        TestButton.TypeBox = 1;
+        TestButton.padding_hoz = 10;
 
         bool quit = false;
         while(!quit) {
@@ -21,8 +23,7 @@ void systemProcess() {
                     break;
                 }
 
-//                TestButton.TypeBox = 1;
-//                TestButton.isTextBox(gRenderer, &event);
+                TestButton.isTextBox(gRenderer, &event);
 
                 TestButton.Display(gRenderer);
 

@@ -4,11 +4,12 @@
 #include <SDL_image.h>
 
 #include "TextSolve.h"
+#include "Const.h"
 
 struct Button {
     SDL_Rect bRect;
     SDL_Texture* bImage;
-    int boder;
+    int boder, padding_hoz;
     SDL_Color InitCol;
     SDL_Color OutlineCol;
     SDL_Color FillCol;
@@ -21,6 +22,7 @@ struct Button {
     Button() {
         bImage = NULL;
         boder = 0;
+        padding_hoz = 0;
         InitCol = {0, 0, 0, 0};
         OutlineCol = {0, 0, 0, 0};
         FillCol = {0, 0, 0, 0};
@@ -65,25 +67,23 @@ struct Button {
         SDL_RenderFillRect(gRenderer, &tRect);
 
         TextOutput tmp = TextOutput(BLACK, TextSize);
-        tmp.loadText(gRenderer, Text, "times-new-roman-14.ttf");
+        tmp.loadText(gRenderer, Text, FONTDIR);
         if(!TypeBox) {
             tmp.Display(gRenderer, bRect.x + bRect.w / 2 - tmp.mWidth / 2, bRect.y + bRect.h / 2 - tmp.mHeight / 2);
         }
         else {
-            tmp.Display(gRenderer, bRect.x + 10, bRect.y + bRect.h / 2 - tmp.mHeight / 2);
+            tmp.Display(gRenderer, bRect.x + padding_hoz, bRect.y + bRect.h / 2 - tmp.mHeight / 2);
         }
     }
 
     bool isTextBox(SDL_Renderer* &gRenderer, SDL_Event* event) {
         if(isMouseClick(event) != 1) return false;
         Display(gRenderer);
-
         //Enable text input
         SDL_StartTextInput();
         bool quit = false;
         while(!quit)
         {
-            //Handle events on queue
             SDL_Event e;
             while(SDL_PollEvent(&e) != 0) {
                 //The rerender text flag
@@ -94,19 +94,14 @@ struct Button {
 //                    exit(0);
                     break;
                 }
-                //Special key input
                 else if(e.type == SDL_KEYDOWN) {
-                    //Handle backspace
                     if(e.key.keysym.sym == SDLK_BACKSPACE && Text.length() > 0) {
-                        //lop off character
                         Text.pop_back();
                         renderText = true;
                     }
-                    //Handle copy
                     else if(e.key.keysym.sym == SDLK_c && SDL_GetModState() & KMOD_CTRL) {
                         SDL_SetClipboardText(Text.c_str());
                     }
-                    //Handle paste
                     else if(e.key.keysym.sym == SDLK_v && SDL_GetModState() & KMOD_CTRL) {
                         Text = SDL_GetClipboardText();
                         renderText = true;
@@ -116,15 +111,13 @@ struct Button {
                         return true;
                     }
                 }
-                //Special text input event
                 else if(e.type == SDL_TEXTINPUT) {
-                    //Not copy or pasting
                     if(!(SDL_GetModState() & KMOD_CTRL && (e.text.text[0] == 'c' || e.text.text[0] == 'C' || e.text.text[0] == 'v' || e.text.text[0] == 'V')))
                     {
                         //Append character
                         TextOutput tmp = TextOutput(BLACK, TextSize);
-                        tmp.loadText(gRenderer, Text + e.text.text, "times-new-roman-14.ttf");
-                        if(tmp.mWidth <= bRect.w - 20) {
+                        tmp.loadText(gRenderer, Text + e.text.text, FONTDIR);
+                        if(tmp.mWidth <= bRect.w - padding_hoz * 2) {
                             Text += e.text.text;
                             renderText = true;
                         }
