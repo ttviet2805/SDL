@@ -384,11 +384,11 @@ void studentWindow(Student* &curStudent) {
 
         vector <Button> listButton(5);
 
-        listButton[0] = Button(startX, startY, buttonWidth, buttonHeight, 4, BLACK, LIGHTBLUE, RED, RED, "PROFILE", buttonTextSize);
+        listButton[0] = Button(startX, startY, buttonWidth, buttonHeight, 2, BLACK, LIGHTBLUE, RED, RED, "PROFILE", buttonTextSize);
 
         listButton[1] = Button(startX + buttonWidth + plusX, startY, buttonWidth, buttonHeight, 2, BLACK, LIGHTBLUE, RED, RED, "VIEW SCORE", buttonTextSize);
 
-        listButton[2] = Button(startX + (buttonWidth + plusX) * 2, startY, buttonWidth, buttonHeight, 2, BLACK, LIGHTBLUE, RED, RED, "VIEW STUDENT", buttonTextSize);
+        listButton[2] = Button(startX + (buttonWidth + plusX) * 2, startY, buttonWidth, buttonHeight, 2, BLACK, LIGHTBLUE, RED, RED, "VIEW STUDENT IN CLASS", buttonTextSize);
 
         listButton[3] = Button(startX, startY + buttonHeight + plusY, buttonWidth, buttonHeight, 2, BLACK, LIGHTBLUE, RED, RED, "CHANGE PASSWORD", buttonTextSize);
 

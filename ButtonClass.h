@@ -2,6 +2,10 @@
 
 #include <SDL.h>
 #include <SDL_image.h>
+#include <string>
+#include <vector>
+
+using namespace std;
 
 #include "TextSolve.h"
 #include "Const.h"
@@ -9,7 +13,7 @@
 struct Button {
     SDL_Rect bRect;
     SDL_Texture* bImage;
-    int boder, padding_hoz;
+    int boder, padding_hoz = 5;
     SDL_Color InitCol;
     SDL_Color OutlineCol;
     SDL_Color FillCol;
@@ -22,7 +26,6 @@ struct Button {
     Button() {
         bImage = NULL;
         boder = 0;
-        padding_hoz = 0;
         InitCol = {0, 0, 0, 0};
         OutlineCol = {0, 0, 0, 0};
         FillCol = {0, 0, 0, 0};
@@ -66,12 +69,52 @@ struct Button {
         SDL_SetRenderDrawColor(gRenderer, FillCol.r, FillCol.g, FillCol.b, FillCol.a);
         SDL_RenderFillRect(gRenderer, &tRect);
 
-        TextOutput tmp = TextOutput(BLACK, TextSize);
-        tmp.loadText(gRenderer, Text, FONTDIR);
+        if(Text == "") return;
+
         if(!TypeBox) {
-            tmp.Display(gRenderer, bRect.x + bRect.w / 2 - tmp.mWidth / 2, bRect.y + bRect.h / 2 - tmp.mHeight / 2);
+            string curLine = "";
+            vector <string> listText;
+            int totHeight = 0;
+            for(int i = 0; i < Text.size(); ) {
+                string curWord = "";
+                int j = i;
+                for(; j < Text.size(); ++j) {
+                    if(Text[j] == ' ') {
+                        break;
+                    }
+                    curWord += Text[j];
+                }
+                i = j + 1;
+                string temStr = curLine;
+                if(temStr != "") temStr += " ";
+                temStr += curWord;
+                TextOutput tmp = TextOutput(BLACK, TextSize);
+                tmp.loadText(gRenderer, temStr, FONTDIR);
+                if(tmp.mWidth > bRect.w - 2 * padding_hoz) {
+                    listText.push_back(curLine);
+                    curLine = curWord;
+                }
+                else curLine = temStr;
+            }
+            if(curLine != "") listText.push_back(curLine);
+            for(int i = 0; i < listText.size(); ++i) {
+                TextOutput tmp = TextOutput(BLACK, TextSize);
+                tmp.loadText(gRenderer, listText[i], FONTDIR);
+                totHeight += tmp.mHeight;
+                if(i + 1 < listText.size()) totHeight += 4;
+            }
+
+            int curY = bRect.y + (bRect.h - totHeight) / 2;
+            for(int i = 0; i < listText.size(); ++i) {
+                TextOutput tmp = TextOutput(BLACK, TextSize);
+                tmp.loadText(gRenderer, listText[i], FONTDIR);
+                tmp.Display(gRenderer, bRect.x + bRect.w / 2 - tmp.mWidth / 2, curY);
+                curY += (tmp.mHeight + 4);
+            }
         }
         else {
+            TextOutput tmp = TextOutput(BLACK, TextSize);
+            tmp.loadText(gRenderer, Text, FONTDIR);
             tmp.Display(gRenderer, bRect.x + padding_hoz, bRect.y + bRect.h / 2 - tmp.mHeight / 2);
         }
     }
