@@ -16,8 +16,8 @@ void systemProcess() {
 
 //        Student* curStudent = findStudentByID(allStudent, curAccount->username);
 
-        studentWindow(allStudent);
+//        studentWindow(allStudent);
 
-//        studentEditProfileWindow(allStudent);
+        studentEditProfileWindow(allStudent);
 //    }
 }
