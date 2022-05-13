@@ -1,9 +1,5 @@
 #include "Student.h"
 
-#define studentFileName "Data/AllStudent.txt"
-#define classFileName "Data/AllClass.txt"
-#define courseFileName "Data/AllCourse.txt"
-
 void loadAllStudentData(Student* &allStudent, string fileName) {
     ifstream fin;
     fin.open(fileName);
@@ -194,4 +190,100 @@ StudentScore* createAStudentScore(string CourseID, float MidTerm, float Final, f
     newScore->studentScore->setScore(MidTerm, Final, Other);
 
     return newScore;
+}
+
+// --------------------------------------------------------------------------- //
+
+void studentEditProfileWindow(Student* &curStudent) {
+
+}
+
+void studentWindow(Student* &curStudent) {
+    SDL_Window* gWindow = NULL;
+    SDL_Renderer* gRenderer = NULL;
+    SDL_Event event;
+
+    const int buttonWidth = 270;
+    const int buttonHeight = 140;
+    const int startX = 45;
+    const int startY = 100;
+    const int plusX = 90;
+    const int plusY = 60;
+    const int buttonTextSize = 27;
+
+    const string backgroundPath = "Data/Image/StudentBackground.jpg";
+
+    if(!init(gWindow, gRenderer, "Student")) {
+        printf("SDL could not initialize! SDL_Error: %s\n", SDL_GetError());
+    }
+    else {
+        bool quit = false;
+
+        TextOutput welcomeText = TextOutput(RED, 22);
+        string studentName = curStudent->Info->firstName + " " + curStudent->Info->lastName;
+        welcomeText.loadText(gRenderer, "Welcome " + studentName,FONTDIR);
+
+        SDL_Texture* backgroundImage = nullptr;
+        loadImage(gRenderer, backgroundImage, backgroundPath);
+
+        vector <Button> listButton(5);
+
+        listButton[0] = Button(startX, startY, buttonWidth, buttonHeight, 4, BLACK, LIGHTBLUE, RED, RED, "PROFILE", buttonTextSize);
+
+        listButton[1] = Button(startX + buttonWidth + plusX, startY, buttonWidth, buttonHeight, 2, BLACK, LIGHTBLUE, RED, RED, "VIEW SCORE", buttonTextSize);
+
+        listButton[2] = Button(startX + (buttonWidth + plusX) * 2, startY, buttonWidth, buttonHeight, 2, BLACK, LIGHTBLUE, RED, RED, "VIEW STUDENT", buttonTextSize);
+
+        listButton[3] = Button(startX, startY + buttonHeight + plusY, buttonWidth, buttonHeight, 2, BLACK, LIGHTBLUE, RED, RED, "CHANGE PASSWORD", buttonTextSize);
+
+        listButton[4] = Button(startX + buttonWidth + plusX, startY + buttonHeight + plusY, buttonWidth, buttonHeight, 2, BLACK, LIGHTBLUE, RED, RED, "LOG OUT", buttonTextSize);
+
+        while(!quit) {
+            while(SDL_PollEvent(&event) != 0) {
+                if(event.type == SDL_QUIT) {
+                    quit = true;
+                    break;
+                }
+
+                SDL_RenderClear(gRenderer);
+
+                SDL_RenderCopy(gRenderer, backgroundImage, NULL, NULL);
+
+                welcomeText.Display(gRenderer, SCREEN_WIDTH - welcomeText.mWidth - 20, 10);
+
+
+                for(int i = 0; i < 5; i++) {
+                    listButton[i].Display(gRenderer);
+                }
+
+                for(int i = 0; i < 5; i++) {
+                    int buttonState = listButton[i].isMouseClick(&event);
+                    if(buttonState == 1) {
+                        listButton[i].FillCol = listButton[i].PressCol;
+                    }
+                    else if(buttonState == 2) {
+                        listButton[i].FillCol = listButton[i].HoverCol;
+                    }
+                    else {
+                        listButton[i].FillCol = listButton[i].InitCol;
+                    }
+                }
+
+                SDL_RenderPresent(gRenderer);
+            }
+        }
+
+        SDL_DestroyTexture(backgroundImage);
+        backgroundImage = NULL;
+
+        //Destroy window
+        SDL_DestroyRenderer( gRenderer );
+        SDL_DestroyWindow( gWindow );
+        gWindow = NULL;
+        gRenderer = NULL;
+
+        // Quit
+        IMG_Quit();
+        SDL_Quit();
+    }
 }

@@ -7,6 +7,7 @@
 #include <windows.h>
 using namespace std;
 
+#include "Const.h"
 #include "ButtonClass.h"
 #include "SDLProcess.h"
 
@@ -25,10 +26,8 @@ struct Account {
 
 //Back End
 
-// load account from txt file
 void loadAllAccountData(Account* &allAccount, string fileName);
 
-// save account to txtfile
 void saveAllAccountData(Account* allAccount, string fileName);
 
 void showAllAccountData(Account* allAccount);
@@ -38,6 +37,9 @@ Account* findAccountByID(Account* allAccount, string ID);
 Account* loginProcess();
 
 void addANewAccount(Account* newAccount);
+
+
+//----------------------------------------------------------------------------//
 
 //Front End
 

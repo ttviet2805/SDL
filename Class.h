@@ -8,6 +8,7 @@
 
 using namespace std;
 
+#include "Const.h"
 #include "Student.h"
 #include "Course.h"
 

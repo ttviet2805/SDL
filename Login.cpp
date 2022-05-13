@@ -1,7 +1,5 @@
 #include "Login.h"
 
-#define accountFileName "Data/AllAccount.txt"
-
 void loadAllAccountData(Account* &allAccount, string fileName) {
     ifstream fin;
     fin.open(fileName);
@@ -219,12 +217,28 @@ Account* loginWindow() {
                     while(curAccount) {
                         if(curAccount->username == curUsername && curAccount->password == curPassword) {
                             cout << "Login successful";
+
+                            SDL_DestroyTexture(background_Image);
+                            background_Image = NULL;
+
+                            //Destroy window
+                            SDL_DestroyRenderer( gRenderer );
+                            SDL_DestroyWindow( gWindow );
+                            gWindow = NULL;
+                            gRenderer = NULL;
+
+                            // Quit
+                            IMG_Quit();
+                            SDL_Quit();
+
                             return curAccount;
                         }
 
                         curAccount = curAccount->Next;
                     }
 
+                    userNameButton.Text = "";
+                    passwordButton.Text = "";
 
                     cout << "Fail to login" << '\n';
                     isLogin = true;
@@ -257,5 +271,20 @@ Account* loginWindow() {
                 SDL_RenderPresent(gRenderer);
             }
         }
+
+        SDL_DestroyTexture(background_Image);
+        background_Image = NULL;
+
+        //Destroy window
+        SDL_DestroyRenderer( gRenderer );
+        SDL_DestroyWindow( gWindow );
+        gWindow = NULL;
+        gRenderer = NULL;
+
+        // Quit
+        IMG_Quit();
+        SDL_Quit();
     }
+
+    return nullptr;
 }

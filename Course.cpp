@@ -1,8 +1,5 @@
 #include "Course.h"
 
-#define courseScoreFileName "Data/CourseScore/"
-#define studentFileName "Data/AllStudent.txt"
-
 void Course::loadCourseScoreData(string fileName, Student* &allStudent) {
     ifstream fin;
     fin.open(fileName);

@@ -1,8 +1,5 @@
 #include "Class.h"
 
-#define classFileName = "Data/AllClass.txt"
-#define studentFileName "Data/AllStudent.txt"
-
 void Class::loadStudentInClass() {
     Student* allStudent = nullptr;
     loadAllStudentData(allStudent, studentFileName);

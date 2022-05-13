@@ -8,6 +8,7 @@
 
 using namespace std;
 
+#include "Const.h"
 #include "Course.h";
 #include "Score.h"
 #include "Class.h"
@@ -40,6 +41,8 @@ void viewStudentInAClass(Class* curClass);
 void exportStudentInAClass(Class* curClass, string fileName);
 
 void viewStudentInASameYear(string schoolYear);
+
+//---------------------------------------------------------------------------------//
 
 // Front End
 void staffaddStudentByManual();

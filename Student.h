@@ -5,12 +5,16 @@
 #include <conio.h>
 #include <fstream>
 #include <windows.h>
+#include <vector>
 
 using namespace std;
 
+#include "Const.h"
 #include "Course.h";
 #include "Score.h"
 #include "Class.h"
+#include "SDLProcess.h"
+#include "ButtonClass.h"
 
 struct StudentInfo {
     string ID, firstName, lastName, Gender, Dob, SocialID, Class, schoolyear;
@@ -44,6 +48,7 @@ struct Student {
 //    StudentScore* findCourseScore(string ID);
 };
 
+// Back End
 void loadAllStudentData(Student* &allStudent, string fileName);
 
 void saveAllStudentData(Student* allStudent, string FileName);
@@ -53,3 +58,11 @@ void showAllStudentInfo(Student* allStudent);
 Student* findStudentByID(Student* allStudent, string ID);
 
 StudentScore* createAStudentScore(string CourseID, float MidTerm, float Final, float Other);
+
+//-----------------------------------------------------------------------//
+
+//Front End
+
+void studentEditProfileWindow(Student* &curStudent);
+
+void studentWindow(Student* &curStudent);

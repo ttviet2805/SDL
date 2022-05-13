@@ -8,6 +8,7 @@
 
 using namespace std;
 
+#include "Const.h"
 #include "Score.h"
 
 struct CourseInfo {

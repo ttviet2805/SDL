@@ -1,13 +1,5 @@
 #include "Staff.h"
 
-#define accountFileName "Data/AllAccount.txt"
-#define studentFileName "Data/AllStudent.txt"
-#define courseFileName "Data/AllCourse.txt"
-#define courseScoreFileName "Data/CourseScore/"
-#define classFileName "Data/AllClass.txt"
-#define studentScoreFileName "Data/StudentScore/"
-#define staffFileName "Data/AllStaff.txt"
-
 void loadAllStaffData(Staff* & allStaff, string fileName) {
     ifstream fin;
     fin.open(fileName);
@@ -170,7 +162,7 @@ void exportStudentInASameYear(string schoolYear, string fileName) {
     fout.close();
 }
 
-
+//-----------------------------------------------------------------------------------------//
 
 // Front End
 
