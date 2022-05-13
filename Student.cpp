@@ -346,6 +346,15 @@ void studentEditProfileWindow(Student* tmpStudent) {
 
                 int saveButtonState = saveButton.isMouseClick(&event);
                 if(saveButtonState == 1) {
+                    curStudent->Info->ID = listTextbox[0].Text;
+                    curStudent->Info->firstName = listTextbox[1].Text;
+                    curStudent->Info->lastName = listTextbox[2].Text;
+                    curStudent->Info->Gender = listTextbox[3].Text;
+                    curStudent->Info->Dob = listTextbox[4].Text;
+                    curStudent->Info->SocialID = listTextbox[5].Text;
+                    curStudent->Info->Class = listTextbox[6].Text;
+                    curStudent->Info->schoolyear = listTextbox[7].Text;
+
                     saveButton.FillCol = saveButton.PressCol;
                     saveAllStudentData(allStudent, studentFileName);
                     isSave = true;
