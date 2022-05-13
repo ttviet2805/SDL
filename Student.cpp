@@ -195,7 +195,163 @@ StudentScore* createAStudentScore(string CourseID, float MidTerm, float Final, f
 // --------------------------------------------------------------------------- //
 
 void studentEditProfileWindow(Student* &curStudent) {
+    SDL_Window* gWindow = NULL;
+    SDL_Renderer* gRenderer = NULL;
+    SDL_Event event;
 
+    const int textboxWidth = 300;
+    const int textboxHeight = 40;
+    const int startX = 120;
+    const int startY = 150;
+    const int plusX = 240;
+    const int plusY = 55;
+
+    const string backgroundPath = "Data/Image/StudentBackground.jpg";
+
+    if(!init(gWindow, gRenderer, "Profile")) {
+        printf("SDL could not initialize! SDL_Error: %s\n", SDL_GetError());
+    }
+    else {
+        bool quit = false;
+
+        SDL_Texture* backgroundImage = nullptr;
+        loadImage(gRenderer, backgroundImage, backgroundPath);
+
+        vector <Button> listTextbox(8);
+
+        for(int i = 0; i < 8; i++) {
+            string curText = "";
+
+            switch (i) {
+            case 0:
+                curText = curStudent->Info->ID;
+                break;
+
+            case 1:
+                curText = curStudent->Info->firstName;
+                break;
+
+            case 2:
+                curText = curStudent->Info->lastName;
+                break;
+
+            case 3:
+                curText = curStudent->Info->Gender;
+                break;
+
+            case 4:
+                curText = curStudent->Info->Dob;
+                break;
+
+            case 5:
+                curText = curStudent->Info->SocialID;
+                break;
+
+            case 6:
+                curText = curStudent->Info->Class;
+                break;
+
+            case 7:
+                curText = curStudent->Info->schoolyear;
+                break;
+            }
+
+            if(i < 4)
+                listTextbox[i] = Button(startX, startY + (textboxHeight + plusY) * i, textboxWidth, textboxHeight, 2, BLACK, WHITE, WHITE, GREY, curText, 20);
+            else
+                listTextbox[i] = Button(startX + (textboxWidth + plusX), startY + (textboxHeight + plusY) * (i - 4), textboxWidth, textboxHeight, 2, BLACK, WHITE, WHITE, GREY, curText, 20);
+        }
+
+        vector <TextOutput> listText;
+
+        for(int i = 0; i < 8; i++) {
+            string curText = "";
+
+            switch (i) {
+            case 0:
+                curText = "ID";
+                break;
+
+            case 1:
+                curText = "First name";
+                break;
+
+            case 2:
+                curText = "Last name";
+                break;
+
+            case 3:
+                curText = "Gender";
+                break;
+
+            case 4:
+                curText = "Date of birth";
+                break;
+
+            case 5:
+                curText = "Social ID";
+                break;
+
+            case 6:
+                curText = "Class";
+                break;
+
+            case 7:
+                curText = "School year";
+                break;
+            }
+
+            TextOutput tmp = TextOutput(BLACK, 22);
+            tmp.loadText(gRenderer, curText, FONTDIR);
+
+            listText.push_back(tmp);
+        }
+
+        Button saveButton = Button((SCREEN_WIDTH - 100) / 2, 550, 100, 30, 2, BLACK, LIGHTBLUE, RED, RED, "Save", 19);
+
+
+        while(!quit) {
+            while(SDL_PollEvent(&event) != 0) {
+                if(event.type == SDL_QUIT) {
+                    quit = true;
+                    break;
+                }
+
+                SDL_RenderClear(gRenderer);
+
+                SDL_RenderCopy(gRenderer, backgroundImage, NULL, NULL);
+
+                for(int i = 0; i < 8; i++)
+                    listTextbox[i].Display(gRenderer);
+
+                for(int i = 0; i < 4; i++)
+                    listText[i].Display(gRenderer, startX, startY + (textboxHeight + plusY) * i - 25);
+
+                for(int i = 4; i < 8; i++)
+                    listText[i].Display(gRenderer, startX + (textboxWidth + plusX), startY + (textboxHeight + plusY) * (i - 4) - 25);
+
+                saveButton.Display(gRenderer);
+
+                for(int i = 0; i < 8; i++)
+                    listTextbox[i].isTextBox(gRenderer, &event);
+
+                SDL_RenderPresent(gRenderer);
+            }
+        }
+
+        SDL_DestroyTexture(backgroundImage);
+        backgroundImage = NULL;
+
+        //Destroy window
+        SDL_DestroyRenderer( gRenderer );
+        SDL_DestroyWindow( gWindow );
+        gWindow = NULL;
+        gRenderer = NULL;
+
+        // Quit
+        IMG_Quit();
+        SDL_Quit();
+    }
 }
 
 void studentWindow(Student* &curStudent) {
