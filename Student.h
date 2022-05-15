@@ -15,6 +15,7 @@ using namespace std;
 #include "Class.h"
 #include "SDLProcess.h"
 #include "ButtonClass.h"
+#include "Login.h"
 
 struct StudentInfo {
     string ID, firstName, lastName, Gender, Dob, SocialID, Class, schoolyear;
@@ -64,5 +65,9 @@ StudentScore* createAStudentScore(string CourseID, float MidTerm, float Final, f
 //Front End
 
 void studentEditProfileWindow(Student* curStudent);
+
+void studentViewScore(Student* curStudent);
+
+void studentViewStudentInClass(Student* curStudent);
 
 void studentWindow(Student* curStudent);

@@ -22,6 +22,10 @@ struct Account {
     Account* Next = nullptr;
 
     void changePassword();
+
+    //Front end
+
+    void userChangePassword();
 };
 
 //Back End
@@ -44,7 +48,6 @@ void addANewAccount(Account* newAccount);
 //Front End
 
 Account* loginWindow();
-
 
 
 

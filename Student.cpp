@@ -319,6 +319,8 @@ void studentEditProfileWindow(Student* tmpStudent) {
 
         Button saveButton = Button((SCREEN_WIDTH - 100) / 2, 550, 100, 30, 2, BLACK, LIGHTBLUE, RED, RED, "Save", 19);
 
+        Button backButton = Button(20, 20, 80, 30, 2, BLACK, RED, LIGHTBLUE, GREY, "Back", 20);
+
         while(!quit) {
             while(SDL_PollEvent(&event) != 0) {
                 if(event.type == SDL_QUIT) {
@@ -340,6 +342,7 @@ void studentEditProfileWindow(Student* tmpStudent) {
                     listText[i].Display(gRenderer, startX + (textboxWidth + plusX), startY + (textboxHeight + plusY) * (i - 4) - 25);
 
                 saveButton.Display(gRenderer);
+                backButton.Display(gRenderer);
 
                 for(int i = 0; i < 8; i++)
                     listTextbox[i].isTextBox(gRenderer, &event);
@@ -366,9 +369,510 @@ void studentEditProfileWindow(Student* tmpStudent) {
                     saveButton.FillCol = saveButton.InitCol;
                 }
 
+                int backButtonState = backButton.isMouseClick(&event);
+                if(backButtonState == 1) {
+                    backButton.FillCol = backButton.PressCol;
+                    SDL_DestroyTexture(backgroundImage);
+                    backgroundImage = NULL;
+
+                    //Destroy window
+                    SDL_DestroyRenderer( gRenderer );
+                    SDL_DestroyWindow( gWindow );
+                    gWindow = NULL;
+                    gRenderer = NULL;
+
+                    // Quit
+                    IMG_Quit();
+                    SDL_Quit();
+                    return;
+                }
+                else if(backButtonState == 2) {
+                    backButton.FillCol = backButton.HoverCol;
+                }
+                else {
+                    backButton.FillCol = backButton.InitCol;
+                }
+
                 if(isSave) {
                     saveText.Display(gRenderer, (SCREEN_WIDTH - saveText.mWidth) / 2, 550 + saveButton.bRect.h + 10);
                 }
+
+                SDL_RenderPresent(gRenderer);
+            }
+        }
+
+        SDL_DestroyTexture(backgroundImage);
+        backgroundImage = NULL;
+
+        //Destroy window
+        SDL_DestroyRenderer( gRenderer );
+        SDL_DestroyWindow( gWindow );
+        gWindow = NULL;
+        gRenderer = NULL;
+
+        // Quit
+        IMG_Quit();
+        SDL_Quit();
+    }
+}
+
+void studentViewScore(Student* tmpStudent) {
+    Student* allStudent = nullptr;
+    loadAllStudentData(allStudent, studentFileName);
+
+    Course* allCourse = nullptr;
+    loadAllCourseData(allCourse, courseFileName, allStudent);
+
+    Student* curStudent = findStudentByID(allStudent, tmpStudent->Info->ID);
+
+    StudentScore* curScore = curStudent->Score;
+
+    SDL_Window* gWindow = NULL;
+    SDL_Renderer* gRenderer = NULL;
+    SDL_Event event;
+
+    const int startX = 40, startY = 100;
+
+    const string backgroundPath = "Data/Image/StudentBackground.jpg";
+
+    if(!init(gWindow, gRenderer, "View Scoreboard")) {
+        printf("SDL could not initialize! SDL_Error: %s\n", SDL_GetError());
+    }
+    else {
+        bool quit = false;
+
+        SDL_Texture* backgroundImage = nullptr;
+        loadImage(gRenderer, backgroundImage, backgroundPath);
+
+        Button backButton = Button(20, 20, 80, 30, 2, BLACK, RED, LIGHTBLUE, GREY, "Back", 20);
+
+        Button exportCSVButton = Button(SCREEN_WIDTH - 350, 50, 300, 30, 2, BLACK, GREY, RED, LIGHTBLUE, "Export to CSV file", 20);
+
+        vector <Button> listButton[10];
+
+        int curX = startX, curY = startY;
+
+        for(int i = 0; i < 7; i++) {
+            int Width = 0, Height = 25;
+            string curText = "";
+
+            switch (i) {
+                case 0: {
+                    Width = 200;
+                    curText = "Course ID";
+                    break;
+                }
+
+                case 1: {
+                    Width = 300;
+                    curText = "Course name";
+                    curX += 200;
+                    break;
+                }
+
+                case 2: {
+                    Width = 100;
+                    curText = "Midterm";
+                    curX += 300;
+                    break;
+                }
+
+                case 3: {
+                    Width = 100;
+                    curText = "Final";
+                    curX += 100;
+                    break;
+                }
+
+                case 4: {
+                    Width = 100;
+                    curText = "Other";
+                    curX += 100;
+                    break;
+                }
+
+                case 5: {
+                    Width = 100;
+                    curText = "Total";
+                    curX += 100;
+                    break;
+                }
+
+                case 6: {
+                    Width = 100;
+                    curText = "GPA";
+                    curX += 100;
+                    break;
+                }
+            }
+
+            Button tmp = Button(curX, startY, Width, Height, 2, BLACK, WHITE, RED, RED, curText, 15);
+
+            listButton[i].push_back(tmp);
+        }
+
+        curY = startY;
+
+        while(curScore) {
+            Course* curCourse = findCourseByID(allCourse, curScore->courseID);
+
+            if(curCourse) {
+                curX = startX;
+                curY += 25;
+
+                for(int i = 0; i < 7; i++) {
+                    int Width = 0, Height = 25;
+                    string curText = "";
+
+                    switch (i) {
+                        case 0: {
+                            Width = 200;
+                            curText = curCourse->Info->courseID;
+                            break;
+                        }
+
+                        case 1: {
+                            Width = 300;
+                            curText = curCourse->Info->courseName;
+                            curX += 200;
+                            break;
+                        }
+
+                        case 2: {
+                            Width = 100;
+                            curText = to_string(curScore->studentScore->MidTerm);
+                            curX += 300;
+                            break;
+                        }
+
+                        case 3: {
+                            Width = 100;
+                            curText = to_string(curScore->studentScore->Final);
+                            curX += 100;
+                            break;
+                        }
+
+                        case 4: {
+                            Width = 100;
+                            curText = to_string(curScore->studentScore->Other);
+                            curX += 100;
+                            break;
+                        }
+
+                        case 5: {
+                            Width = 100;
+                            curScore->studentScore->calTotal();
+                            curText = to_string(curScore->studentScore->Total);
+                            curX += 100;
+                            break;
+                        }
+
+                        case 6: {
+                            Width = 100;
+                            curX += 100;
+                            break;
+                        }
+                    }
+
+                    Button tmp = Button(curX, curY, Width, 25, 2, BLACK, WHITE, RED, RED, curText, 15);
+
+                    listButton[i].push_back(tmp);
+                }
+            }
+
+            curScore = curScore->Next;
+        }
+
+        while(!quit) {
+            while(SDL_PollEvent(&event) != 0) {
+                if(event.type == SDL_QUIT) {
+                    quit = true;
+                    break;
+                }
+
+                SDL_RenderClear(gRenderer);
+
+                SDL_RenderCopy(gRenderer, backgroundImage, NULL, NULL);
+
+                for(int i = 0; i < 7; i++) {
+                    for(auto it : listButton[i]) {
+                        it.Display(gRenderer);
+                    }
+                }
+
+                int backButtonState = backButton.isMouseClick(&event);
+                if(backButtonState == 1) {
+                    backButton.FillCol = backButton.PressCol;
+                    SDL_DestroyTexture(backgroundImage);
+                    backgroundImage = NULL;
+
+                    //Destroy window
+                    SDL_DestroyRenderer( gRenderer );
+                    SDL_DestroyWindow( gWindow );
+                    gWindow = NULL;
+                    gRenderer = NULL;
+
+                    // Quit
+                    IMG_Quit();
+                    SDL_Quit();
+                    return;
+                }
+                else if(backButtonState == 2) {
+                    backButton.FillCol = backButton.HoverCol;
+                }
+                else {
+                    backButton.FillCol = backButton.InitCol;
+                }
+
+                backButton.Display(gRenderer);
+                exportCSVButton.Display(gRenderer);
+
+                SDL_RenderPresent(gRenderer);
+            }
+        }
+
+        SDL_DestroyTexture(backgroundImage);
+        backgroundImage = NULL;
+
+        //Destroy window
+        SDL_DestroyRenderer( gRenderer );
+        SDL_DestroyWindow( gWindow );
+        gWindow = NULL;
+        gRenderer = NULL;
+
+        // Quit
+        IMG_Quit();
+        SDL_Quit();
+    }
+}
+
+void studentViewStudentInClass(Student* curStudent) {
+    Class* allClass = nullptr;
+    loadAllClassData(allClass, classFileName);
+
+    Student* allStudent = nullptr;
+    loadAllStudentData(allStudent, studentFileName);
+
+    Class* curClass = findClassByID(allClass, curStudent->Info->Class);
+
+    SDL_Window* gWindow = NULL;
+    SDL_Renderer* gRenderer = NULL;
+    SDL_Event event;
+
+    const int startX = 40, startY = 100;
+
+    const string backgroundPath = "Data/Image/StudentBackground.jpg";
+
+    if(!init(gWindow, gRenderer, "List Students In Class")) {
+        printf("SDL could not initialize! SDL_Error: %s\n", SDL_GetError());
+    }
+    else {
+        bool quit = false;
+
+        SDL_Texture* backgroundImage = nullptr;
+        loadImage(gRenderer, backgroundImage, backgroundPath);
+
+        Button backButton = Button(20, 20, 80, 30, 2, BLACK, RED, LIGHTBLUE, GREY, "Back", 20);
+
+        Button curClassButton = Button((SCREEN_WIDTH - 150) / 2 , 60, 150, 30, 2, BLACK, WHITE, WHITE, WHITE, "Class: " + curClass->className, 20);
+
+        Button exportCSVButton = Button(SCREEN_WIDTH - 350, 50, 300, 30, 2, BLACK, GREY, RED, LIGHTBLUE, "Export to CSV file", 20);
+
+        vector <Button> listButton[10];
+
+        int curX = startX, curY = startY;
+
+        for(int i = 0; i < 8; i++) {
+            int Width = 0, Height = 25;
+            string curText = "";
+
+            switch (i) {
+                case 0: {
+                    Width = 150;
+                    curText = "Student ID";
+                    break;
+                }
+
+                case 1: {
+                    Width = 250;
+                    curText = "First name";
+                    curX += 150;
+                    break;
+                }
+
+                case 2: {
+                    Width = 150;
+                    curText = "Last name";
+                    curX += 250;
+                    break;
+                }
+
+                case 3: {
+                    Width = 100;
+                    curText = "Gender";
+                    curX += 150;
+                    break;
+                }
+
+                case 4: {
+                    Width = 100;
+                    curText = "Date of birth";
+                    curX += 100;
+                    break;
+                }
+
+                case 5: {
+                    Width = 100;
+                    curText = "Social ID";
+                    curX += 100;
+                    break;
+                }
+
+                case 6: {
+                    Width = 70;
+                    curText = "Class";
+                    curX += 100;
+                    break;
+                }
+
+                case 7: {
+                    Width = 80;
+                    curText = "School year";
+                    curX += 70;
+                    break;
+                }
+            }
+
+            Button tmp = Button(curX, startY, Width, Height, 2, BLACK, WHITE, RED, RED, curText, 15);
+
+            listButton[i].push_back(tmp);
+        }
+
+        StudentInClass* curStudentInClass = curClass->studentHead;
+
+        curY = startY;
+
+        while(curStudentInClass) {
+            Student* curStudent = findStudentByID(allStudent, curStudentInClass->StudentID);
+
+            if(curStudent) {
+                curX = startX;
+                curY += 25;
+
+                for(int i = 0; i < 8; i++) {
+                    int Width = 0, Height = 25;
+                    string curText = "";
+
+                    switch (i) {
+                        case 0: {
+                            Width = 150;
+                            curText = curStudent->Info->ID;
+                            break;
+                        }
+
+                        case 1: {
+                            Width = 250;
+                            curText = curStudent->Info->firstName;
+                            curX += 150;
+                            break;
+                        }
+
+                        case 2: {
+                            Width = 150;
+                            curText = curStudent->Info->lastName;
+                            curX += 250;
+                            break;
+                        }
+
+                        case 3: {
+                            Width = 100;
+                            curText = curStudent->Info->Gender;
+                            curX += 150;
+                            break;
+                        }
+
+                        case 4: {
+                            Width = 100;
+                            curText = curStudent->Info->Dob;
+                            curX += 100;
+                            break;
+                        }
+
+                        case 5: {
+                            Width = 100;
+                            curText = curStudent->Info->SocialID;
+                            curX += 100;
+                            break;
+                        }
+
+                        case 6: {
+                            Width = 70;
+                            curText = curStudent->Info->Class;
+                            curX += 100;
+                            break;
+                        }
+
+                        case 7: {
+                            Width = 80;
+                            curText = curStudent->Info->schoolyear;
+                            curX += 70;
+                            break;
+                        }
+                    }
+
+                    Button tmp = Button(curX, curY, Width, 25, 2, BLACK, WHITE, RED, RED, curText, 15);
+
+                    listButton[i].push_back(tmp);
+                }
+            }
+
+            curStudentInClass = curStudentInClass->Next;
+        }
+
+        while(!quit) {
+            while(SDL_PollEvent(&event) != 0) {
+                if(event.type == SDL_QUIT) {
+                    quit = true;
+                    break;
+                }
+
+                SDL_RenderClear(gRenderer);
+
+                SDL_RenderCopy(gRenderer, backgroundImage, NULL, NULL);
+
+                for(int i = 0; i < 8; i++) {
+                    for(auto it : listButton[i]) {
+                        it.Display(gRenderer);
+                    }
+                }
+
+                int backButtonState = backButton.isMouseClick(&event);
+                if(backButtonState == 1) {
+                    backButton.FillCol = backButton.PressCol;
+                    SDL_DestroyTexture(backgroundImage);
+                    backgroundImage = NULL;
+
+                    //Destroy window
+                    SDL_DestroyRenderer( gRenderer );
+                    SDL_DestroyWindow( gWindow );
+                    gWindow = NULL;
+                    gRenderer = NULL;
+
+                    // Quit
+                    IMG_Quit();
+                    SDL_Quit();
+                    return;
+                }
+                else if(backButtonState == 2) {
+                    backButton.FillCol = backButton.HoverCol;
+                }
+                else {
+                    backButton.FillCol = backButton.InitCol;
+                }
+
+                backButton.Display(gRenderer);
+                curClassButton.Display(gRenderer);
+                exportCSVButton.Display(gRenderer);
 
                 SDL_RenderPresent(gRenderer);
             }
@@ -451,6 +955,31 @@ void studentWindow(Student* curStudent) {
                     int buttonState = listButton[i].isMouseClick(&event);
                     if(buttonState == 1) {
                         listButton[i].FillCol = listButton[i].PressCol;
+
+                        switch (i) {
+                            case 0: {
+                                studentEditProfileWindow(curStudent);
+                                break;
+                            }
+
+                            case 3: {
+                                Account* allAccount = nullptr;
+                                loadAllAccountData(allAccount, accountFileName);
+
+                                Account* curAccount = findAccountByID(allAccount, curStudent->Info->ID);
+                                if(!curAccount) {
+                                    cout << "Change password problem";
+                                    return;
+                                }
+
+                                curAccount->userChangePassword();
+                                break;
+                            }
+
+                            case 4: {
+                                break;
+                            }
+                        }
                     }
                     else if(buttonState == 2) {
                         listButton[i].FillCol = listButton[i].HoverCol;

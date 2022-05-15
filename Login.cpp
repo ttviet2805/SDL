@@ -65,7 +65,7 @@ void showAllAccountData(Account* allAccount) {
 Account* findAccountByID(Account* allAccount, string ID) {
     Account* cur = allAccount;
 
-    while(!cur) {
+    while(cur) {
         if(cur->username == ID) return cur;
         cur = cur->Next;
     }
@@ -154,6 +154,162 @@ void addANewAccount(Account* newAccount) {
 
 // -------------------------------------------------------------------------------- //
 
+void Account::userChangePassword() {
+    SDL_Window* gWindow = NULL;
+    SDL_Renderer* gRenderer = NULL;
+    SDL_Event event;
+
+    Account* allAccount = nullptr;
+    loadAllAccountData(allAccount, accountFileName);
+
+    Account* curAccount = findAccountByID(allAccount, username);
+    if(!curAccount) {
+        cout << "Change password problem";
+        return;
+    }
+
+    const string backgroundPath = "Data/Image/StudentBackground.jpg";
+
+    if(!init(gWindow, gRenderer, "Change Password")) {
+        printf("SDL could not initialize! SDL_Error: %s\n", SDL_GetError());
+    }
+    else {
+        SDL_RenderClear(gRenderer);
+
+        SDL_Texture* backgroundImage = nullptr;
+        loadImage(gRenderer, backgroundImage, backgroundPath);
+
+        Button backButton = Button(20, 20, 80, 30, 2, BLACK, RED, LIGHTBLUE, GREY, "Back", 20);
+
+        Button curPasswordButton = Button((SCREEN_WIDTH - 300) / 2, 250, 300, 35, 2, BLACK, WHITE, WHITE, GREY, "", 20);
+        curPasswordButton.TypeBox = 1;
+        curPasswordButton.padding_hoz = 10;
+
+        Button newPasswordButton = Button((SCREEN_WIDTH - 300) / 2, 350, 300, 35, 2, BLACK, WHITE, WHITE, GREY, "", 20);
+        newPasswordButton.TypeBox = 1;
+        newPasswordButton.padding_hoz = 10;
+
+        TextOutput curPasswordText = TextOutput(BLACK, 22);
+        curPasswordText.loadText(gRenderer, "Your current password", FONTDIR);
+
+        TextOutput newPasswordText = TextOutput(BLACK, 22);
+        newPasswordText.loadText(gRenderer, "Your new password", FONTDIR);
+
+        TextOutput warningText = TextOutput(RED, 22);
+        warningText.loadText(gRenderer, "Your current password is incorrect", FONTDIR);
+
+        Button saveButton = Button((SCREEN_WIDTH - 100) / 2, 450, 100, 30, 2, BLACK, LIGHTBLUE, RED, RED, "Save", 19);
+
+        bool isSave = false;
+
+        bool quit = false;
+        while(!quit) {
+            while(SDL_PollEvent(&event) != 0) {
+                if(event.type == SDL_QUIT) {
+                    quit = true;
+                    break;
+                }
+
+                SDL_RenderClear(gRenderer);
+
+                SDL_RenderCopy(gRenderer, backgroundImage, NULL, NULL);
+
+                int saveButtonState = saveButton.isMouseClick(&event);
+                if(saveButtonState == 1) {
+                    saveButton.FillCol = saveButton.PressCol;
+                    isSave = true;
+
+                    if(curPasswordButton.Text == curAccount->password) {
+                        curAccount->password = newPasswordButton.Text;
+
+                        saveAllAccountData(allAccount, accountFileName);
+
+                        SDL_DestroyTexture(backgroundImage);
+                        backgroundImage = NULL;
+
+                        //Destroy window
+                        SDL_DestroyRenderer( gRenderer );
+                        SDL_DestroyWindow( gWindow );
+                        gWindow = NULL;
+                        gRenderer = NULL;
+
+                        // Quit
+                        IMG_Quit();
+                        SDL_Quit();
+                        return;
+                    }
+
+
+                    curPasswordButton.Text = "";
+                    newPasswordButton.Text = "";
+                }
+                else if(saveButtonState == 2) {
+                    saveButton.FillCol = saveButton.HoverCol;
+                }
+                else {
+                    saveButton.FillCol = saveButton.InitCol;
+                }
+
+                // Display
+                curPasswordButton.Display(gRenderer);
+                newPasswordButton.Display(gRenderer);
+                saveButton.Display(gRenderer);
+                backButton.Display(gRenderer);
+
+                curPasswordText.Display(gRenderer, (SCREEN_WIDTH - 300) / 2, 222);
+                newPasswordText.Display(gRenderer, (SCREEN_WIDTH - 300) / 2, 322);
+
+                if(isSave) {
+                    warningText.Display(gRenderer, (SCREEN_WIDTH - warningText.mWidth) / 2, 485);
+                }
+
+                int backButtonState = backButton.isMouseClick(&event);
+                if(backButtonState == 1) {
+                    backButton.FillCol = backButton.PressCol;
+                    SDL_DestroyTexture(backgroundImage);
+                    backgroundImage = NULL;
+
+                    //Destroy window
+                    SDL_DestroyRenderer( gRenderer );
+                    SDL_DestroyWindow( gWindow );
+                    gWindow = NULL;
+                    gRenderer = NULL;
+
+                    // Quit
+                    IMG_Quit();
+                    SDL_Quit();
+                    return;
+                }
+                else if(backButtonState == 2) {
+                    backButton.FillCol = backButton.HoverCol;
+                }
+                else {
+                    backButton.FillCol = backButton.InitCol;
+                }
+
+                curPasswordButton.isTextBox(gRenderer, &event);
+
+                newPasswordButton.isTextBox(gRenderer, &event);
+
+                SDL_RenderPresent(gRenderer);
+            }
+        }
+
+        SDL_DestroyTexture(backgroundImage);
+        backgroundImage = NULL;
+
+        //Destroy window
+        SDL_DestroyRenderer( gRenderer );
+        SDL_DestroyWindow( gWindow );
+        gWindow = NULL;
+        gRenderer = NULL;
+
+        // Quit
+        IMG_Quit();
+        SDL_Quit();
+    }
+}
+
 Account* loginWindow() {
     SDL_Window* gWindow = NULL;
     SDL_Renderer* gRenderer = NULL;
@@ -170,8 +326,8 @@ Account* loginWindow() {
     else {
         SDL_RenderClear(gRenderer);
 
-        SDL_Texture* background_Image = nullptr;
-        loadImage(gRenderer, background_Image, backgroundPath);
+        SDL_Texture* backgroundImage = nullptr;
+        loadImage(gRenderer, backgroundImage, backgroundPath);
 
         Button userNameButton = Button((SCREEN_WIDTH - 300) / 2, 250, 300, 35, 2, BLACK, WHITE, WHITE, GREY, "", 20);
         userNameButton.TypeBox = 1;
@@ -206,7 +362,7 @@ Account* loginWindow() {
 
                 SDL_RenderClear(gRenderer);
 
-                SDL_RenderCopy(gRenderer, background_Image, NULL, NULL);
+                SDL_RenderCopy(gRenderer, backgroundImage, NULL, NULL);
 
                 int loginButtonState = loginButton.isMouseClick(&event);
                 if(loginButtonState == 1) {
@@ -218,8 +374,8 @@ Account* loginWindow() {
                         if(curAccount->username == curUsername && curAccount->password == curPassword) {
                             cout << "Login successful";
 
-                            SDL_DestroyTexture(background_Image);
-                            background_Image = NULL;
+                            SDL_DestroyTexture(backgroundImage);
+                            backgroundImage = NULL;
 
                             //Destroy window
                             SDL_DestroyRenderer( gRenderer );
@@ -272,8 +428,8 @@ Account* loginWindow() {
             }
         }
 
-        SDL_DestroyTexture(background_Image);
-        background_Image = NULL;
+        SDL_DestroyTexture(backgroundImage);
+        backgroundImage = NULL;
 
         //Destroy window
         SDL_DestroyRenderer( gRenderer );

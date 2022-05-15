@@ -48,3 +48,7 @@ void viewStudentInASameYear(string schoolYear);
 void staffaddStudentByManual();
 
 void staffaddStudentByCSV(string fileName);
+
+
+
+void staffViewStudentInAClass(Class* curClass);
