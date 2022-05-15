@@ -3,8 +3,6 @@
 void systemProcess() {
     Account* curAccount = loginWindow();
 
-    exit(0);
-
     if(curAccount == nullptr) {
         return;
     }
@@ -15,14 +13,8 @@ void systemProcess() {
 
         Staff* curStaff = findStaffByID(allStaff, curAccount->username);
 
-        if(!curStaff) {
-            cout << 1;
-        }
-
-        cout << curStaff->Info->fullName << endl;
-        exit(0);
-
-        staffWindow(curStaff);
+        if(curStaff)
+            staffWindow(curStaff);
     }
     else {
         Student* allStudent = nullptr;

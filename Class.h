@@ -16,12 +16,12 @@ using namespace std;
 struct Student;
 
 struct StudentInClass {
-    string StudentID;
+    string StudentID = "";
     StudentInClass* Next = nullptr;
 };
 
 struct Class {
-    string className;
+    string className = "";
     StudentInClass* studentHead = nullptr;
 
     Class* Next = nullptr;

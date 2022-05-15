@@ -21,18 +21,18 @@ using namespace std;
 #include "SystemProcess.h"
 
 struct StudentInfo {
-    string ID, firstName, lastName, Gender, Dob, SocialID, Class, schoolyear;
+    string ID = "", firstName = "", lastName = "", Gender = "", Dob = "", SocialID = "", Class = "", schoolyear = "";
 };
 
 struct StudentScore {
-    string courseID;
-    Score* studentScore = new Score;
+    string courseID = "";
+    Score studentScore;
 
     StudentScore* Next = nullptr;
 };
 
 struct Student {
-    StudentInfo* Info = new StudentInfo;
+    StudentInfo Info;
     StudentScore* Score = nullptr;
 
     Student* Next = nullptr;

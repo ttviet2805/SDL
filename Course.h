@@ -12,21 +12,21 @@ using namespace std;
 #include "Score.h"
 
 struct CourseInfo {
-    string courseID, courseName;
+    string courseID = "", courseName = "";
 };
 
 #include "Student.h"
 struct Student;
 
 struct CourseScore {
-    string StudentID;
-    Score* studentScore = new Score;
+    string StudentID = "";
+    Score studentScore;
 
     CourseScore* Next = nullptr;
 };
 
 struct Course {
-    CourseInfo* Info = new CourseInfo;
+    CourseInfo Info;
     CourseScore* courseScoreHead = nullptr;
 
     Course* Next = nullptr;

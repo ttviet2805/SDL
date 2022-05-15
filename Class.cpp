@@ -10,9 +10,9 @@ void Class::loadStudentInClass() {
     StudentInClass* curStudentInClass = Dummy;
 
     while(curStudent) {
-        if(curStudent->Info->Class == className) {
+        if(curStudent->Info.Class == className) {
             curStudentInClass->Next = new StudentInClass;
-            curStudentInClass->Next->StudentID = curStudent->Info->ID;
+            curStudentInClass->Next->StudentID = curStudent->Info.ID;
             curStudentInClass = curStudentInClass->Next;
         }
 

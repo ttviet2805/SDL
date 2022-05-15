@@ -16,14 +16,14 @@ void loadAllStudentData(Student* &allStudent, string fileName) {
     string stuID;
     while(!fin.eof() && getline(fin, stuID)) {
         curStudent->Next = new Student;
-        curStudent->Next->Info->ID = stuID;
-        getline(fin, curStudent->Next->Info->firstName);
-        getline(fin, curStudent->Next->Info->lastName);
-        getline(fin, curStudent->Next->Info->Gender);
-        getline(fin, curStudent->Next->Info->Dob);
-        getline(fin, curStudent->Next->Info->SocialID);
-        getline(fin, curStudent->Next->Info->Class);
-        getline(fin, curStudent->Next->Info->schoolyear);
+        curStudent->Next->Info.ID = stuID;
+        getline(fin, curStudent->Next->Info.firstName);
+        getline(fin, curStudent->Next->Info.lastName);
+        getline(fin, curStudent->Next->Info.Gender);
+        getline(fin, curStudent->Next->Info.Dob);
+        getline(fin, curStudent->Next->Info.SocialID);
+        getline(fin, curStudent->Next->Info.Class);
+        getline(fin, curStudent->Next->Info.schoolyear);
 
         curStudent = curStudent->Next;
     }
@@ -49,10 +49,10 @@ void saveAllStudentData(Student* allStudent, string filename) {
     Student* curStudent = allStudent;
 
     while(curStudent) {
-        fout << curStudent->Info->ID << '\n' << curStudent->Info->firstName << '\n' << curStudent->Info->lastName << '\n';
-        fout << curStudent->Info->Gender << '\n' << curStudent->Info->Dob << '\n';
-        fout << curStudent->Info->SocialID << '\n' << curStudent->Info->Class << '\n';
-        fout << curStudent->Info->schoolyear << '\n';
+        fout << curStudent->Info.ID << '\n' << curStudent->Info.firstName << '\n' << curStudent->Info.lastName << '\n';
+        fout << curStudent->Info.Gender << '\n' << curStudent->Info.Dob << '\n';
+        fout << curStudent->Info.SocialID << '\n' << curStudent->Info.Class << '\n';
+        fout << curStudent->Info.schoolyear << '\n';
         curStudent = curStudent->Next;
     }
 
@@ -88,11 +88,11 @@ void showAllStudentInfo(Student* allStudent) {
     Student* tmpStudent = allStudent;
 
     while(tmpStudent) {
-        cout << tmpStudent->Info->ID << '\n';
-        cout << tmpStudent->Info->firstName << '\n' << tmpStudent->Info->lastName << '\n';
-        cout << tmpStudent->Info->Gender << '\n' << tmpStudent->Info->Dob << '\n';
-        cout << tmpStudent->Info->SocialID << '\n' << tmpStudent->Info->Class << '\n';
-        cout << tmpStudent->Info->schoolyear << '\n';
+        cout << tmpStudent->Info.ID << '\n';
+        cout << tmpStudent->Info.firstName << '\n' << tmpStudent->Info.lastName << '\n';
+        cout << tmpStudent->Info.Gender << '\n' << tmpStudent->Info.Dob << '\n';
+        cout << tmpStudent->Info.SocialID << '\n' << tmpStudent->Info.Class << '\n';
+        cout << tmpStudent->Info.schoolyear << '\n';
         cout << '\n';
         tmpStudent = tmpStudent->Next;
     }
@@ -102,7 +102,7 @@ Student* findStudentByID(Student* allStudent, string ID) {
     Student* curStudent = allStudent;
 
     while(curStudent) {
-        if(curStudent->Info->ID == ID) return curStudent;
+        if(curStudent->Info.ID == ID) return curStudent;
         curStudent = curStudent->Next;
     }
 
@@ -110,9 +110,9 @@ Student* findStudentByID(Student* allStudent, string ID) {
 }
 
 void Student::viewProfile() {
-    cout << Info->ID << '\n' << Info->firstName << '\n' << Info->lastName << '\n' << Info->Gender << '\n';
-    cout << Info->Dob << '\n' << Info->SocialID << '\n' << Info->Class << '\n';
-    cout << Info->schoolyear << '\n';
+    cout << Info.ID << '\n' << Info.firstName << '\n' << Info.lastName << '\n' << Info.Gender << '\n';
+    cout << Info.Dob << '\n' << Info.SocialID << '\n' << Info.Class << '\n';
+    cout << Info.schoolyear << '\n';
 }
 
 void Student::viewScoreBoard() {
@@ -126,8 +126,8 @@ void Student::viewScoreBoard() {
 
     while(curScore) {
         Course* curCourse = findCourseByID(allCourse, curScore->courseID);
-        cout << curCourse->Info->courseID << ' ' << curCourse->Info->courseName << '\n';
-        cout << curScore->studentScore->MidTerm << ' ' << curScore->studentScore->Final << ' ' << curScore->studentScore->Other << '\n';
+        cout << curCourse->Info.courseID << ' ' << curCourse->Info.courseName << '\n';
+        cout << curScore->studentScore.MidTerm << ' ' << curScore->studentScore.Final << ' ' << curScore->studentScore.Other << '\n';
 
         curScore = curScore->Next;
     }
@@ -149,8 +149,8 @@ void Student::exportScoreBoard(string fileName) {
 
     while(curScore) {
         Course* curCourse = findCourseByID(allCourse, curScore->courseID);
-        fout << curCourse->Info->courseID << ' ' << curCourse->Info->courseName << '\n';
-        fout << curScore->studentScore->MidTerm << ' ' << curScore->studentScore->Final << ' ' << curScore->studentScore->Other << '\n';
+        fout << curCourse->Info.courseID << ' ' << curCourse->Info.courseName << '\n';
+        fout << curScore->studentScore.MidTerm << ' ' << curScore->studentScore.Final << ' ' << curScore->studentScore.Other << '\n';
 
         curScore = curScore->Next;
     }
@@ -167,7 +167,7 @@ void Student::viewStudentInCurrentClass() {
     Student* allStudent = nullptr;
     loadAllStudentData(allStudent, studentFileName);
 
-    Class* curClass = findClassByID(allClass, Info->Class);
+    Class* curClass = findClassByID(allClass, Info.Class);
 
     StudentInClass* curStudentInClass = curClass->studentHead;
 
@@ -187,7 +187,7 @@ StudentScore* createAStudentScore(string CourseID, float MidTerm, float Final, f
     StudentScore* newScore = new StudentScore;
 
     newScore->courseID = CourseID;
-    newScore->studentScore->setScore(MidTerm, Final, Other);
+    newScore->studentScore.setScore(MidTerm, Final, Other);
 
     return newScore;
 }
@@ -209,7 +209,7 @@ void studentEditProfileWindow(Student* tmpStudent) {
     Student* allStudent = nullptr;
     loadAllStudentData(allStudent, studentFileName);
 
-    Student* curStudent = findStudentByID(allStudent, tmpStudent->Info->ID);
+    Student* curStudent = findStudentByID(allStudent, tmpStudent->Info.ID);
 
     const string backgroundPath = "Data/Image/StudentBackground.jpg";
 
@@ -232,35 +232,35 @@ void studentEditProfileWindow(Student* tmpStudent) {
 
             switch (i) {
             case 0:
-                curText = curStudent->Info->ID;
+                curText = curStudent->Info.ID;
                 break;
 
             case 1:
-                curText = curStudent->Info->firstName;
+                curText = curStudent->Info.firstName;
                 break;
 
             case 2:
-                curText = curStudent->Info->lastName;
+                curText = curStudent->Info.lastName;
                 break;
 
             case 3:
-                curText = curStudent->Info->Gender;
+                curText = curStudent->Info.Gender;
                 break;
 
             case 4:
-                curText = curStudent->Info->Dob;
+                curText = curStudent->Info.Dob;
                 break;
 
             case 5:
-                curText = curStudent->Info->SocialID;
+                curText = curStudent->Info.SocialID;
                 break;
 
             case 6:
-                curText = curStudent->Info->Class;
+                curText = curStudent->Info.Class;
                 break;
 
             case 7:
-                curText = curStudent->Info->schoolyear;
+                curText = curStudent->Info.schoolyear;
                 break;
             }
 
@@ -354,14 +354,14 @@ void studentEditProfileWindow(Student* tmpStudent) {
 
                 int saveButtonState = saveButton.isMouseClick(&event);
                 if(saveButtonState == 1) {
-                    curStudent->Info->ID = listTextbox[0].Text;
-                    curStudent->Info->firstName = listTextbox[1].Text;
-                    curStudent->Info->lastName = listTextbox[2].Text;
-                    curStudent->Info->Gender = listTextbox[3].Text;
-                    curStudent->Info->Dob = listTextbox[4].Text;
-                    curStudent->Info->SocialID = listTextbox[5].Text;
-                    curStudent->Info->Class = listTextbox[6].Text;
-                    curStudent->Info->schoolyear = listTextbox[7].Text;
+                    curStudent->Info.ID = listTextbox[0].Text;
+                    curStudent->Info.firstName = listTextbox[1].Text;
+                    curStudent->Info.lastName = listTextbox[2].Text;
+                    curStudent->Info.Gender = listTextbox[3].Text;
+                    curStudent->Info.Dob = listTextbox[4].Text;
+                    curStudent->Info.SocialID = listTextbox[5].Text;
+                    curStudent->Info.Class = listTextbox[6].Text;
+                    curStudent->Info.schoolyear = listTextbox[7].Text;
 
                     saveButton.FillCol = saveButton.PressCol;
                     saveAllStudentData(allStudent, studentFileName);
@@ -429,7 +429,7 @@ void studentViewScore(Student* tmpStudent) {
     Course* allCourse = nullptr;
     loadAllCourseData(allCourse, courseFileName, allStudent);
 
-    Student* curStudent = findStudentByID(allStudent, tmpStudent->Info->ID);
+    Student* curStudent = findStudentByID(allStudent, tmpStudent->Info.ID);
 
     StudentScore* curScore = curStudent->Score;
 
@@ -535,20 +535,20 @@ void studentViewScore(Student* tmpStudent) {
                     switch (i) {
                         case 0: {
                             Width = 200;
-                            curText = curCourse->Info->courseID;
+                            curText = curCourse->Info.courseID;
                             break;
                         }
 
                         case 1: {
                             Width = 300;
-                            curText = curCourse->Info->courseName;
+                            curText = curCourse->Info.courseName;
                             curX += 200;
                             break;
                         }
 
                         case 2: {
                             Width = 100;
-                            ss << fixed << setprecision(2) << curScore->studentScore->MidTerm << ' ';
+                            ss << fixed << setprecision(2) << curScore->studentScore.MidTerm << ' ';
                             ss >> curText;
                             curX += 300;
                             break;
@@ -556,7 +556,7 @@ void studentViewScore(Student* tmpStudent) {
 
                         case 3: {
                             Width = 100;
-                            ss << fixed << setprecision(2) << curScore->studentScore->Final << ' ';
+                            ss << fixed << setprecision(2) << curScore->studentScore.Final << ' ';
                             ss >> curText;
                             curX += 100;
                             break;
@@ -564,7 +564,7 @@ void studentViewScore(Student* tmpStudent) {
 
                         case 4: {
                             Width = 100;
-                            ss << fixed << setprecision(2) << curScore->studentScore->Other << ' ';
+                            ss << fixed << setprecision(2) << curScore->studentScore.Other << ' ';
                             ss >> curText;
                             curX += 100;
                             break;
@@ -572,8 +572,8 @@ void studentViewScore(Student* tmpStudent) {
 
                         case 5: {
                             Width = 100;
-                            curScore->studentScore->calTotal();
-                            ss << fixed << setprecision(2) << curScore->studentScore->Total << ' ';
+                            curScore->studentScore.calTotal();
+                            ss << fixed << setprecision(2) << curScore->studentScore.Total << ' ';
                             ss >> curText;
                             curX += 100;
                             break;
@@ -666,7 +666,7 @@ void studentViewStudentInClass(Student* curStudent) {
     Student* allStudent = nullptr;
     loadAllStudentData(allStudent, studentFileName);
 
-    Class* curClass = findClassByID(allClass, curStudent->Info->Class);
+    Class* curClass = findClassByID(allClass, curStudent->Info.Class);
 
     SDL_Window* gWindow = NULL;
     SDL_Renderer* gRenderer = NULL;
@@ -779,55 +779,55 @@ void studentViewStudentInClass(Student* curStudent) {
                     switch (i) {
                         case 0: {
                             Width = 150;
-                            curText = curStudent->Info->ID;
+                            curText = curStudent->Info.ID;
                             break;
                         }
 
                         case 1: {
                             Width = 250;
-                            curText = curStudent->Info->firstName;
+                            curText = curStudent->Info.firstName;
                             curX += 150;
                             break;
                         }
 
                         case 2: {
                             Width = 150;
-                            curText = curStudent->Info->lastName;
+                            curText = curStudent->Info.lastName;
                             curX += 250;
                             break;
                         }
 
                         case 3: {
                             Width = 100;
-                            curText = curStudent->Info->Gender;
+                            curText = curStudent->Info.Gender;
                             curX += 150;
                             break;
                         }
 
                         case 4: {
                             Width = 100;
-                            curText = curStudent->Info->Dob;
+                            curText = curStudent->Info.Dob;
                             curX += 100;
                             break;
                         }
 
                         case 5: {
                             Width = 100;
-                            curText = curStudent->Info->SocialID;
+                            curText = curStudent->Info.SocialID;
                             curX += 100;
                             break;
                         }
 
                         case 6: {
                             Width = 70;
-                            curText = curStudent->Info->Class;
+                            curText = curStudent->Info.Class;
                             curX += 100;
                             break;
                         }
 
                         case 7: {
                             Width = 80;
-                            curText = curStudent->Info->schoolyear;
+                            curText = curStudent->Info.schoolyear;
                             curX += 70;
                             break;
                         }
@@ -930,7 +930,7 @@ void studentWindow(Student* curStudent) {
         bool quit = false;
 
         TextOutput welcomeText = TextOutput(RED, 22);
-        string studentName = curStudent->Info->firstName + " " + curStudent->Info->lastName;
+        string studentName = curStudent->Info.firstName + " " + curStudent->Info.lastName;
         welcomeText.loadText(gRenderer, "Welcome " + studentName,FONTDIR);
 
         SDL_Texture* backgroundImage = nullptr;
@@ -1005,7 +1005,7 @@ void studentWindow(Student* curStudent) {
                                 Account* allAccount = nullptr;
                                 loadAllAccountData(allAccount, accountFileName);
 
-                                Account* curAccount = findAccountByID(allAccount, curStudent->Info->ID);
+                                Account* curAccount = findAccountByID(allAccount, curStudent->Info.ID);
                                 if(!curAccount) {
                                     cout << "Change password problem";
                                     return;

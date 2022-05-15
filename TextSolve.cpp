@@ -69,6 +69,8 @@ bool TextOutput::loadText(SDL_Renderer* &gRenderer, string curText, string fileN
 	//Loading success flag
 	bool success = true;
 
+	if(curText == "") return false;
+
 	//Open the font
 	mFont = TTF_OpenFont( FONTDIR.c_str(), textSize );
 	if( mFont == NULL )

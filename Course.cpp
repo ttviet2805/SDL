@@ -11,15 +11,15 @@ void Course::loadCourseScoreData(string fileName, Student* &allStudent) {
     while(!fin.eof() && getline(fin, tmpstudentID)) {
         cur->Next = new CourseScore;
         cur->Next->StudentID = tmpstudentID;
-        fin >> cur->Next->studentScore->MidTerm >> cur->Next->studentScore->Final >> cur->Next->studentScore->Other;
+        fin >> cur->Next->studentScore.MidTerm >> cur->Next->studentScore.Final >> cur->Next->studentScore.Other;
         fin.get();
 
         Student* curStudent = findStudentByID(allStudent, tmpstudentID);
 
         if(curStudent) {
             StudentScore* newScore = new StudentScore;
-            newScore->courseID = Info->courseID;
-            newScore->studentScore->setScore(cur->Next->studentScore->MidTerm, cur->Next->studentScore->Final, cur->Next->studentScore->Other);
+            newScore->courseID = Info.courseID;
+            newScore->studentScore.setScore(cur->Next->studentScore.MidTerm, cur->Next->studentScore.Final, cur->Next->studentScore.Other);
             curStudent->addStudentScore(newScore);
         }
 
@@ -42,7 +42,7 @@ void Course::saveCourseScoreData(string fileName) {
 
     while(curScore) {
         fout << curScore->StudentID << '\n';
-        fout << curScore->studentScore->MidTerm << ' ' << curScore->studentScore->Final << ' ' << curScore->studentScore->Other << '\n';
+        fout << curScore->studentScore.MidTerm << ' ' << curScore->studentScore.Final << ' ' << curScore->studentScore.Other << '\n';
         curScore = curScore->Next;
     }
 
@@ -65,10 +65,10 @@ void loadAllCourseData(Course* &allCourse, string fileName, Student* &allStudent
     string tmpID;
     while(!fin.eof() && getline(fin, tmpID)) {
         curCourse->Next = new Course;
-        curCourse->Next->Info->courseID = tmpID;
-        getline(fin, curCourse->Next->Info->courseName);
+        curCourse->Next->Info.courseID = tmpID;
+        getline(fin, curCourse->Next->Info.courseName);
 
-        curCourse->Next->loadCourseScoreData(courseScoreFileName + curCourse->Next->Info->courseID + ".txt", allStudent);
+        curCourse->Next->loadCourseScoreData(courseScoreFileName + curCourse->Next->Info.courseID + ".txt", allStudent);
         curCourse = curCourse->Next;
     }
 
@@ -93,8 +93,8 @@ void saveAllCourseData(Course* allCourse, string fileName) {
     Course* curCourse = allCourse;
 
     while(curCourse) {
-        fout << curCourse->Info->courseID << '\n' << curCourse->Info->courseName << '\n';
-        curCourse->saveCourseScoreData(courseScoreFileName + curCourse->Info->courseID + ".txt");
+        fout << curCourse->Info.courseID << '\n' << curCourse->Info.courseName << '\n';
+        curCourse->saveCourseScoreData(courseScoreFileName + curCourse->Info.courseID + ".txt");
         curCourse = curCourse->Next;
     }
 
@@ -105,7 +105,7 @@ void showAllCourseData(Course* allCourse) {
     Course* curCourse = allCourse;
 
     while(curCourse) {
-        cout << curCourse->Info->courseID << '\n' << curCourse->Info->courseName << '\n';
+        cout << curCourse->Info.courseID << '\n' << curCourse->Info.courseName << '\n';
         curCourse = curCourse->Next;
     }
 }
@@ -114,7 +114,7 @@ Course* findCourseByID(Course* allCourse, string ID) {
     Course* curCourse = allCourse;
 
     while(curCourse) {
-        if(curCourse->Info->courseID == ID) return curCourse;
+        if(curCourse->Info.courseID == ID) return curCourse;
         curCourse = curCourse->Next;
     }
 
@@ -151,7 +151,7 @@ void Course::viewStudentScore() {
 
     while(curScore) {
         cout << curScore->StudentID << '\n';
-        cout << curScore->studentScore->MidTerm << ' ' << curScore->studentScore->Final << ' ' << curScore->studentScore->Other << '\n';
+        cout << curScore->studentScore.MidTerm << ' ' << curScore->studentScore.Final << ' ' << curScore->studentScore.Other << '\n';
 
         curScore = curScore->Next;
     }
@@ -161,7 +161,7 @@ CourseScore* createACourseScore(string studentID, float Midterm, float Final, fl
     CourseScore* newScore = new CourseScore;
 
     newScore->StudentID = studentID;
-    newScore->studentScore->setScore(Midterm, Final, Other);
+    newScore->studentScore.setScore(Midterm, Final, Other);
 
     return newScore;
 }

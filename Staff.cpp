@@ -10,8 +10,8 @@ void loadAllStaffData(Staff* & allStaff, string fileName) {
     string tmpID;
     while(!fin.eof() && getline(fin, tmpID)) {
         curStaff->Next = new Staff;
-        curStaff->Next->Info->ID = tmpID;
-        getline(fin, curStaff->Next->Info->fullName);
+        curStaff->Next->Info.ID = tmpID;
+        getline(fin, curStaff->Next->Info.fullName);
 
         curStaff = curStaff->Next;
     }
@@ -32,7 +32,7 @@ void saveAllStaffData(Staff* allStaff, string fileName) {
     Staff* curStaff = allStaff;
 
     while(curStaff) {
-        fout << curStaff->Info->ID << '\n' << curStaff->Info->fullName << '\n';
+        fout << curStaff->Info.ID << '\n' << curStaff->Info.fullName << '\n';
         curStaff = curStaff->Next;
     }
 
@@ -43,7 +43,7 @@ Staff* findStaffByID(Staff* allStaff, string StaffID) {
     Staff* curStaff = allStaff;
 
     while(curStaff) {
-        if(curStaff->Info->ID == StaffID)
+        if(curStaff->Info.ID == StaffID)
             return curStaff;
 
         curStaff = curStaff->Next;
@@ -56,7 +56,7 @@ void showAllStaffData(Staff* allStaff) {
     Staff* curStaff = allStaff;
 
     while(curStaff) {
-        cout << curStaff->Info->ID << ' ' << curStaff->Info->fullName << '\n';
+        cout << curStaff->Info.ID << ' ' << curStaff->Info.fullName << '\n';
         curStaff = curStaff->Next;
     }
 }
@@ -124,11 +124,11 @@ void exportStudentInAClass(Class* curClass, string fileName) {
 
     while(curStudentInClass) {
         Student* curStudent = findStudentByID(allStudent, curStudentInClass->StudentID);
-        StudentInfo* Info = curStudent->Info;
+        StudentInfo Info = curStudent->Info;
 
-        fout << Info->ID << '\n' << Info->firstName << '\n' << Info->lastName << '\n' << Info->Gender << '\n';
-        fout << Info->Dob << '\n' << Info->SocialID << '\n' << Info->Class << '\n';
-        fout << Info->schoolyear << '\n';
+        fout << Info.ID << '\n' << Info.firstName << '\n' << Info.lastName << '\n' << Info.Gender << '\n';
+        fout << Info.Dob << '\n' << Info.SocialID << '\n' << Info.Class << '\n';
+        fout << Info.schoolyear << '\n';
 
         curStudentInClass = curStudentInClass->Next;
     }
@@ -143,7 +143,7 @@ void viewStudentInASameYear(string schoolYear) {
     Student* curStudent = allStudent;
 
     while(curStudent) {
-        if(curStudent->Info->schoolyear == schoolYear) {
+        if(curStudent->Info.schoolyear == schoolYear) {
             curStudent->viewProfile();
         }
 
@@ -161,18 +161,60 @@ void exportStudentInASameYear(string schoolYear, string fileName) {
     Student* curStudent = allStudent;
 
     while(curStudent) {
-        if(curStudent->Info->schoolyear == schoolYear) {
-            StudentInfo* Info = curStudent->Info;
+        if(curStudent->Info.schoolyear == schoolYear) {
+            StudentInfo Info = curStudent->Info;
 
-            fout << Info->ID << '\n' << Info->firstName << '\n' << Info->lastName << '\n' << Info->Gender << '\n';
-            fout << Info->Dob << '\n' << Info->SocialID << '\n' << Info->Class << '\n';
-            fout << Info->schoolyear << '\n';
+            fout << Info.ID << '\n' << Info.firstName << '\n' << Info.lastName << '\n' << Info.Gender << '\n';
+            fout << Info.Dob << '\n' << Info.SocialID << '\n' << Info.Class << '\n';
+            fout << Info.schoolyear << '\n';
         }
 
         curStudent = curStudent->Next;
     }
 
     fout.close();
+}
+
+void addStudentByCSV(string fileName) {
+    ifstream fin;
+    fin.open(fileName);
+
+    if(!fin) {
+        cout << "Can not open student CSV file";
+        system("pause");
+        return;
+    }
+
+    Student* allStudent = nullptr;
+    loadAllStudentData(allStudent, studentFileName);
+
+    string ID;
+    while(!fin.eof() && getline(fin, ID, ',')) {
+        Student* newStudent = new Student;
+        newStudent->Info.ID = ID;
+        getline(fin, newStudent->Info.firstName, ',');
+        getline(fin, newStudent->Info.lastName, ',');
+        getline(fin, newStudent->Info.Gender, ',');
+        getline(fin, newStudent->Info.Dob, ',');
+        getline(fin, newStudent->Info.SocialID, ',');
+        getline(fin, newStudent->Info.Class, ',');
+        getline(fin, newStudent->Info.schoolyear);
+
+        addANewStudent(allStudent, newStudent);
+
+        newStudent->viewProfile();
+
+        Account* newAccount = new Account;
+        newAccount->username = newStudent->Info.ID;
+        newAccount->type = 1;
+        addANewAccount(newAccount);
+    }
+
+    saveAllStudentData(allStudent, studentFileName);
+
+    showAllStudentInfo(allStudent);
+
+    fin.close();
 }
 
 //-----------------------------------------------------------------------------------------//
@@ -415,19 +457,19 @@ void staffaddStudentByManual() {
 
                     for(int i = 1; i < listButton[0].size(); i++) {
                         Student* newStudent = new Student;
-                        newStudent->Info->ID = listButton[0][i].Text;
-                        newStudent->Info->firstName = listButton[1][i].Text;
-                        newStudent->Info->lastName = listButton[2][i].Text;
-                        newStudent->Info->Gender = listButton[3][i].Text;
-                        newStudent->Info->Dob = listButton[4][i].Text;
-                        newStudent->Info->SocialID = listButton[5][i].Text;
-                        newStudent->Info->Class = listButton[6][i].Text;
-                        newStudent->Info->schoolyear = listButton[7][i].Text;
+                        newStudent->Info.ID = listButton[0][i].Text;
+                        newStudent->Info.firstName = listButton[1][i].Text;
+                        newStudent->Info.lastName = listButton[2][i].Text;
+                        newStudent->Info.Gender = listButton[3][i].Text;
+                        newStudent->Info.Dob = listButton[4][i].Text;
+                        newStudent->Info.SocialID = listButton[5][i].Text;
+                        newStudent->Info.Class = listButton[6][i].Text;
+                        newStudent->Info.schoolyear = listButton[7][i].Text;
 
                         addANewStudent(allStudent, newStudent);
 
                         Account* newAccount = new Account;
-                        newAccount->username = newStudent->Info->ID;
+                        newAccount->username = newStudent->Info.ID;
                         newAccount->type = 1;
                         addANewAccount(newAccount);
                     }
@@ -462,48 +504,6 @@ void staffaddStudentByManual() {
         IMG_Quit();
         SDL_Quit();
     }
-}
-
-void staffaddStudentByCSV(string fileName) {
-    ifstream fin;
-    fin.open(fileName);
-
-    if(!fin) {
-        cout << "Can not open student CSV file";
-        system("pause");
-        return;
-    }
-
-    Student* allStudent = nullptr;
-    loadAllStudentData(allStudent, studentFileName);
-
-    string ID;
-    while(!fin.eof() && getline(fin, ID, ',')) {
-        Student* newStudent = new Student;
-        newStudent->Info->ID = ID;
-        getline(fin, newStudent->Info->firstName, ',');
-        getline(fin, newStudent->Info->lastName, ',');
-        getline(fin, newStudent->Info->Gender, ',');
-        getline(fin, newStudent->Info->Dob, ',');
-        getline(fin, newStudent->Info->SocialID, ',');
-        getline(fin, newStudent->Info->Class, ',');
-        getline(fin, newStudent->Info->schoolyear);
-
-        addANewStudent(allStudent, newStudent);
-
-        newStudent->viewProfile();
-
-        Account* newAccount = new Account;
-        newAccount->username = newStudent->Info->ID;
-        newAccount->type = 1;
-        addANewAccount(newAccount);
-    }
-
-    saveAllStudentData(allStudent, studentFileName);
-
-    showAllStudentInfo(allStudent);
-
-    fin.close();
 }
 
 void staffViewStudentInAClass(Class* tmpClass) {
@@ -626,55 +626,55 @@ void staffViewStudentInAClass(Class* tmpClass) {
                     switch (i) {
                         case 0: {
                             Width = 150;
-                            curText = curStudent->Info->ID;
+                            curText = curStudent->Info.ID;
                             break;
                         }
 
                         case 1: {
                             Width = 250;
-                            curText = curStudent->Info->firstName;
+                            curText = curStudent->Info.firstName;
                             curX += 150;
                             break;
                         }
 
                         case 2: {
                             Width = 150;
-                            curText = curStudent->Info->lastName;
+                            curText = curStudent->Info.lastName;
                             curX += 250;
                             break;
                         }
 
                         case 3: {
                             Width = 100;
-                            curText = curStudent->Info->Gender;
+                            curText = curStudent->Info.Gender;
                             curX += 150;
                             break;
                         }
 
                         case 4: {
                             Width = 100;
-                            curText = curStudent->Info->Dob;
+                            curText = curStudent->Info.Dob;
                             curX += 100;
                             break;
                         }
 
                         case 5: {
                             Width = 100;
-                            curText = curStudent->Info->SocialID;
+                            curText = curStudent->Info.SocialID;
                             curX += 100;
                             break;
                         }
 
                         case 6: {
                             Width = 70;
-                            curText = curStudent->Info->Class;
+                            curText = curStudent->Info.Class;
                             curX += 100;
                             break;
                         }
 
                         case 7: {
                             Width = 80;
-                            curText = curStudent->Info->schoolyear;
+                            curText = curStudent->Info.schoolyear;
                             curX += 70;
                             break;
                         }
@@ -775,8 +775,11 @@ void staffWindow(Staff* curStaff) {
         bool quit = false;
 
         TextOutput welcomeText = TextOutput(RED, 22);
-        string staffName = curStaff->Info->fullName;
+
+        string staffName = curStaff->Info.fullName;
+
         welcomeText.loadText(gRenderer, "Welcome " + staffName,FONTDIR);
+
 
         SDL_Texture* backgroundImage = nullptr;
         loadImage(gRenderer, backgroundImage, backgroundPath);
@@ -795,6 +798,8 @@ void staffWindow(Staff* curStaff) {
 
         listButton[5] = Button(startX + 2 * (buttonWidth + plusX), startY + buttonHeight + plusY, buttonWidth, buttonHeight, 2, BLACK, LIGHTBLUE, RED, RED, "Log Out", buttonTextSize);
 
+//        system("pause");
+
         while(!quit) {
             while(SDL_PollEvent(&event) != 0) {
                 if(event.type == SDL_QUIT) {
@@ -808,7 +813,6 @@ void staffWindow(Staff* curStaff) {
 
                 welcomeText.Display(gRenderer, SCREEN_WIDTH - welcomeText.mWidth - 20, 10);
 
-
                 for(int i = 0; i < 6; i++) {
                     listButton[i].Display(gRenderer);
                 }
@@ -817,6 +821,8 @@ void staffWindow(Staff* curStaff) {
                     int buttonState = listButton[i].isMouseClick(&event);
                     //listButton[i].FillCol = listButton[i].InitCol;
                     if(buttonState == 1) {
+                        listButton[i].FillCol = listButton[i].PressCol;
+
                         SDL_DestroyTexture(backgroundImage);
                         backgroundImage = NULL;
 
@@ -829,7 +835,6 @@ void staffWindow(Staff* curStaff) {
                         // Quit
                         IMG_Quit();
                         SDL_Quit();
-                        listButton[i].FillCol = listButton[i].PressCol;
 
                         switch (i) {
                             case 0: {
@@ -849,6 +854,10 @@ void staffWindow(Staff* curStaff) {
                             }
 
                             case 4: {
+                                return;
+                            }
+
+                            case 5: {
                                 return;
                             }
                         }

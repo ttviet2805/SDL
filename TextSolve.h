@@ -14,13 +14,13 @@ using namespace std;
 struct TextOutput {
     //The actual hardware texture
     SDL_Texture* mTexture = NULL;
-    TTF_Font* mFont;
-    SDL_Color textColor;
+    TTF_Font* mFont = NULL;
+    SDL_Color textColor = WHITE;
 
     //Image dimensions
-    int mWidth;
-    int mHeight;
-    int textSize;
+    int mWidth = 0;
+    int mHeight = 0;
+    int textSize = 0;
 
     TextOutput(SDL_Color _textColor, int _textSize) {
         mTexture = NULL;

@@ -21,11 +21,11 @@ struct Student;
 struct Class;
 
 struct StaffInfo {
-    string ID, fullName;
+    string ID = "", fullName = "";
 };
 
 struct Staff {
-    StaffInfo* Info = new StaffInfo;
+    StaffInfo Info;
 
     Staff* Next = nullptr;
 };
@@ -49,14 +49,13 @@ void exportStudentInAClass(Class* curClass, string fileName);
 
 void viewStudentInASameYear(string schoolYear);
 
+void addStudentByManual();
+
 //---------------------------------------------------------------------------------//
 
 // Front End
-void staffaddStudentByManual();
 
 void staffaddStudentByCSV(string fileName);
-
-
 
 void staffViewStudentInAClass(Class* curClass);
 
