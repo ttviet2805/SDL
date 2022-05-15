@@ -387,6 +387,7 @@ void studentEditProfileWindow(Student* tmpStudent) {
                     gRenderer = NULL;
 
                     // Quit
+                    TTF_Quit();
                     IMG_Quit();
                     SDL_Quit();
                     studentWindow(curStudent);
@@ -417,6 +418,7 @@ void studentEditProfileWindow(Student* tmpStudent) {
         gRenderer = NULL;
 
         // Quit
+        TTF_Quit();
         IMG_Quit();
         SDL_Quit();
     }
@@ -625,6 +627,7 @@ void studentViewScore(Student* tmpStudent) {
                     gRenderer = NULL;
 
                     // Quit
+                    TTF_Quit();
                     IMG_Quit();
                     SDL_Quit();
                     studentWindow(curStudent);
@@ -654,12 +657,13 @@ void studentViewScore(Student* tmpStudent) {
         gRenderer = NULL;
 
         // Quit
+        TTF_Quit();
         IMG_Quit();
         SDL_Quit();
     }
 }
 
-void studentViewStudentInClass(Student* curStudent) {
+void studentViewStudentInClass(Student* curStudent, int page) {
     Class* allClass = nullptr;
     loadAllClassData(allClass, classFileName);
 
@@ -673,6 +677,7 @@ void studentViewStudentInClass(Student* curStudent) {
     SDL_Event event;
 
     const int startX = 40, startY = 100;
+    const int numStudentInAPage = 15;
 
     const string backgroundPath = "Data/Image/StudentBackground.jpg";
 
@@ -690,6 +695,12 @@ void studentViewStudentInClass(Student* curStudent) {
         Button curClassButton = Button((SCREEN_WIDTH - 150) / 2 , 60, 150, 30, 2, BLACK, WHITE, WHITE, WHITE, "Class: " + curClass->className, 20);
 
         Button exportCSVButton = Button(SCREEN_WIDTH - 350, 50, 300, 30, 2, BLACK, GREY, RED, LIGHTBLUE, "Export to CSV file", 20);
+
+        string preText = "<";
+        Button preButton = Button(SCREEN_WIDTH / 2 - 40 - 15, 580, 40, 40, 2, GREEN, GREEN, RED, LIGHTBLUE, preText, 20);
+
+        string nextText = ">";
+        Button nextButton = Button(SCREEN_WIDTH / 2 + 15, 580, 40, 40, 2, GREEN, GREEN, RED, LIGHTBLUE, nextText, 20);
 
         vector <Button> listButton[10];
 
@@ -763,9 +774,30 @@ void studentViewStudentInClass(Student* curStudent) {
 
         StudentInClass* curStudentInClass = curClass->studentHead;
 
+        int numStudentInClass = 0;
+        StudentInClass* tmpStu = curStudentInClass;
+
+        while(tmpStu) {
+            numStudentInClass++;
+            tmpStu = tmpStu->Next;
+        }
+
+        int numMaxPage = numStudentInClass / numStudentInAPage;
+        if(numStudentInAPage % numStudentInAPage != 0) numMaxPage++;
+
         curY = startY;
 
-        while(curStudentInClass) {
+        int startStu = page * numStudentInAPage, cnt = 0;
+
+        while(curStudentInClass && cnt < startStu) {
+            ++cnt;
+            curStudentInClass = curStudentInClass->Next;
+        }
+
+        cnt = 0;
+
+        while(curStudentInClass && cnt < numStudentInAPage) {
+            ++cnt;
             Student* curStudent = findStudentByID(allStudent, curStudentInClass->StudentID);
 
             if(curStudent) {
@@ -885,9 +917,75 @@ void studentViewStudentInClass(Student* curStudent) {
                     backButton.FillCol = backButton.InitCol;
                 }
 
+                int preButtonState = preButton.isMouseClick(&event);
+                if(preButtonState == 1) {
+                    if(page > 0) {
+                        SDL_DestroyTexture(backgroundImage);
+                        backgroundImage = NULL;
+
+                        //Destroy window
+                        SDL_DestroyRenderer( gRenderer );
+                        SDL_DestroyWindow( gWindow );
+                        gWindow = NULL;
+                        gRenderer = NULL;
+
+                        // Quit
+                        IMG_Quit();
+                        SDL_Quit();
+
+                        for(int i = 0; i < 8; i++) {
+                            listButton[i].clear();
+                        }
+
+                        preButton.FillCol = preButton.PressCol;
+                        studentViewStudentInClass(curStudent, page - 1);
+                        return;
+                    }
+                                    }
+                else if(preButtonState == 2) {
+                    preButton.FillCol = preButton.HoverCol;
+                }
+                else {
+                    preButton.FillCol = preButton.InitCol;
+                }
+
+                int nextButtonState = nextButton.isMouseClick(&event);
+                if(nextButtonState == 1) {
+                    if(page < numMaxPage) {
+                        SDL_DestroyTexture(backgroundImage);
+                        backgroundImage = NULL;
+
+                        //Destroy window
+                        SDL_DestroyRenderer( gRenderer );
+                        SDL_DestroyWindow( gWindow );
+                        gWindow = NULL;
+                        gRenderer = NULL;
+
+                        // Quit
+                        IMG_Quit();
+                        SDL_Quit();
+
+                        for(int i = 0; i < 8; i++) {
+                            listButton[i].clear();
+                        }
+
+                        nextButton.FillCol = nextButton.PressCol;
+                        studentViewStudentInClass(curStudent, page + 1);
+                        return;
+                    }
+                }
+                else if(nextButtonState == 2) {
+                    nextButton.FillCol = nextButton.HoverCol;
+                }
+                else {
+                    nextButton.FillCol = nextButton.InitCol;
+                }
+
                 backButton.Display(gRenderer);
                 curClassButton.Display(gRenderer);
                 exportCSVButton.Display(gRenderer);
+                preButton.Display(gRenderer);
+                nextButton.Display(gRenderer);
 
                 SDL_RenderPresent(gRenderer);
             }
@@ -997,7 +1095,7 @@ void studentWindow(Student* curStudent) {
                             }
 
                             case 2: {
-                                studentViewStudentInClass(curStudent);
+                                studentViewStudentInClass(curStudent, 0);
                                 return;
                             }
 

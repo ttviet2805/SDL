@@ -36,6 +36,19 @@ struct Button {
         TypeBox = 0;
     }
 
+    void Destroy() {
+        bImage = NULL;
+        boder = 0;
+        InitCol = {0, 0, 0, 0};
+        OutlineCol = {0, 0, 0, 0};
+        FillCol = {0, 0, 0, 0};
+        HoverCol = {0, 0, 0, 0};
+        PressCol = {0, 0, 0, 0};
+        Text = "";
+        TextSize = 0;
+        TypeBox = 0;
+    }
+
     Button(int bx, int by, int bw, int bh, int _boder, SDL_Color _OutlineCol, SDL_Color _FillCol, SDL_Color _HoverCol, SDL_Color _PressCol, string _Text, int _TextSize) {
         bRect = {bx, by, bw, bh};
         boder = _boder;
@@ -55,7 +68,7 @@ struct Button {
         if(event->type != SDL_MOUSEMOTION && event->type != SDL_MOUSEBUTTONDOWN) return 0;
         if(event->button.button == SDL_BUTTON_RIGHT) return 0;
         int type = 2;
-        if(event->button.button == SDL_BUTTON_LEFT) type = 1, cout << "Here\n";
+        if(event->button.button == SDL_BUTTON_LEFT) type = 1;
         int x, y;
         SDL_GetMouseState(&x, &y);
         if(x < bRect.x || y < bRect.y || x > bRect.x + bRect.w || y > bRect.y + bRect.h) return 0;
@@ -96,6 +109,8 @@ struct Button {
                     curLine = curWord;
                 }
                 else curLine = temStr;
+
+                tmp.free();
             }
             if(curLine != "") listText.push_back(curLine);
             for(int i = 0; i < listText.size(); ++i) {
@@ -103,6 +118,7 @@ struct Button {
                 tmp.loadText(gRenderer, listText[i], FONTDIR);
                 totHeight += tmp.mHeight;
                 if(i + 1 < listText.size()) totHeight += 4;
+                tmp.free();
             }
 
             int curY = bRect.y + (bRect.h - totHeight) / 2;
@@ -111,6 +127,7 @@ struct Button {
                 tmp.loadText(gRenderer, listText[i], FONTDIR);
                 tmp.Display(gRenderer, bRect.x + bRect.w / 2 - tmp.mWidth / 2, curY);
                 curY += (tmp.mHeight + 4);
+                tmp.free();
             }
         }
         else {
@@ -135,6 +152,8 @@ struct Button {
                 curText.loadText(gRenderer, Text[Cur] + curStr, FONTDIR);
                 curText.Display(gRenderer, bRect.x + boder + padding_hoz, bRect.y + bRect.h / 2 - curText.mHeight / 2);
             }
+
+            tmp.free();
         }
     }
 

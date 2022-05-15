@@ -200,7 +200,10 @@ void Account::userChangePassword() {
 
         Button saveButton = Button((SCREEN_WIDTH - 100) / 2, 450, 100, 30, 2, BLACK, LIGHTBLUE, RED, RED, "Save", 19);
 
-        bool isSave = false;
+        TextOutput saveOKText = TextOutput(RED, 22);
+        saveOKText.loadText(gRenderer, "You have save your data", FONTDIR);
+
+        bool isWarning = false, isSaveOK = false;
 
         bool quit = false;
         while(!quit) {
@@ -217,28 +220,19 @@ void Account::userChangePassword() {
                 int saveButtonState = saveButton.isMouseClick(&event);
                 if(saveButtonState == 1) {
                     saveButton.FillCol = saveButton.PressCol;
-                    isSave = true;
 
                     if(curPasswordButton.Text == curAccount->password) {
                         curAccount->password = newPasswordButton.Text;
 
                         saveAllAccountData(allAccount, accountFileName);
 
-                        SDL_DestroyTexture(backgroundImage);
-                        backgroundImage = NULL;
-
-                        //Destroy window
-                        SDL_DestroyRenderer( gRenderer );
-                        SDL_DestroyWindow( gWindow );
-                        gWindow = NULL;
-                        gRenderer = NULL;
-
-                        // Quit
-                        IMG_Quit();
-                        SDL_Quit();
-                        return;
+                        isSaveOK = true;
+                        isWarning = false;
+                        continue;
                     }
 
+                    isWarning = true;
+                    isSaveOK = false;
 
                     curPasswordButton.Text = "";
                     newPasswordButton.Text = "";
@@ -259,8 +253,13 @@ void Account::userChangePassword() {
                 curPasswordText.Display(gRenderer, (SCREEN_WIDTH - 300) / 2, 222);
                 newPasswordText.Display(gRenderer, (SCREEN_WIDTH - 300) / 2, 322);
 
-                if(isSave) {
+                if(isWarning && !isSaveOK) {
                     warningText.Display(gRenderer, (SCREEN_WIDTH - warningText.mWidth) / 2, 485);
+                }
+                else {
+                    if(!isWarning && isSaveOK) {
+                        saveOKText.Display(gRenderer, (SCREEN_WIDTH - saveOKText.mWidth) / 2, 485);
+                    }
                 }
 
                 int backButtonState = backButton.isMouseClick(&event);
@@ -276,6 +275,7 @@ void Account::userChangePassword() {
                     gRenderer = NULL;
 
                     // Quit
+                    TTF_Quit();
                     IMG_Quit();
                     SDL_Quit();
 
@@ -317,6 +317,7 @@ void Account::userChangePassword() {
         gRenderer = NULL;
 
         // Quit
+        TTF_Quit();
         IMG_Quit();
         SDL_Quit();
     }
@@ -396,6 +397,7 @@ Account* loginWindow() {
                             gRenderer = NULL;
 
                             // Quit
+                            TTF_Quit();
                             IMG_Quit();
                             SDL_Quit();
 

@@ -345,6 +345,7 @@ void staffaddStudentByManual() {
                     gRenderer = NULL;
 
                     // Quit
+                    TTF_Quit();
                     IMG_Quit();
                     SDL_Quit();
                     return;
@@ -501,6 +502,7 @@ void staffaddStudentByManual() {
         gRenderer = NULL;
 
         // Quit
+        TTF_Quit();
         IMG_Quit();
         SDL_Quit();
     }
@@ -719,6 +721,7 @@ void staffViewStudentInAClass(Class* tmpClass) {
                     gRenderer = NULL;
 
                     // Quit
+                    TTF_Quit();
                     IMG_Quit();
                     SDL_Quit();
                     return;
@@ -748,6 +751,7 @@ void staffViewStudentInAClass(Class* tmpClass) {
         gRenderer = NULL;
 
         // Quit
+        TTF_Quit();
         IMG_Quit();
         SDL_Quit();
     }
@@ -833,6 +837,7 @@ void staffWindow(Staff* curStaff) {
                         gRenderer = NULL;
 
                         // Quit
+                        TTF_Quit();
                         IMG_Quit();
                         SDL_Quit();
 
@@ -884,6 +889,7 @@ void staffWindow(Staff* curStaff) {
         gRenderer = NULL;
 
         // Quit
+        TTF_Quit();
         IMG_Quit();
         SDL_Quit();
     }

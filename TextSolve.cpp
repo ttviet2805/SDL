@@ -5,6 +5,7 @@ void TextOutput::free()
 	//Free texture if it exists
 	if( mTexture != NULL )
 	{
+	    TTF_CloseFont( mFont );
 		SDL_DestroyTexture( mTexture );
 		mTexture = NULL;
         textColor = {0, 0, 0, 0};

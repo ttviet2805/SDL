@@ -49,13 +49,12 @@ void exportStudentInAClass(Class* curClass, string fileName);
 
 void viewStudentInASameYear(string schoolYear);
 
-void addStudentByManual();
+void addStudentByCSV(string fileName);
 
 //---------------------------------------------------------------------------------//
 
 // Front End
-
-void staffaddStudentByCSV(string fileName);
+void staffaddStudentByManual();
 
 void staffViewStudentInAClass(Class* curClass);
 

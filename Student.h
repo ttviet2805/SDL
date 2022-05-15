@@ -71,6 +71,6 @@ void studentEditProfileWindow(Student* curStudent);
 
 void studentViewScore(Student* curStudent);
 
-void studentViewStudentInClass(Student* curStudent);
+void studentViewStudentInClass(Student* curStudent, int page);
 
 void studentWindow(Student* curStudent);
