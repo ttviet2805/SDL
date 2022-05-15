@@ -454,7 +454,10 @@ void studentViewScore(Student* tmpStudent) {
 
         Button backButton = Button(20, 20, 80, 30, 2, BLACK, RED, LIGHTBLUE, GREY, "Back", 20);
 
-        Button exportCSVButton = Button(SCREEN_WIDTH - 350, 50, 300, 30, 2, BLACK, GREY, RED, LIGHTBLUE, "Export to CSV file", 20);
+        Button exportFileButton = Button(SCREEN_WIDTH - 350, 50, 300, 30, 2, BLACK, GREY, RED, LIGHTBLUE, "Export to CSV file", 20);
+
+        TextOutput exportOKButton = TextOutput(RED, 22);
+        exportOKButton.loadText(gRenderer, "You have export your score to file", FONTDIR);
 
         vector <Button> listButton[10];
 
@@ -597,6 +600,8 @@ void studentViewScore(Student* tmpStudent) {
             curScore = curScore->Next;
         }
 
+        bool isExport = false;
+
         while(!quit) {
             while(SDL_PollEvent(&event) != 0) {
                 if(event.type == SDL_QUIT) {
@@ -640,8 +645,25 @@ void studentViewScore(Student* tmpStudent) {
                     backButton.FillCol = backButton.InitCol;
                 }
 
+                int exportState = exportFileButton.isMouseClick(&event);
+                if(exportState == 1) {
+                    exportFileButton.FillCol = exportFileButton.PressCol;
+                    isExport = true;
+                    curStudent->exportScoreBoard("Data/StudentScore/" + curStudent->Info.ID + ".txt");
+                }
+                else if(exportState == 2) {
+                    exportFileButton.FillCol = exportFileButton.HoverCol;
+                }
+                else {
+                    exportFileButton.FillCol = exportFileButton.InitCol;
+                }
+
+                if(isExport) {
+                    exportOKButton.Display(gRenderer, (SCREEN_WIDTH - exportOKButton.mWidth) / 2, 30);
+                }
+
                 backButton.Display(gRenderer);
-                exportCSVButton.Display(gRenderer);
+                exportFileButton.Display(gRenderer);
 
                 SDL_RenderPresent(gRenderer);
             }
@@ -694,8 +716,6 @@ void studentViewStudentInClass(Student* curStudent, int page) {
 
         Button curClassButton = Button((SCREEN_WIDTH - 150) / 2 , 60, 150, 30, 2, BLACK, WHITE, WHITE, WHITE, "Class: " + curClass->className, 20);
 
-        Button exportCSVButton = Button(SCREEN_WIDTH - 350, 50, 300, 30, 2, BLACK, GREY, RED, LIGHTBLUE, "Export to CSV file", 20);
-
         string preText = "<";
         Button preButton = Button(SCREEN_WIDTH / 2 - 40 - 15, 580, 40, 40, 2, GREEN, GREEN, RED, LIGHTBLUE, preText, 20);
 
@@ -718,7 +738,7 @@ void studentViewStudentInClass(Student* curStudent, int page) {
                 }
 
                 case 1: {
-                    Width = 250;
+                    Width = 230;
                     curText = "First name";
                     curX += 150;
                     break;
@@ -727,7 +747,7 @@ void studentViewStudentInClass(Student* curStudent, int page) {
                 case 2: {
                     Width = 150;
                     curText = "Last name";
-                    curX += 250;
+                    curX += 230;
                     break;
                 }
 
@@ -760,7 +780,7 @@ void studentViewStudentInClass(Student* curStudent, int page) {
                 }
 
                 case 7: {
-                    Width = 80;
+                    Width = 100;
                     curText = "School year";
                     curX += 70;
                     break;
@@ -816,7 +836,7 @@ void studentViewStudentInClass(Student* curStudent, int page) {
                         }
 
                         case 1: {
-                            Width = 250;
+                            Width = 230;
                             curText = curStudent->Info.firstName;
                             curX += 150;
                             break;
@@ -825,7 +845,7 @@ void studentViewStudentInClass(Student* curStudent, int page) {
                         case 2: {
                             Width = 150;
                             curText = curStudent->Info.lastName;
-                            curX += 250;
+                            curX += 230;
                             break;
                         }
 
@@ -858,7 +878,7 @@ void studentViewStudentInClass(Student* curStudent, int page) {
                         }
 
                         case 7: {
-                            Width = 80;
+                            Width = 100;
                             curText = curStudent->Info.schoolyear;
                             curX += 70;
                             break;
@@ -983,7 +1003,6 @@ void studentViewStudentInClass(Student* curStudent, int page) {
 
                 backButton.Display(gRenderer);
                 curClassButton.Display(gRenderer);
-                exportCSVButton.Display(gRenderer);
                 preButton.Display(gRenderer);
                 nextButton.Display(gRenderer);
 

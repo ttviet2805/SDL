@@ -4,9 +4,8 @@ void systemProcess() {
     Student* allStudent = nullptr;
     loadAllStudentData(allStudent, studentFileName);
 
-    studentViewStudentInClass(allStudent, 0);
+    studentViewScore(allStudent);
 
-    exit(0);
     Account* curAccount = loginWindow();
 
     if(curAccount == nullptr) {
