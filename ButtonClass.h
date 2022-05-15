@@ -13,7 +13,7 @@ using namespace std;
 struct Button {
     SDL_Rect bRect;
     SDL_Texture* bImage = NULL;
-    int boder, padding_hoz = 5;
+    int boder, padding_hoz = 10;
     SDL_Color InitCol;
     SDL_Color OutlineCol;
     SDL_Color FillCol;
@@ -91,7 +91,7 @@ struct Button {
                 temStr += curWord;
                 TextOutput tmp = TextOutput(BLACK, TextSize);
                 tmp.loadText(gRenderer, temStr, FONTDIR);
-                if(tmp.mWidth > bRect.w - 2 * padding_hoz) {
+                if(tmp.mWidth > bRect.w - 2 * padding_hoz - 2 * boder) {
                     listText.push_back(curLine);
                     curLine = curWord;
                 }
@@ -116,7 +116,25 @@ struct Button {
         else {
             TextOutput tmp = TextOutput(BLACK, TextSize);
             tmp.loadText(gRenderer, Text, FONTDIR);
-            tmp.Display(gRenderer, bRect.x + padding_hoz, bRect.y + bRect.h / 2 - tmp.mHeight / 2);
+            if(tmp.mWidth <= bRect.w - 2 * padding_hoz - 2 * boder) {
+                tmp.Display(gRenderer, bRect.x + padding_hoz, bRect.y + bRect.h / 2 - tmp.mHeight / 2);
+            }
+            else {
+                string curStr = "";
+                int Cur = Text.size() - 1;
+                while(Cur >= 0) {
+                    TextOutput curText = TextOutput(BLACK, TextSize);
+                    curText.loadText(gRenderer, Text[Cur] + curStr, FONTDIR);
+                    if(curText.mWidth <= bRect.w - 2 * padding_hoz - 2 * boder) {
+                        curStr = Text[Cur] + curStr;
+                        Cur--;
+                    }
+                    else break;
+                }
+                TextOutput curText = TextOutput(BLACK, TextSize);
+                curText.loadText(gRenderer, Text[Cur] + curStr, FONTDIR);
+                curText.Display(gRenderer, bRect.x + boder + padding_hoz, bRect.y + bRect.h / 2 - curText.mHeight / 2);
+            }
         }
     }
 
@@ -160,12 +178,8 @@ struct Button {
                     if(!(SDL_GetModState() & KMOD_CTRL && (e.text.text[0] == 'c' || e.text.text[0] == 'C' || e.text.text[0] == 'v' || e.text.text[0] == 'V')))
                     {
                         //Append character
-                        TextOutput tmp = TextOutput(BLACK, TextSize);
-                        tmp.loadText(gRenderer, Text + e.text.text, FONTDIR);
-                        if(tmp.mWidth <= bRect.w - padding_hoz * 2) {
-                            Text += e.text.text;
-                            renderText = true;
-                        }
+                        Text += e.text.text;
+                        renderText = true;
                     }
                 }
                 if(renderText) {
