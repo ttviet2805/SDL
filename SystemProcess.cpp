@@ -1,25 +1,28 @@
 #include "systemProcess.h"
 
 void systemProcess() {
-    Student* allStudent = nullptr;
-    loadAllStudentData(allStudent, studentFileName);
-
-    Course* allCourse = nullptr;
-    loadAllCourseData(allCourse, courseFileName, allStudent);
-
-    Class* allClass = nullptr;
-    loadAllClassData(allClass, classFileName);
-
-    staffaddStudentByManual();
-    exit(0);
     Account* curAccount = loginWindow();
+
+    exit(0);
 
     if(curAccount == nullptr) {
         return;
     }
 
     if(curAccount->type == 0) {
+        Staff* allStaff = nullptr;
+        loadAllStaffData(allStaff, staffFileName);
 
+        Staff* curStaff = findStaffByID(allStaff, curAccount->username);
+
+        if(!curStaff) {
+            cout << 1;
+        }
+
+        cout << curStaff->Info->fullName << endl;
+        exit(0);
+
+        staffWindow(curStaff);
     }
     else {
         Student* allStudent = nullptr;
@@ -27,6 +30,6 @@ void systemProcess() {
 
         Student* curStudent = findStudentByID(allStudent, curAccount->username);
 
-        studentWindow(allStudent);
+        studentWindow(curStudent);
     }
 }

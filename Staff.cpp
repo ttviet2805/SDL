@@ -39,6 +39,19 @@ void saveAllStaffData(Staff* allStaff, string fileName) {
     fout.close();
 }
 
+Staff* findStaffByID(Staff* allStaff, string StaffID) {
+    Staff* curStaff = allStaff;
+
+    while(curStaff) {
+        if(curStaff->Info->ID == StaffID)
+            return curStaff;
+
+        curStaff = curStaff->Next;
+    }
+
+    return nullptr;
+}
+
 void showAllStaffData(Staff* allStaff) {
     Staff* curStaff = allStaff;
 
@@ -385,7 +398,9 @@ void staffaddStudentByManual() {
 
                 for(int i = 0; i < 8; i++) {
                     for(int j = 1; j < listButton[i].size(); j++) {
-                        listButton[i][j].isTextBox(gRenderer, &event);
+                        int kq = listButton[i][j].isTextBox(gRenderer, &event);
+
+                        if(kq) event.button.button = SDL_BUTTON_RIGHT;
                     }
                 }
 
@@ -718,6 +733,133 @@ void staffViewStudentInAClass(Class* tmpClass) {
                 backButton.Display(gRenderer);
                 curClassButton.Display(gRenderer);
                 exportCSVButton.Display(gRenderer);
+
+                SDL_RenderPresent(gRenderer);
+            }
+        }
+
+        SDL_DestroyTexture(backgroundImage);
+        backgroundImage = NULL;
+
+        //Destroy window
+        SDL_DestroyRenderer( gRenderer );
+        SDL_DestroyWindow( gWindow );
+        gWindow = NULL;
+        gRenderer = NULL;
+
+        // Quit
+        IMG_Quit();
+        SDL_Quit();
+    }
+}
+
+void staffWindow(Staff* curStaff) {
+    SDL_Window* gWindow = NULL;
+    SDL_Renderer* gRenderer = NULL;
+    SDL_Event event;
+
+    const int buttonWidth = 270;
+    const int buttonHeight = 140;
+    const int startX = 45;
+    const int startY = 100;
+    const int plusX = 90;
+    const int plusY = 60;
+    const int buttonTextSize = 27;
+
+    const string backgroundPath = "Data/Image/StudentBackground.jpg";
+
+    if(!init(gWindow, gRenderer, "Staff")) {
+        printf("SDL could not initialize! SDL_Error: %s\n", SDL_GetError());
+    }
+    else {
+        bool quit = false;
+
+        TextOutput welcomeText = TextOutput(RED, 22);
+        string staffName = curStaff->Info->fullName;
+        welcomeText.loadText(gRenderer, "Welcome " + staffName,FONTDIR);
+
+        SDL_Texture* backgroundImage = nullptr;
+        loadImage(gRenderer, backgroundImage, backgroundPath);
+
+        vector <Button> listButton(6);
+
+        listButton[0] = Button(startX, startY, buttonWidth, buttonHeight, 2, BLACK, LIGHTBLUE, RED, RED, "Profile", buttonTextSize);
+
+        listButton[1] = Button(startX + buttonWidth + plusX, startY, buttonWidth, buttonHeight, 2, BLACK, LIGHTBLUE, RED, RED, "Add Student", buttonTextSize);
+
+        listButton[2] = Button(startX + (buttonWidth + plusX) * 2, startY, buttonWidth, buttonHeight, 2, BLACK, LIGHTBLUE, RED, RED, "Add Score", buttonTextSize);
+
+        listButton[3] = Button(startX, startY + buttonHeight + plusY, buttonWidth, buttonHeight, 2, BLACK, LIGHTBLUE, RED, RED, "View Student", buttonTextSize);
+
+        listButton[4] = Button(startX + buttonWidth + plusX, startY + buttonHeight + plusY, buttonWidth, buttonHeight, 2, BLACK, LIGHTBLUE, RED, RED, "Change Password", buttonTextSize);
+
+        listButton[5] = Button(startX + 2 * (buttonWidth + plusX), startY + buttonHeight + plusY, buttonWidth, buttonHeight, 2, BLACK, LIGHTBLUE, RED, RED, "Log Out", buttonTextSize);
+
+        while(!quit) {
+            while(SDL_PollEvent(&event) != 0) {
+                if(event.type == SDL_QUIT) {
+                    quit = true;
+                    break;
+                }
+
+                SDL_RenderClear(gRenderer);
+
+                SDL_RenderCopy(gRenderer, backgroundImage, NULL, NULL);
+
+                welcomeText.Display(gRenderer, SCREEN_WIDTH - welcomeText.mWidth - 20, 10);
+
+
+                for(int i = 0; i < 6; i++) {
+                    listButton[i].Display(gRenderer);
+                }
+
+                for(int i = 0; i < 6; i++) {
+                    int buttonState = listButton[i].isMouseClick(&event);
+                    //listButton[i].FillCol = listButton[i].InitCol;
+                    if(buttonState == 1) {
+                        SDL_DestroyTexture(backgroundImage);
+                        backgroundImage = NULL;
+
+                        //Destroy window
+                        SDL_DestroyRenderer( gRenderer );
+                        SDL_DestroyWindow( gWindow );
+                        gWindow = NULL;
+                        gRenderer = NULL;
+
+                        // Quit
+                        IMG_Quit();
+                        SDL_Quit();
+                        listButton[i].FillCol = listButton[i].PressCol;
+
+                        switch (i) {
+                            case 0: {
+                                return;
+                            }
+
+                            case 1: {
+                                return;
+                            }
+
+                            case 2: {
+                                return;
+                            }
+
+                            case 3: {
+                                return;
+                            }
+
+                            case 4: {
+                                return;
+                            }
+                        }
+                    }
+                    else if(buttonState == 2) {
+                        listButton[i].FillCol = listButton[i].HoverCol;
+                    }
+                    else {
+                        listButton[i].FillCol = listButton[i].InitCol;
+                    }
+                }
 
                 SDL_RenderPresent(gRenderer);
             }

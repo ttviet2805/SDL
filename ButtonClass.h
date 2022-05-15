@@ -12,16 +12,16 @@ using namespace std;
 
 struct Button {
     SDL_Rect bRect;
-    SDL_Texture* bImage;
+    SDL_Texture* bImage = NULL;
     int boder, padding_hoz = 5;
     SDL_Color InitCol;
     SDL_Color OutlineCol;
     SDL_Color FillCol;
     SDL_Color HoverCol;
     SDL_Color PressCol;
-    string Text;
-    int TextSize;
-    bool TypeBox;
+    string Text = "";
+    int TextSize = 0;
+    bool TypeBox = 0;
 
     Button() {
         bImage = NULL;
@@ -55,10 +55,11 @@ struct Button {
         if(event->type != SDL_MOUSEMOTION && event->type != SDL_MOUSEBUTTONDOWN) return 0;
         if(event->button.button == SDL_BUTTON_RIGHT) return 0;
         int type = 2;
-        if(event->button.button == SDL_BUTTON_LEFT) type = 1;
+        if(event->button.button == SDL_BUTTON_LEFT) type = 1, cout << "Here\n";
         int x, y;
         SDL_GetMouseState(&x, &y);
         if(x < bRect.x || y < bRect.y || x > bRect.x + bRect.w || y > bRect.y + bRect.h) return 0;
+        if(type == 1) event->button.button = SDL_BUTTON_RIGHT;
         return type;
     }
 
@@ -181,6 +182,7 @@ struct Button {
             }
         }
         FillCol = InitCol;
+        event->button.button = SDL_BUTTON_RIGHT;
         return true;
     }
 };

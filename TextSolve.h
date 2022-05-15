@@ -9,9 +9,11 @@
 
 using namespace std;
 
+#include "Const.h"
+
 struct TextOutput {
     //The actual hardware texture
-    SDL_Texture* mTexture;
+    SDL_Texture* mTexture = NULL;
     TTF_Font* mFont;
     SDL_Color textColor;
 

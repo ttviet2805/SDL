@@ -8,12 +8,17 @@
 
 using namespace std;
 
+#include "Class.h"
+#include "Student.h"
 #include "Const.h"
 #include "Course.h";
 #include "Score.h"
-#include "Class.h"
-#include "Student.h"
 #include "Login.h"
+#include "SystemProcess.h"
+
+struct Student;
+
+struct Class;
 
 struct StaffInfo {
     string ID, fullName;
@@ -24,6 +29,8 @@ struct Staff {
 
     Staff* Next = nullptr;
 };
+
+Staff* findStaffByID(Staff* allStaff, string StaffID);
 
 // Back End
 void loadAllStaffData(Staff* &allStaff, string fileName);
@@ -52,3 +59,5 @@ void staffaddStudentByCSV(string fileName);
 
 
 void staffViewStudentInAClass(Class* curClass);
+
+void staffWindow(Staff* tmpStaff);

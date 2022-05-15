@@ -6,6 +6,8 @@
 #include <fstream>
 #include <windows.h>
 #include <vector>
+#include <sstream>
+#include <iomanip>
 
 using namespace std;
 
@@ -16,6 +18,7 @@ using namespace std;
 #include "SDLProcess.h"
 #include "ButtonClass.h"
 #include "Login.h"
+#include "SystemProcess.h"
 
 struct StudentInfo {
     string ID, firstName, lastName, Gender, Dob, SocialID, Class, schoolyear;

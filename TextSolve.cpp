@@ -70,7 +70,7 @@ bool TextOutput::loadText(SDL_Renderer* &gRenderer, string curText, string fileN
 	bool success = true;
 
 	//Open the font
-	mFont = TTF_OpenFont( fileName.c_str(), textSize );
+	mFont = TTF_OpenFont( FONTDIR.c_str(), textSize );
 	if( mFont == NULL )
 	{
 		printf( "Failed to load lazy font! SDL_ttf Error: %s\n", TTF_GetError() );

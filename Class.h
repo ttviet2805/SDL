@@ -11,6 +11,9 @@ using namespace std;
 #include "Const.h"
 #include "Student.h"
 #include "Course.h"
+#include "SystemProcess.h"
+
+struct Student;
 
 struct StudentInClass {
     string StudentID;

@@ -278,6 +278,18 @@ void Account::userChangePassword() {
                     // Quit
                     IMG_Quit();
                     SDL_Quit();
+
+                    if(curAccount->type == 1) {
+                        Student* allStudent = nullptr;
+                        loadAllStudentData(allStudent, studentFileName);
+
+                        Student* curStudent = findStudentByID(allStudent, curAccount->username);
+                        studentWindow(curStudent);
+                    }
+                    else {
+
+                    }
+
                     return;
                 }
                 else if(backButtonState == 2) {

@@ -10,6 +10,7 @@ using namespace std;
 #include "Const.h"
 #include "ButtonClass.h"
 #include "SDLProcess.h"
+#include "Student.h"
 
 // Account is account to login
 struct Account {

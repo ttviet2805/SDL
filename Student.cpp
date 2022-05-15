@@ -321,6 +321,8 @@ void studentEditProfileWindow(Student* tmpStudent) {
 
         Button backButton = Button(20, 20, 80, 30, 2, BLACK, RED, LIGHTBLUE, GREY, "Back", 20);
 
+        event.button.button = SDL_BUTTON_RIGHT;
+
         while(!quit) {
             while(SDL_PollEvent(&event) != 0) {
                 if(event.type == SDL_QUIT) {
@@ -344,8 +346,11 @@ void studentEditProfileWindow(Student* tmpStudent) {
                 saveButton.Display(gRenderer);
                 backButton.Display(gRenderer);
 
-                for(int i = 0; i < 8; i++)
-                    listTextbox[i].isTextBox(gRenderer, &event);
+                for(int i = 1; i < 8; i++) {
+                    if(listTextbox[i].isTextBox(gRenderer, &event)) {
+                        event.button.button = SDL_BUTTON_RIGHT;
+                    }
+                }
 
                 int saveButtonState = saveButton.isMouseClick(&event);
                 if(saveButtonState == 1) {
@@ -384,6 +389,7 @@ void studentEditProfileWindow(Student* tmpStudent) {
                     // Quit
                     IMG_Quit();
                     SDL_Quit();
+                    studentWindow(curStudent);
                     return;
                 }
                 else if(backButtonState == 2) {
@@ -520,6 +526,8 @@ void studentViewScore(Student* tmpStudent) {
                 curX = startX;
                 curY += 25;
 
+                stringstream ss;
+
                 for(int i = 0; i < 7; i++) {
                     int Width = 0, Height = 25;
                     string curText = "";
@@ -540,21 +548,24 @@ void studentViewScore(Student* tmpStudent) {
 
                         case 2: {
                             Width = 100;
-                            curText = to_string(curScore->studentScore->MidTerm);
+                            ss << fixed << setprecision(2) << curScore->studentScore->MidTerm << ' ';
+                            ss >> curText;
                             curX += 300;
                             break;
                         }
 
                         case 3: {
                             Width = 100;
-                            curText = to_string(curScore->studentScore->Final);
+                            ss << fixed << setprecision(2) << curScore->studentScore->Final << ' ';
+                            ss >> curText;
                             curX += 100;
                             break;
                         }
 
                         case 4: {
                             Width = 100;
-                            curText = to_string(curScore->studentScore->Other);
+                            ss << fixed << setprecision(2) << curScore->studentScore->Other << ' ';
+                            ss >> curText;
                             curX += 100;
                             break;
                         }
@@ -562,7 +573,8 @@ void studentViewScore(Student* tmpStudent) {
                         case 5: {
                             Width = 100;
                             curScore->studentScore->calTotal();
-                            curText = to_string(curScore->studentScore->Total);
+                            ss << fixed << setprecision(2) << curScore->studentScore->Total << ' ';
+                            ss >> curText;
                             curX += 100;
                             break;
                         }
@@ -615,6 +627,7 @@ void studentViewScore(Student* tmpStudent) {
                     // Quit
                     IMG_Quit();
                     SDL_Quit();
+                    studentWindow(curStudent);
                     return;
                 }
                 else if(backButtonState == 2) {
@@ -861,6 +874,8 @@ void studentViewStudentInClass(Student* curStudent) {
                     // Quit
                     IMG_Quit();
                     SDL_Quit();
+
+                    studentWindow(curStudent);
                     return;
                 }
                 else if(backButtonState == 2) {
@@ -953,13 +968,37 @@ void studentWindow(Student* curStudent) {
 
                 for(int i = 0; i < 5; i++) {
                     int buttonState = listButton[i].isMouseClick(&event);
+                    //listButton[i].FillCol = listButton[i].InitCol;
                     if(buttonState == 1) {
+                        SDL_DestroyTexture(backgroundImage);
+                        backgroundImage = NULL;
+
+                        //Destroy window
+                        SDL_DestroyRenderer( gRenderer );
+                        SDL_DestroyWindow( gWindow );
+                        gWindow = NULL;
+                        gRenderer = NULL;
+
+                        // Quit
+                        IMG_Quit();
+                        SDL_Quit();
                         listButton[i].FillCol = listButton[i].PressCol;
 
                         switch (i) {
                             case 0: {
                                 studentEditProfileWindow(curStudent);
+                                return;
                                 break;
+                            }
+
+                            case 1: {
+                                studentViewScore(curStudent);
+                                return;
+                            }
+
+                            case 2: {
+                                studentViewStudentInClass(curStudent);
+                                return;
                             }
 
                             case 3: {
@@ -973,10 +1012,13 @@ void studentWindow(Student* curStudent) {
                                 }
 
                                 curAccount->userChangePassword();
+                                return;
                                 break;
                             }
 
                             case 4: {
+                                systemProcess();
+                                return;
                                 break;
                             }
                         }

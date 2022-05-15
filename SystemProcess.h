@@ -8,10 +8,10 @@
 #include "Const.h"
 #include "SDLProcess.h"
 #include "ButtonClass.h"
+#include "Staff.h"
 #include "Login.h"
 #include "Student.h"
 #include "Course.h"
 #include "Class.h"
-#include "Staff.h"
 
 void systemProcess();
