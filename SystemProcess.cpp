@@ -1,10 +1,15 @@
 #include "systemProcess.h"
 
 void systemProcess() {
-    Staff* allStaff = nullptr;
-    loadAllStaffData(allStaff, staffFileName);
+//    Staff* allStaff = nullptr;
+//    loadAllStaffData(allStaff, staffFileName);
 
 //    staffEditProfile(allStaff);
+////
+//Class* allClass = nullptr;
+//loadAllClassData(allClass, classFileName);
+//
+//    staffViewStudentInAClass(allClass, 0);
 
     staffViewStudentInASameYear("2021", 0);
 //

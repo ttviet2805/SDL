@@ -49,6 +49,8 @@ void exportStudentInAClass(Class* curClass, string fileName);
 
 void viewStudentInASameYear(string schoolYear);
 
+void exportStudentInASameYear(string schoolYear, string fileName);
+
 bool addStudentByCSV(string fileName);
 
 //---------------------------------------------------------------------------------//
@@ -60,7 +62,7 @@ void staffImportDataWindow(int Type);
 
 void staffaddStudentByManual();
 
-void staffViewStudentInAClass(Class* curClass);
+void staffViewStudentInAClass(Class* curClass, int page);
 
 void staffViewStudentInASameYear(string schoolYear, int page);
 

@@ -817,20 +817,16 @@ void staffImportDataWindow(int Type) {
     }
 }
 
-void staffViewStudentInAClass(Class* tmpClass) {
+void staffViewStudentInAClass(Class* curClass, int page) {
     Student* allStudent = nullptr;
     loadAllStudentData(allStudent, studentFileName);
-
-    Class* allClass = nullptr;
-    loadAllClassData(allClass, classFileName);
-
-    Class* curClass = findClassByID(allClass, tmpClass->className);
 
     SDL_Window* gWindow = NULL;
     SDL_Renderer* gRenderer = NULL;
     SDL_Event event;
 
     const int startX = 40, startY = 100;
+    const int numStudentInAPage = 15;
 
     const string backgroundPath = "Data/Image/StudentBackground.jpg";
 
@@ -845,159 +841,85 @@ void staffViewStudentInAClass(Class* tmpClass) {
 
         Button backButton = Button(20, 20, 80, 30, 2, BLACK, RED, LIGHTBLUE, GREY, "Back", 20);
 
-        Button curClassButton = Button((SCREEN_WIDTH - 150) / 2 , 60, 150, 30, 2, BLACK, WHITE, WHITE, WHITE, "Class: " + curClass->className, 20);
+        Button exportFileButton = Button(SCREEN_WIDTH - 350, 50, 300, 30, 2, BLACK, GREY, RED, LIGHTBLUE, "Export to CSV file", 20);
 
-        Button exportCSVButton = Button(SCREEN_WIDTH - 350, 50, 300, 30, 2, BLACK, GREY, RED, LIGHTBLUE, "Export to CSV file", 20);
+        TextOutput exportOKButton = TextOutput(RED, 22);
+        exportOKButton.loadText(gRenderer, "You have export this students to file", FONTDIR);
 
-        vector <Button> listButton[10];
+        bool isExport = false;
+
+        string curClassName = "Class: " + curClass->className;
+        Button curClassButton = Button((SCREEN_WIDTH - 200) / 2 , 60, 200, 30, 2, BLACK, WHITE, WHITE, WHITE, curClassName, 20);
+
+        string preText = "<";
+        Button preButton = Button(SCREEN_WIDTH / 2 - 40 - 15, 580, 40, 40, 2, GREEN, GREEN, RED, LIGHTBLUE, preText, 20);
+
+        string nextText = ">";
+        Button nextButton = Button(SCREEN_WIDTH / 2 + 15, 580, 40, 40, 2, GREEN, GREEN, RED, LIGHTBLUE, nextText, 20);
+
+        vector <Button> listTitleButton;
+        vector <Button> listContentButton;
+        int listWidth[8] = {150, 230, 150, 100, 100, 100, 70, 100};
+        string listTitle[8] = {"Student ID", "First name", "Last name", "Gender", "Date of birth", "Social ID", "Class", "School year"};
 
         int curX = startX, curY = startY;
 
         for(int i = 0; i < 8; i++) {
-            int Width = 0, Height = 25;
-            string curText = "";
+            int Width = listWidth[i], Height = 25;
 
-            switch (i) {
-                case 0: {
-                    Width = 150;
-                    curText = "Student ID";
-                    break;
-                }
+            Button tmp = Button(curX, startY, Width, Height, 2, BLACK, WHITE, RED, RED, listTitle[i], 15);
 
-                case 1: {
-                    Width = 250;
-                    curText = "First name";
-                    curX += 150;
-                    break;
-                }
-
-                case 2: {
-                    Width = 150;
-                    curText = "Last name";
-                    curX += 250;
-                    break;
-                }
-
-                case 3: {
-                    Width = 100;
-                    curText = "Gender";
-                    curX += 150;
-                    break;
-                }
-
-                case 4: {
-                    Width = 100;
-                    curText = "Date of birth";
-                    curX += 100;
-                    break;
-                }
-
-                case 5: {
-                    Width = 100;
-                    curText = "Social ID";
-                    curX += 100;
-                    break;
-                }
-
-                case 6: {
-                    Width = 70;
-                    curText = "Class";
-                    curX += 100;
-                    break;
-                }
-
-                case 7: {
-                    Width = 80;
-                    curText = "School year";
-                    curX += 70;
-                    break;
-                }
-            }
-
-            Button tmp = Button(curX, startY, Width, Height, 2, BLACK, WHITE, RED, RED, curText, 15);
-
-            listButton[i].push_back(tmp);
+            listTitleButton.push_back(tmp);
+            curX += Width;
         }
 
+        Student* curStudent = allStudent;
+
+        int numStudent = 0;
         StudentInClass* curStudentInClass = curClass->studentHead;
+
+        while(curStudentInClass) {
+            curStudentInClass = curStudentInClass->Next;
+            numStudent++;
+        }
+
+        int numMaxPage = numStudent / numStudentInAPage;
+        if(numStudent % numStudentInAPage != 0) numMaxPage++;
 
         curY = startY;
 
-        while(curStudentInClass) {
+        int startStu = page * numStudentInAPage, cnt = 0;
+
+        curStudentInClass = curClass->studentHead;
+
+        while(curStudentInClass && cnt < numStudentInAPage) {
             Student* curStudent = findStudentByID(allStudent, curStudentInClass->StudentID);
 
             if(curStudent) {
+                cnt++;
+                string listContent[8] = {curStudent->Info.ID, curStudent->Info.firstName, curStudent->Info.lastName, curStudent->Info.Gender, curStudent->Info.Dob,  curStudent->Info.SocialID, curStudent->Info.Class, curStudent->Info.schoolyear};
                 curX = startX;
                 curY += 25;
 
                 for(int i = 0; i < 8; i++) {
-                    int Width = 0, Height = 25;
-                    string curText = "";
+                    int Width = listWidth[i], Height = 25;
 
-                    switch (i) {
-                        case 0: {
-                            Width = 150;
-                            curText = curStudent->Info.ID;
-                            break;
-                        }
+                    Button tmp = Button(curX, curY, Width, 25, 2, BLACK, WHITE, RED, RED, listContent[i], 15);
 
-                        case 1: {
-                            Width = 250;
-                            curText = curStudent->Info.firstName;
-                            curX += 150;
-                            break;
-                        }
-
-                        case 2: {
-                            Width = 150;
-                            curText = curStudent->Info.lastName;
-                            curX += 250;
-                            break;
-                        }
-
-                        case 3: {
-                            Width = 100;
-                            curText = curStudent->Info.Gender;
-                            curX += 150;
-                            break;
-                        }
-
-                        case 4: {
-                            Width = 100;
-                            curText = curStudent->Info.Dob;
-                            curX += 100;
-                            break;
-                        }
-
-                        case 5: {
-                            Width = 100;
-                            curText = curStudent->Info.SocialID;
-                            curX += 100;
-                            break;
-                        }
-
-                        case 6: {
-                            Width = 70;
-                            curText = curStudent->Info.Class;
-                            curX += 100;
-                            break;
-                        }
-
-                        case 7: {
-                            Width = 80;
-                            curText = curStudent->Info.schoolyear;
-                            curX += 70;
-                            break;
-                        }
-                    }
-
-                    Button tmp = Button(curX, curY, Width, 25, 2, BLACK, WHITE, RED, RED, curText, 15);
-
-                    listButton[i].push_back(tmp);
+                    listContentButton.push_back(tmp);
+                    curX += Width;
                 }
             }
 
             curStudentInClass = curStudentInClass->Next;
+        }
+
+        SDL_RenderCopy(gRenderer, backgroundImage, NULL, NULL);
+        for(auto it : listTitleButton) {
+            it.Display(gRenderer);
+        }
+        for(auto it : listContentButton) {
+            it.Display(gRenderer);
         }
 
         while(!quit) {
@@ -1007,15 +929,7 @@ void staffViewStudentInAClass(Class* tmpClass) {
                     break;
                 }
 
-                SDL_RenderClear(gRenderer);
-
-                SDL_RenderCopy(gRenderer, backgroundImage, NULL, NULL);
-
-                for(int i = 0; i < 8; i++) {
-                    for(auto it : listButton[i]) {
-                        it.Display(gRenderer);
-                    }
-                }
+                //SDL_RenderClear(gRenderer);
 
                 int backButtonState = backButton.isMouseClick(&event);
                 if(backButtonState == 1) {
@@ -1030,9 +944,9 @@ void staffViewStudentInAClass(Class* tmpClass) {
                     gRenderer = NULL;
 
                     // Quit
-                    TTF_Quit();
                     IMG_Quit();
                     SDL_Quit();
+
                     return;
                 }
                 else if(backButtonState == 2) {
@@ -1042,11 +956,105 @@ void staffViewStudentInAClass(Class* tmpClass) {
                     backButton.FillCol = backButton.InitCol;
                 }
 
+                int preButtonState = preButton.isMouseClick(&event);
+                bool isChange = false;
+                if(preButtonState == 1) {
+                    if(page > 0) {
+                        page -= 1;
+                        isChange = true;
+                    }
+                                    }
+                else if(preButtonState == 2) {
+                    preButton.FillCol = preButton.HoverCol;
+                }
+                else {
+                    preButton.FillCol = preButton.InitCol;
+                }
+
+                int nextButtonState = nextButton.isMouseClick(&event);
+                if(nextButtonState == 1) {
+                    if(page < numMaxPage - 1) {
+                        page += 1;
+                        isChange = true;
+                    }
+                }
+                else if(nextButtonState == 2) {
+                    nextButton.FillCol = nextButton.HoverCol;
+                }
+                else {
+                    nextButton.FillCol = nextButton.InitCol;
+                }
+
                 backButton.Display(gRenderer);
                 curClassButton.Display(gRenderer);
-                exportCSVButton.Display(gRenderer);
+                preButton.Display(gRenderer);
+                nextButton.Display(gRenderer);
+                exportFileButton.Display(gRenderer);
+
+                int exportState = exportFileButton.isMouseClick(&event);
+                if(exportState == 1) {
+                    exportFileButton.FillCol = exportFileButton.PressCol;
+                    isExport = true;
+
+                    exportStudentInAClass(curClass, exportClassFilename + curClass->className + ".txt");
+                }
+                else if(exportState == 2) {
+                    exportFileButton.FillCol = exportFileButton.HoverCol;
+                }
+                else {
+                    exportFileButton.FillCol = exportFileButton.InitCol;
+                }
+
+                if(isExport) {
+                    exportOKButton.Display(gRenderer, (SCREEN_WIDTH - exportOKButton.mWidth) / 2, 30);
+                }
 
                 SDL_RenderPresent(gRenderer);
+
+                if(isChange) {
+                    listContentButton.clear();
+                    curStudentInClass = curClass->studentHead;
+                    curY = startY;
+                    startStu = page * numStudentInAPage, cnt = 0;
+
+                    while(curStudentInClass && cnt < startStu) {
+                        ++cnt;
+                        curStudentInClass = curStudentInClass->Next;
+                    }
+
+                    cnt = 0;
+
+                    while(curStudentInClass && cnt < numStudentInAPage) {
+                        Student* curStudent = findStudentByID(allStudent, curStudentInClass->StudentID);
+
+                        if(curStudent) {
+                            cnt++;
+                            string listContent[8] = {curStudent->Info.ID, curStudent->Info.firstName, curStudent->Info.lastName, curStudent->Info.Gender, curStudent->Info.Dob,  curStudent->Info.SocialID, curStudent->Info.Class, curStudent->Info.schoolyear};
+                            curX = startX;
+                            curY += 25;
+
+                            for(int i = 0; i < 8; i++) {
+                                int Width = listWidth[i], Height = 25;
+
+                                Button tmp = Button(curX, curY, Width, 25, 2, BLACK, WHITE, RED, RED, listContent[i], 15);
+
+                                listContentButton.push_back(tmp);
+                                curX += Width;
+                            }
+                        }
+
+                        curStudentInClass = curStudentInClass->Next;
+                    }
+
+                    SDL_RenderClear(gRenderer);
+                    SDL_RenderCopy(gRenderer, backgroundImage, NULL, NULL);
+                    for(auto it : listTitleButton) {
+                        it.Display(gRenderer);
+                    }
+                    for(auto it : listContentButton) {
+                        it.Display(gRenderer);
+                    }
+                }
             }
         }
 
@@ -1060,7 +1068,6 @@ void staffViewStudentInAClass(Class* tmpClass) {
         gRenderer = NULL;
 
         // Quit
-        TTF_Quit();
         IMG_Quit();
         SDL_Quit();
     }
@@ -1089,6 +1096,13 @@ void staffViewStudentInASameYear(string schoolYear, int page) {
         loadImage(gRenderer, backgroundImage, backgroundPath);
 
         Button backButton = Button(20, 20, 80, 30, 2, BLACK, RED, LIGHTBLUE, GREY, "Back", 20);
+
+        Button exportFileButton = Button(SCREEN_WIDTH - 350, 50, 300, 30, 2, BLACK, GREY, RED, LIGHTBLUE, "Export to CSV file", 20);
+
+        TextOutput exportOKButton = TextOutput(RED, 22);
+        exportOKButton.loadText(gRenderer, "You have export this students to file", FONTDIR);
+
+        bool isExport = false;
 
         Button curYearButton = Button((SCREEN_WIDTH - 200) / 2 , 60, 200, 30, 2, BLACK, WHITE, WHITE, WHITE, "School year: " + schoolYear, 20);
 
@@ -1190,7 +1204,6 @@ void staffViewStudentInASameYear(string schoolYear, int page) {
                     IMG_Quit();
                     SDL_Quit();
 
-                    studentWindow(curStudent);
                     return;
                 }
                 else if(backButtonState == 2) {
@@ -1233,6 +1246,26 @@ void staffViewStudentInASameYear(string schoolYear, int page) {
                 curYearButton.Display(gRenderer);
                 preButton.Display(gRenderer);
                 nextButton.Display(gRenderer);
+
+                int exportState = exportFileButton.isMouseClick(&event);
+                if(exportState == 1) {
+                    exportFileButton.FillCol = exportFileButton.PressCol;
+                    isExport = true;
+
+                    exportStudentInASameYear(schoolYear, exportSchoolYearFilename + schoolYear + ".txt");
+                }
+                else if(exportState == 2) {
+                    exportFileButton.FillCol = exportFileButton.HoverCol;
+                }
+                else {
+                    exportFileButton.FillCol = exportFileButton.InitCol;
+                }
+
+                if(isExport) {
+                    exportOKButton.Display(gRenderer, (SCREEN_WIDTH - exportOKButton.mWidth) / 2, 30);
+                }
+
+                exportFileButton.Display(gRenderer);
 
                 SDL_RenderPresent(gRenderer);
 

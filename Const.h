@@ -29,3 +29,5 @@ const string studentScoreFileName = "Data/StudentScore/";
 const string staffFileName = "Data/AllStaff.txt";
 const string studentInClassFileName = "Data/Class/";
 const string studentCSVFileName = "Data/StudentCSV.csv";
+const string exportClassFilename = "Data/Class/";
+const string exportSchoolYearFilename = "Data/SchoolYear/";

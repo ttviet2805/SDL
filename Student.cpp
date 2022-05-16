@@ -689,10 +689,10 @@ void studentViewStudentInClass(Student* curStudent, int page) {
     Class* allClass = nullptr;
     loadAllClassData(allClass, classFileName);
 
+    Class* curClass = findClassByID(allClass, curStudent->Info.Class);
+
     Student* allStudent = nullptr;
     loadAllStudentData(allStudent, studentFileName);
-
-    Class* curClass = findClassByID(allClass, curStudent->Info.Class);
 
     SDL_Window* gWindow = NULL;
     SDL_Renderer* gRenderer = NULL;
@@ -703,7 +703,7 @@ void studentViewStudentInClass(Student* curStudent, int page) {
 
     const string backgroundPath = "Data/Image/StudentBackground.jpg";
 
-    if(!init(gWindow, gRenderer, "List Students In Class")) {
+    if(!init(gWindow, gRenderer, "List Students In A Class")) {
         printf("SDL could not initialize! SDL_Error: %s\n", SDL_GetError());
     }
     else {
@@ -714,7 +714,8 @@ void studentViewStudentInClass(Student* curStudent, int page) {
 
         Button backButton = Button(20, 20, 80, 30, 2, BLACK, RED, LIGHTBLUE, GREY, "Back", 20);
 
-        Button curClassButton = Button((SCREEN_WIDTH - 150) / 2 , 60, 150, 30, 2, BLACK, WHITE, WHITE, WHITE, "Class: " + curClass->className, 20);
+        string curClassName = "Class: " + curClass->className;
+        Button curClassButton = Button((SCREEN_WIDTH - 200) / 2 , 60, 200, 30, 2, BLACK, WHITE, WHITE, WHITE, curClassName, 20);
 
         string preText = "<";
         Button preButton = Button(SCREEN_WIDTH / 2 - 40 - 15, 580, 40, 40, 2, GREEN, GREEN, RED, LIGHTBLUE, preText, 20);
@@ -722,176 +723,69 @@ void studentViewStudentInClass(Student* curStudent, int page) {
         string nextText = ">";
         Button nextButton = Button(SCREEN_WIDTH / 2 + 15, 580, 40, 40, 2, GREEN, GREEN, RED, LIGHTBLUE, nextText, 20);
 
-        vector <Button> listButton[10];
+        vector <Button> listTitleButton;
+        vector <Button> listContentButton;
+        int listWidth[8] = {150, 230, 150, 100, 100, 100, 70, 100};
+        string listTitle[8] = {"Student ID", "First name", "Last name", "Gender", "Date of birth", "Social ID", "Class", "School year"};
 
         int curX = startX, curY = startY;
 
         for(int i = 0; i < 8; i++) {
-            int Width = 0, Height = 25;
-            string curText = "";
+            int Width = listWidth[i], Height = 25;
 
-            switch (i) {
-                case 0: {
-                    Width = 150;
-                    curText = "Student ID";
-                    break;
-                }
+            Button tmp = Button(curX, startY, Width, Height, 2, BLACK, WHITE, RED, RED, listTitle[i], 15);
 
-                case 1: {
-                    Width = 230;
-                    curText = "First name";
-                    curX += 150;
-                    break;
-                }
-
-                case 2: {
-                    Width = 150;
-                    curText = "Last name";
-                    curX += 230;
-                    break;
-                }
-
-                case 3: {
-                    Width = 100;
-                    curText = "Gender";
-                    curX += 150;
-                    break;
-                }
-
-                case 4: {
-                    Width = 100;
-                    curText = "Date of birth";
-                    curX += 100;
-                    break;
-                }
-
-                case 5: {
-                    Width = 100;
-                    curText = "Social ID";
-                    curX += 100;
-                    break;
-                }
-
-                case 6: {
-                    Width = 70;
-                    curText = "Class";
-                    curX += 100;
-                    break;
-                }
-
-                case 7: {
-                    Width = 100;
-                    curText = "School year";
-                    curX += 70;
-                    break;
-                }
-            }
-
-            Button tmp = Button(curX, startY, Width, Height, 2, BLACK, WHITE, RED, RED, curText, 15);
-
-            listButton[i].push_back(tmp);
+            listTitleButton.push_back(tmp);
+            curX += Width;
         }
 
+        Student* curStudent = allStudent;
+
+        int numStudent = 0;
         StudentInClass* curStudentInClass = curClass->studentHead;
 
-        int numStudentInClass = 0;
-        StudentInClass* tmpStu = curStudentInClass;
-
-        while(tmpStu) {
-            numStudentInClass++;
-            tmpStu = tmpStu->Next;
+        while(curStudentInClass) {
+            curStudentInClass = curStudentInClass->Next;
+            numStudent++;
         }
 
-        int numMaxPage = numStudentInClass / numStudentInAPage;
-        if(numStudentInClass % numStudentInAPage != 0) numMaxPage++;
+        int numMaxPage = numStudent / numStudentInAPage;
+        if(numStudent % numStudentInAPage != 0) numMaxPage++;
 
         curY = startY;
 
         int startStu = page * numStudentInAPage, cnt = 0;
 
-        while(curStudentInClass && cnt < startStu) {
-            ++cnt;
-            curStudentInClass = curStudentInClass->Next;
-        }
-
-        cnt = 0;
+        curStudentInClass = curClass->studentHead;
 
         while(curStudentInClass && cnt < numStudentInAPage) {
-            ++cnt;
             Student* curStudent = findStudentByID(allStudent, curStudentInClass->StudentID);
 
             if(curStudent) {
+                cnt++;
+                string listContent[8] = {curStudent->Info.ID, curStudent->Info.firstName, curStudent->Info.lastName, curStudent->Info.Gender, curStudent->Info.Dob,  curStudent->Info.SocialID, curStudent->Info.Class, curStudent->Info.schoolyear};
                 curX = startX;
                 curY += 25;
 
                 for(int i = 0; i < 8; i++) {
-                    int Width = 0, Height = 25;
-                    string curText = "";
+                    int Width = listWidth[i], Height = 25;
 
-                    switch (i) {
-                        case 0: {
-                            Width = 150;
-                            curText = curStudent->Info.ID;
-                            break;
-                        }
+                    Button tmp = Button(curX, curY, Width, 25, 2, BLACK, WHITE, RED, RED, listContent[i], 15);
 
-                        case 1: {
-                            Width = 230;
-                            curText = curStudent->Info.firstName;
-                            curX += 150;
-                            break;
-                        }
-
-                        case 2: {
-                            Width = 150;
-                            curText = curStudent->Info.lastName;
-                            curX += 230;
-                            break;
-                        }
-
-                        case 3: {
-                            Width = 100;
-                            curText = curStudent->Info.Gender;
-                            curX += 150;
-                            break;
-                        }
-
-                        case 4: {
-                            Width = 100;
-                            curText = curStudent->Info.Dob;
-                            curX += 100;
-                            break;
-                        }
-
-                        case 5: {
-                            Width = 100;
-                            curText = curStudent->Info.SocialID;
-                            curX += 100;
-                            break;
-                        }
-
-                        case 6: {
-                            Width = 70;
-                            curText = curStudent->Info.Class;
-                            curX += 100;
-                            break;
-                        }
-
-                        case 7: {
-                            Width = 100;
-                            curText = curStudent->Info.schoolyear;
-                            curX += 70;
-                            break;
-                        }
-                    }
-
-                    Button tmp = Button(curX, curY, Width, 25, 2, BLACK, WHITE, RED, RED, curText, 15);
-
-                    listButton[i].push_back(tmp);
+                    listContentButton.push_back(tmp);
+                    curX += Width;
                 }
             }
 
             curStudentInClass = curStudentInClass->Next;
+        }
+
+        SDL_RenderCopy(gRenderer, backgroundImage, NULL, NULL);
+        for(auto it : listTitleButton) {
+            it.Display(gRenderer);
+        }
+        for(auto it : listContentButton) {
+            it.Display(gRenderer);
         }
 
         while(!quit) {
@@ -901,15 +795,7 @@ void studentViewStudentInClass(Student* curStudent, int page) {
                     break;
                 }
 
-                SDL_RenderClear(gRenderer);
-
-                SDL_RenderCopy(gRenderer, backgroundImage, NULL, NULL);
-
-                for(int i = 0; i < 8; i++) {
-                    for(auto it : listButton[i]) {
-                        it.Display(gRenderer);
-                    }
-                }
+                //SDL_RenderClear(gRenderer);
 
                 int backButtonState = backButton.isMouseClick(&event);
                 if(backButtonState == 1) {
@@ -927,7 +813,7 @@ void studentViewStudentInClass(Student* curStudent, int page) {
                     IMG_Quit();
                     SDL_Quit();
 
-                    studentWindow(curStudent);
+//                    studentWindow(curStudent);
                     return;
                 }
                 else if(backButtonState == 2) {
@@ -938,28 +824,11 @@ void studentViewStudentInClass(Student* curStudent, int page) {
                 }
 
                 int preButtonState = preButton.isMouseClick(&event);
+                bool isChange = false;
                 if(preButtonState == 1) {
                     if(page > 0) {
-                        SDL_DestroyTexture(backgroundImage);
-                        backgroundImage = NULL;
-
-                        //Destroy window
-                        SDL_DestroyRenderer( gRenderer );
-                        SDL_DestroyWindow( gWindow );
-                        gWindow = NULL;
-                        gRenderer = NULL;
-
-                        // Quit
-                        IMG_Quit();
-                        SDL_Quit();
-
-                        for(int i = 0; i < 8; i++) {
-                            listButton[i].clear();
-                        }
-
-                        preButton.FillCol = preButton.PressCol;
-                        studentViewStudentInClass(curStudent, page - 1);
-                        return;
+                        page -= 1;
+                        isChange = true;
                     }
                                     }
                 else if(preButtonState == 2) {
@@ -972,26 +841,8 @@ void studentViewStudentInClass(Student* curStudent, int page) {
                 int nextButtonState = nextButton.isMouseClick(&event);
                 if(nextButtonState == 1) {
                     if(page < numMaxPage - 1) {
-                        SDL_DestroyTexture(backgroundImage);
-                        backgroundImage = NULL;
-
-                        //Destroy window
-                        SDL_DestroyRenderer( gRenderer );
-                        SDL_DestroyWindow( gWindow );
-                        gWindow = NULL;
-                        gRenderer = NULL;
-
-                        // Quit
-                        IMG_Quit();
-                        SDL_Quit();
-
-                        for(int i = 0; i < 8; i++) {
-                            listButton[i].clear();
-                        }
-
-                        nextButton.FillCol = nextButton.PressCol;
-                        studentViewStudentInClass(curStudent, page + 1);
-                        return;
+                        page += 1;
+                        isChange = true;
                     }
                 }
                 else if(nextButtonState == 2) {
@@ -1007,6 +858,51 @@ void studentViewStudentInClass(Student* curStudent, int page) {
                 nextButton.Display(gRenderer);
 
                 SDL_RenderPresent(gRenderer);
+
+                if(isChange) {
+                    listContentButton.clear();
+                    curStudentInClass = curClass->studentHead;
+                    curY = startY;
+                    startStu = page * numStudentInAPage, cnt = 0;
+
+                    while(curStudentInClass && cnt < startStu) {
+                        ++cnt;
+                        curStudentInClass = curStudentInClass->Next;
+                    }
+
+                    cnt = 0;
+
+                    while(curStudentInClass && cnt < numStudentInAPage) {
+                        Student* curStudent = findStudentByID(allStudent, curStudentInClass->StudentID);
+
+                        if(curStudent) {
+                            cnt++;
+                            string listContent[8] = {curStudent->Info.ID, curStudent->Info.firstName, curStudent->Info.lastName, curStudent->Info.Gender, curStudent->Info.Dob,  curStudent->Info.SocialID, curStudent->Info.Class, curStudent->Info.schoolyear};
+                            curX = startX;
+                            curY += 25;
+
+                            for(int i = 0; i < 8; i++) {
+                                int Width = listWidth[i], Height = 25;
+
+                                Button tmp = Button(curX, curY, Width, 25, 2, BLACK, WHITE, RED, RED, listContent[i], 15);
+
+                                listContentButton.push_back(tmp);
+                                curX += Width;
+                            }
+                        }
+
+                        curStudentInClass = curStudentInClass->Next;
+                    }
+
+                    SDL_RenderClear(gRenderer);
+                    SDL_RenderCopy(gRenderer, backgroundImage, NULL, NULL);
+                    for(auto it : listTitleButton) {
+                        it.Display(gRenderer);
+                    }
+                    for(auto it : listContentButton) {
+                        it.Display(gRenderer);
+                    }
+                }
             }
         }
 
