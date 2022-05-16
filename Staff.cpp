@@ -1,6 +1,6 @@
 #include "Staff.h"
 
-void loadAllStaffData(Staff* & allStaff, string fileName) {
+void loadAllStaffData(Staff* &allStaff, string fileName) {
     ifstream fin;
     fin.open(fileName);
 
@@ -17,7 +17,7 @@ void loadAllStaffData(Staff* & allStaff, string fileName) {
     }
 
     allStaff = Dummy->Next;
-    Staff* Del = Dummy->Next;
+    Staff* Del = Dummy;
     Dummy = Dummy->Next;
 
     delete Del;
@@ -43,6 +43,7 @@ Staff* findStaffByID(Staff* allStaff, string StaffID) {
     Staff* curStaff = allStaff;
 
     while(curStaff) {
+        cout << curStaff->Info.ID << ' ' << StaffID << endl;
         if(curStaff->Info.ID == StaffID)
             return curStaff;
 
@@ -221,6 +222,181 @@ void addStudentByCSV(string fileName) {
 
 // Front End
 
+void staffEditProfile(Staff* tmpStaff) {
+    SDL_Window* gWindow = NULL;
+    SDL_Renderer* gRenderer = NULL;
+    SDL_Event event;
+
+    const int textboxWidth = 300;
+    const int textboxHeight = 40;
+    const int startX = (SCREEN_WIDTH - textboxWidth) / 2;
+    const int startY = 220;
+    const int plusX = 240;
+    const int plusY = 55;
+
+    Staff* allStaff = nullptr;
+    loadAllStaffData(allStaff, staffFileName);
+
+    Staff* curStaff = findStaffByID(allStaff, tmpStaff->Info.ID);
+
+    if(!curStaff) {
+        cout << "NO";
+        return;
+    }
+
+    const string backgroundPath = "Data/Image/StudentBackground.jpg";
+
+    if(!init(gWindow, gRenderer, "Profile")) {
+        printf("SDL could not initialize! SDL_Error: %s\n", SDL_GetError());
+    }
+    else {
+        bool quit = false;
+
+        SDL_Texture* backgroundImage = nullptr;
+        loadImage(gRenderer, backgroundImage, backgroundPath);
+
+        TextOutput saveText = TextOutput(RED, 22);
+        saveText.loadText(gRenderer, "You have save your data", FONTDIR);
+
+        vector <Button> listTextbox(2);
+
+        for(int i = 0; i < 2; i++) {
+            string curText = "";
+
+            switch (i) {
+            case 0:
+                curText = curStaff->Info.ID;
+                break;
+
+            case 1:
+                curText = curStaff->Info.fullName;
+                break;
+            }
+
+            listTextbox[i] = Button(startX, startY + (textboxHeight + plusY) * i, textboxWidth, textboxHeight, 2, BLACK, WHITE, WHITE, GREY, curText, 20);
+        }
+
+        vector <TextOutput> listText;
+
+        for(int i = 0; i < 2; i++) {
+            string curText = "";
+
+            switch (i) {
+            case 0:
+                curText = "ID";
+                break;
+
+            case 1:
+                curText = "Full name";
+                break;
+            }
+
+            TextOutput tmp = TextOutput(BLACK, 22);
+            tmp.loadText(gRenderer, curText, FONTDIR);
+
+            listText.push_back(tmp);
+        }
+
+        bool isSave = false;
+
+        Button saveButton = Button((SCREEN_WIDTH - 100) / 2, 550, 100, 30, 2, BLACK, LIGHTBLUE, RED, RED, "Save", 19);
+
+        Button backButton = Button(20, 20, 80, 30, 2, BLACK, RED, LIGHTBLUE, GREY, "Back", 20);
+
+        event.button.button = SDL_BUTTON_RIGHT;
+
+        while(!quit) {
+            while(SDL_PollEvent(&event) != 0) {
+                if(event.type == SDL_QUIT) {
+                    quit = true;
+                    break;
+                }
+
+                SDL_RenderClear(gRenderer);
+
+                SDL_RenderCopy(gRenderer, backgroundImage, NULL, NULL);
+
+                for(int i = 0; i < 2; i++)
+                    listTextbox[i].Display(gRenderer);
+
+                for(int i = 0; i < 2; i++)
+                    listText[i].Display(gRenderer, startX, startY + (textboxHeight + plusY) * i - 25);
+
+                saveButton.Display(gRenderer);
+                backButton.Display(gRenderer);
+
+                for(int i = 1; i < 2; i++) {
+                    if(listTextbox[i].isTextBox(gRenderer, &event)) {
+                        event.button.button = SDL_BUTTON_RIGHT;
+                    }
+                }
+
+                int saveButtonState = saveButton.isMouseClick(&event);
+                if(saveButtonState == 1) {
+                    curStaff->Info.ID = listTextbox[0].Text;
+                    curStaff->Info.fullName = listTextbox[1].Text;
+
+                    saveButton.FillCol = saveButton.PressCol;
+                    saveAllStaffData(allStaff, staffFileName);
+                    isSave = true;
+                }
+                else if(saveButtonState == 2) {
+                    saveButton.FillCol = saveButton.HoverCol;
+                }
+                else {
+                    saveButton.FillCol = saveButton.InitCol;
+                }
+
+                int backButtonState = backButton.isMouseClick(&event);
+                if(backButtonState == 1) {
+                    backButton.FillCol = backButton.PressCol;
+                    SDL_DestroyTexture(backgroundImage);
+                    backgroundImage = NULL;
+
+                    //Destroy window
+                    SDL_DestroyRenderer( gRenderer );
+                    SDL_DestroyWindow( gWindow );
+                    gWindow = NULL;
+                    gRenderer = NULL;
+
+                    // Quit
+                    TTF_Quit();
+                    IMG_Quit();
+                    SDL_Quit();
+                    staffWindow(curStaff);
+                    return;
+                }
+                else if(backButtonState == 2) {
+                    backButton.FillCol = backButton.HoverCol;
+                }
+                else {
+                    backButton.FillCol = backButton.InitCol;
+                }
+
+                if(isSave) {
+                    saveText.Display(gRenderer, (SCREEN_WIDTH - saveText.mWidth) / 2, 550 + saveButton.bRect.h + 10);
+                }
+
+                SDL_RenderPresent(gRenderer);
+            }
+        }
+
+        SDL_DestroyTexture(backgroundImage);
+        backgroundImage = NULL;
+
+        //Destroy window
+        SDL_DestroyRenderer( gRenderer );
+        SDL_DestroyWindow( gWindow );
+        gWindow = NULL;
+        gRenderer = NULL;
+
+        // Quit
+        TTF_Quit();
+        IMG_Quit();
+        SDL_Quit();
+    }
+}
+
 void staffaddStudentByManual() {
     SDL_Window* gWindow = NULL;
     SDL_Renderer* gRenderer = NULL;
@@ -265,7 +441,7 @@ void staffaddStudentByManual() {
                 }
 
                 case 1: {
-                    Width = 250;
+                    Width = 230;
                     curText = "First name";
                     curX += 150;
                     break;
@@ -274,7 +450,7 @@ void staffaddStudentByManual() {
                 case 2: {
                     Width = 150;
                     curText = "Last name";
-                    curX += 250;
+                    curX += 230;
                     break;
                 }
 
@@ -307,7 +483,7 @@ void staffaddStudentByManual() {
                 }
 
                 case 7: {
-                    Width = 80;
+                    Width = 100;
                     curText = "School year";
                     curX += 70;
                     break;
@@ -375,14 +551,14 @@ void staffaddStudentByManual() {
                             }
 
                             case 1: {
-                                Width = 250;
+                                Width = 230;
                                 curX += 150;
                                 break;
                             }
 
                             case 2: {
                                 Width = 150;
-                                curX += 250;
+                                curX += 230;
                                 break;
                             }
 
@@ -411,7 +587,7 @@ void staffaddStudentByManual() {
                             }
 
                             case 7: {
-                                Width = 80;
+                                Width = 100;
                                 curX += 70;
                                 break;
                             }
@@ -772,6 +948,7 @@ void staffWindow(Staff* curStaff) {
 
     const string backgroundPath = "Data/Image/StudentBackground.jpg";
 
+
     if(!init(gWindow, gRenderer, "Staff")) {
         printf("SDL could not initialize! SDL_Error: %s\n", SDL_GetError());
     }
@@ -783,7 +960,6 @@ void staffWindow(Staff* curStaff) {
         string staffName = curStaff->Info.fullName;
 
         welcomeText.loadText(gRenderer, "Welcome " + staffName,FONTDIR);
-
 
         SDL_Texture* backgroundImage = nullptr;
         loadImage(gRenderer, backgroundImage, backgroundPath);
@@ -843,10 +1019,12 @@ void staffWindow(Staff* curStaff) {
 
                         switch (i) {
                             case 0: {
+                                staffEditProfile(curStaff);
                                 return;
                             }
 
                             case 1: {
+                                staffaddStudentByManual();
                                 return;
                             }
 

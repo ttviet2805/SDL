@@ -54,6 +54,8 @@ void addStudentByCSV(string fileName);
 //---------------------------------------------------------------------------------//
 
 // Front End
+void staffEditProfile(Staff* curStaff);
+
 void staffaddStudentByManual();
 
 void staffViewStudentInAClass(Class* curClass);

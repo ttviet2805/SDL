@@ -1,10 +1,12 @@
 #include "systemProcess.h"
 
 void systemProcess() {
-    Student* allStudent = nullptr;
-    loadAllStudentData(allStudent, studentFileName);
-
-    studentViewScore(allStudent);
+//    Staff* allStaff = nullptr;
+//    loadAllStaffData(allStaff, staffFileName);
+//
+//    staffEditProfile(allStaff);
+//
+//    exit(0);
 
     Account* curAccount = loginWindow();
 
