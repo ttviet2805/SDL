@@ -62,4 +62,6 @@ void staffaddStudentByManual();
 
 void staffViewStudentInAClass(Class* curClass);
 
+void staffViewStudentInASameYear(string schoolYear, int page);
+
 void staffWindow(Staff* tmpStaff);

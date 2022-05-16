@@ -6,8 +6,8 @@ void systemProcess() {
 
 //    staffEditProfile(allStaff);
 
-    staffImportDataWindow(0);
-
+    staffViewStudentInASameYear("2021", 0);
+//
     exit(0);
 
     Account* curAccount = loginWindow();

@@ -803,7 +803,7 @@ void studentViewStudentInClass(Student* curStudent, int page) {
         }
 
         int numMaxPage = numStudentInClass / numStudentInAPage;
-        if(numStudentInAPage % numStudentInAPage != 0) numMaxPage++;
+        if(numStudentInClass % numStudentInAPage != 0) numMaxPage++;
 
         curY = startY;
 
