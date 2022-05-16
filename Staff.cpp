@@ -1157,6 +1157,13 @@ void staffViewStudentInASameYear(string schoolYear, int page) {
 
             curStudent = curStudent->Next;
         }
+        SDL_RenderCopy(gRenderer, backgroundImage, NULL, NULL);
+        for(auto it : listTitleButton) {
+            it.Display(gRenderer);
+        }
+        for(auto it : listContentButton) {
+            it.Display(gRenderer);
+        }
 
         while(!quit) {
             while(SDL_PollEvent(&event) != 0) {
@@ -1165,16 +1172,7 @@ void staffViewStudentInASameYear(string schoolYear, int page) {
                     break;
                 }
 
-                SDL_RenderClear(gRenderer);
-
-                SDL_RenderCopy(gRenderer, backgroundImage, NULL, NULL);
-
-                for(auto it : listTitleButton) {
-                    it.Display(gRenderer);
-                }
-                for(auto it : listContentButton) {
-                    it.Display(gRenderer);
-                }
+                //SDL_RenderClear(gRenderer);
 
                 int backButtonState = backButton.isMouseClick(&event);
                 if(backButtonState == 1) {
@@ -1269,6 +1267,14 @@ void staffViewStudentInASameYear(string schoolYear, int page) {
                         }
 
                         curStudent = curStudent->Next;
+                    }
+                    SDL_RenderClear(gRenderer);
+                    SDL_RenderCopy(gRenderer, backgroundImage, NULL, NULL);
+                    for(auto it : listTitleButton) {
+                        it.Display(gRenderer);
+                    }
+                    for(auto it : listContentButton) {
+                        it.Display(gRenderer);
                     }
                 }
             }
