@@ -143,6 +143,11 @@ void Course::addCourseScore(CourseScore* newScore) {
         curScore = curScore->Next;
     }
 
+    if(curScore->StudentID == newScore->StudentID) {
+        curScore->studentScore = newScore->studentScore;
+        return;
+    }
+
     curScore->Next = newScore;
 }
 
@@ -164,4 +169,53 @@ CourseScore* createACourseScore(string studentID, float Midterm, float Final, fl
     newScore->studentScore.setScore(Midterm, Final, Other);
 
     return newScore;
+}
+
+bool addCourseScoreByCSV(string courseID, string fileName) {
+    ifstream fin;
+    fileName = "Data/CourseScore/CS162.csv";
+    fin.open(fileName);
+
+    if(!fin) {
+        fin.close();
+        return false;
+    }
+
+    Student* allStudent = nullptr;
+    loadAllStudentData(allStudent, studentFileName);
+
+    Course* allCourse = nullptr;
+    loadAllCourseData(allCourse, courseFileName, allStudent);
+
+    Course* curCourse = findCourseByID(allCourse, courseID);
+
+    if(!curCourse) {
+        fin.close();
+        return false;
+    }
+
+    string stuID;
+    while(!fin.eof() && getline(fin, stuID, ',')) {
+        CourseScore* newScore = new CourseScore;
+
+        newScore->StudentID = stuID;
+        fin >>  newScore->studentScore.MidTerm;
+        fin.get();
+        fin >>  newScore->studentScore.Final;
+        fin.get();
+        fin >> newScore->studentScore.Other;
+        fin.get();
+
+        curCourse->addCourseScore(newScore);
+    }
+
+    CourseScore* ttt = curCourse->courseScoreHead;
+    while(ttt) {
+        cout << ttt->StudentID << endl;
+        ttt = ttt->Next;
+    }
+
+    saveAllCourseData(allCourse, courseFileName);
+
+    fin.close();
 }

@@ -1,5 +1,13 @@
 #include "Staff.h"
 
+int convertStringToInt(string S) {
+    int res = 0;
+
+    for(int i = 0; i < S.size(); i++) res = res * 10 + S[i] - '0';
+
+    return res;
+}
+
 void loadAllStaffData(Staff* &allStaff, string fileName) {
     ifstream fin;
     fin.open(fileName);
@@ -687,6 +695,191 @@ void staffaddStudentByManual() {
     }
 }
 
+void staffaddScoreByManual(Course* curCourse) {
+    SDL_Window* gWindow = NULL;
+    SDL_Renderer* gRenderer = NULL;
+    SDL_Event event;
+
+    const int startX = 265, startY = 150;
+    const int buttonHeight = 25;
+
+    const string backgroundPath = "Data/Image/StudentBackground.jpg";
+
+    if(!init(gWindow, gRenderer, "Add score")) {
+        printf("SDL could not initialize! SDL_Error: %s\n", SDL_GetError());
+    }
+    else {
+        bool quit = false;
+
+        SDL_Texture* backgroundImage = nullptr;
+        loadImage(gRenderer, backgroundImage, backgroundPath);
+
+        Button backButton = Button(20, 20, 80, 30, 2, BLACK, RED, LIGHTBLUE, GREY, "Back", 20);
+
+        Button saveButton = Button(SCREEN_WIDTH - 120, 60, 80, 30, 2, BLACK, RED, LIGHTBLUE, RED, "Save", 20);
+
+        Button addButton = Button(SCREEN_WIDTH - 120, 20, 80, 30, 2, BLACK, RED, LIGHTBLUE, RED, "Add", 20);
+
+        string courseIDText = "Course ID: "  + curCourse->Info.courseID;
+        Button courseIDButton = Button((SCREEN_WIDTH - 200) / 2, 20, 200, 30, 2, BLACK, WHITE, RED, RED, courseIDText,20);
+
+        string courseNameText = "Course name: "  + curCourse->Info.courseName;
+        Button courseNameButton = Button((SCREEN_WIDTH - 600) / 2, 65, 600, 30, 2, BLACK, WHITE, RED, RED, courseNameText,20);
+
+        TextOutput warningText = TextOutput(RED, 22);
+        warningText.loadText(gRenderer, "You have save your data", FONTDIR);
+
+        bool isSave = false;
+
+        vector <Button> listButton[10];
+
+        int curX = startX, curY = startY;
+
+        string curText[] = {"Student ID", "Midterm", "Final", "Other"};
+        const int Width[] = {250, 100, 100, 100};
+
+        for(int i = 0; i < 4; i++) {
+            if(i > 0) {
+                curX += Width[i - 1];
+            }
+
+            Button tmp = Button(curX, startY, Width[i], buttonHeight, 2, BLACK, WHITE, RED, RED, curText[i], 15);
+
+            listButton[i].push_back(tmp);
+        }
+
+        while(!quit) {
+            while(SDL_PollEvent(&event) != 0) {
+                if(event.type == SDL_QUIT) {
+                    quit = true;
+                    break;
+                }
+
+                SDL_RenderClear(gRenderer);
+
+                SDL_RenderCopy(gRenderer, backgroundImage, NULL, NULL);
+
+                for(int i = 0; i < 4; i++) {
+                    for(auto it : listButton[i]) {
+                        it.Display(gRenderer);
+                    }
+                }
+
+                backButton.Display(gRenderer);
+                saveButton.Display(gRenderer);
+                addButton.Display(gRenderer);
+                courseIDButton.Display(gRenderer);
+                courseNameButton.Display(gRenderer);
+
+                int backButtonState = backButton.isMouseClick(&event);
+                if(backButtonState == 1) {
+                    backButton.FillCol = backButton.PressCol;
+                    SDL_DestroyTexture(backgroundImage);
+                    backgroundImage = NULL;
+
+                    //Destroy window
+                    SDL_DestroyRenderer( gRenderer );
+                    SDL_DestroyWindow( gWindow );
+                    gWindow = NULL;
+                    gRenderer = NULL;
+
+                    // Quit
+                    TTF_Quit();
+                    IMG_Quit();
+                    SDL_Quit();
+                    return;
+                }
+                else if(backButtonState == 2) {
+                    backButton.FillCol = backButton.HoverCol;
+                }
+                else {
+                    backButton.FillCol = backButton.InitCol;
+                }
+
+                int addButtonState = addButton.isMouseClick(&event);
+                if(addButtonState == 1) {
+                    addButton.FillCol = addButton.PressCol;
+
+                    curY += buttonHeight;
+                    curX = startX;
+
+                    for(int i = 0; i < 7; i++) {
+                        if(i > 0) curX += Width[i - 1];
+
+                        Button tmp = Button(curX, curY, Width[i], buttonHeight, 2, BLACK, WHITE, RED, RED, "", 15);
+                        listButton[i].push_back(tmp);
+                    }
+                }
+                else if(addButtonState == 2) {
+                    addButton.FillCol = addButton.HoverCol;
+                }
+                else {
+                    addButton.FillCol = addButton.InitCol;
+                }
+
+                for(int i = 0; i < 4; i++) {
+                    for(int j = 1; j < listButton[i].size(); j++) {
+                        int kq = listButton[i][j].isTextBox(gRenderer, &event);
+
+                        if(kq) event.button.button = SDL_BUTTON_RIGHT;
+                    }
+                }
+
+                int saveButtonState = saveButton.isMouseClick(&event);
+                if(saveButtonState == 1) {
+                    saveButton.FillCol = saveButton.PressCol;
+                    isSave = true;
+
+                    Student* allStudent = nullptr;
+                    loadAllStudentData(allStudent, studentFileName);
+
+                    Course* allCourse = nullptr;
+                    loadAllCourseData(allCourse, courseFileName, allStudent);
+
+                    Course* nowCourse = findCourseByID(allCourse, curCourse->Info.courseID);
+
+                    for(int i = 1; i < listButton[0].size(); i++) {
+                        int Midterm = convertStringToInt(listButton[1][i].Text);
+                        int Final = convertStringToInt(listButton[2][i].Text);
+                        int Other = convertStringToInt(listButton[3][i].Text);
+                        CourseScore* newCourseScore = createACourseScore(listButton[0][i].Text, Midterm, Final, Other);
+
+                        nowCourse->addCourseScore(newCourseScore);
+                    }
+
+                    saveAllCourseData(allCourse, courseFileName);
+                }
+                else if(saveButtonState == 2) {
+                    saveButton.FillCol = saveButton.HoverCol;
+                }
+                else {
+                    saveButton.FillCol = saveButton.InitCol;
+                }
+
+                if(isSave) {
+                    warningText.Display(gRenderer, (SCREEN_WIDTH - warningText.mWidth) / 2, 110);
+                }
+
+                SDL_RenderPresent(gRenderer);
+            }
+        }
+
+        SDL_DestroyTexture(backgroundImage);
+        backgroundImage = NULL;
+
+        //Destroy window
+        SDL_DestroyRenderer( gRenderer );
+        SDL_DestroyWindow( gWindow );
+        gWindow = NULL;
+        gRenderer = NULL;
+
+        // Quit
+        TTF_Quit();
+        IMG_Quit();
+        SDL_Quit();
+    }
+}
+
 void staffImportDataWindow(int Type) {
     SDL_Window* gWindow = NULL;
     SDL_Renderer* gRenderer = NULL;
@@ -721,6 +914,11 @@ void staffImportDataWindow(int Type) {
         Button loadButton = Button((SCREEN_WIDTH - 100) / 2, 375, 100, 30, 2, BLACK, LIGHTBLUE, RED, RED, "LOAD", 19);
 
         Button backButton = Button(20, 20, 80, 30, 2, BLACK, RED, LIGHTBLUE, GREY, "Back", 20);
+
+        Button CourseIDButton = Button((SCREEN_WIDTH - 250) / 2, 175, 250, 30, 2, BLACK, WHITE, WHITE, GREY, "", 20);
+
+        TextOutput courseIDText = TextOutput(BLACK, 22);
+        courseIDText.loadText(gRenderer, "Course ID", FONTDIR);
 
         string dir = "";
 
@@ -771,7 +969,10 @@ void staffImportDataWindow(int Type) {
                         else isLoad = 1;
                     }
                     else {
-
+                        if(addCourseScoreByCSV(CourseIDButton.Text, directoryButton.Text)) {
+                            isLoad = 2;
+                        }
+                        else isLoad = 1;
                     }
                 }
                 else if(ButtonState == 2) {
@@ -788,6 +989,11 @@ void staffImportDataWindow(int Type) {
 
                 directoryText.Display(gRenderer, (SCREEN_WIDTH - 600) / 2, 222);
 
+                if(Type == 1) {
+                    courseIDText.Display(gRenderer, (SCREEN_WIDTH - courseIDText.mWidth) / 2, 150);
+                    CourseIDButton.Display(gRenderer);
+                }
+
                 if(isLoad == 1) {
                     warningText.Display(gRenderer, (SCREEN_WIDTH - warningText.mWidth) / 2, 345);
                 }
@@ -796,6 +1002,7 @@ void staffImportDataWindow(int Type) {
                 }
 
                 directoryButton.isTextBox(gRenderer, &event);
+                CourseIDButton.isTextBox(gRenderer, &event);
                 dir = directoryButton.Text;
 
                 SDL_RenderPresent(gRenderer);
@@ -902,7 +1109,7 @@ void staffViewStudentInAClass(Class* curClass, int page) {
                 curY += 25;
 
                 for(int i = 0; i < 8; i++) {
-                    int Width = listWidth[i], Height = 25;
+                    int Width = listWidth[i];
 
                     Button tmp = Button(curX, curY, Width, 25, 2, BLACK, WHITE, RED, RED, listContent[i], 15);
 

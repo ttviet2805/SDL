@@ -20,6 +20,8 @@ struct Student;
 
 struct Class;
 
+struct Course;
+
 struct StaffInfo {
     string ID = "", fullName = "";
 };
@@ -61,6 +63,8 @@ void staffEditProfile(Staff* curStaff);
 void staffImportDataWindow(int Type);
 
 void staffaddStudentByManual();
+
+void staffaddScoreByManual(Course* curCourse);
 
 void staffViewStudentInAClass(Class* curClass, int page);
 

@@ -1,20 +1,6 @@
 #include "systemProcess.h"
 
 void systemProcess() {
-//    Staff* allStaff = nullptr;
-//    loadAllStaffData(allStaff, staffFileName);
-
-//    staffEditProfile(allStaff);
-////
-//Class* allClass = nullptr;
-//loadAllClassData(allClass, classFileName);
-//
-//    staffViewStudentInAClass(allClass, 0);
-
-    staffViewStudentInASameYear("2021", 0);
-//
-    exit(0);
-
     Account* curAccount = loginWindow();
 
     if(curAccount == nullptr) {

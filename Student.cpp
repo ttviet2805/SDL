@@ -81,6 +81,11 @@ void Student::addStudentScore(StudentScore* newScore) {
         curScore = curScore->Next;
     }
 
+    if(curScore->courseID == newScore->courseID) {
+        curScore->studentScore = newScore->studentScore;
+        return;
+    }
+
     curScore->Next = newScore;
 }
 
@@ -440,6 +445,7 @@ void studentViewScore(Student* tmpStudent) {
     SDL_Event event;
 
     const int startX = 40, startY = 100;
+    const int buttonHeight = 25;
 
     const string backgroundPath = "Data/Image/StudentBackground.jpg";
 
@@ -463,61 +469,15 @@ void studentViewScore(Student* tmpStudent) {
 
         int curX = startX, curY = startY;
 
+        string curText[] = {"Course ID", "Course name", "Midterm", "Final", "Other", "Total", "GPA"};
+        const int Width[] = {200, 300, 100, 100, 100, 100, 100};
+
         for(int i = 0; i < 7; i++) {
-            int Width = 0, Height = 25;
-            string curText = "";
-
-            switch (i) {
-                case 0: {
-                    Width = 200;
-                    curText = "Course ID";
-                    break;
-                }
-
-                case 1: {
-                    Width = 300;
-                    curText = "Course name";
-                    curX += 200;
-                    break;
-                }
-
-                case 2: {
-                    Width = 100;
-                    curText = "Midterm";
-                    curX += 300;
-                    break;
-                }
-
-                case 3: {
-                    Width = 100;
-                    curText = "Final";
-                    curX += 100;
-                    break;
-                }
-
-                case 4: {
-                    Width = 100;
-                    curText = "Other";
-                    curX += 100;
-                    break;
-                }
-
-                case 5: {
-                    Width = 100;
-                    curText = "Total";
-                    curX += 100;
-                    break;
-                }
-
-                case 6: {
-                    Width = 100;
-                    curText = "GPA";
-                    curX += 100;
-                    break;
-                }
+            if(i > 0) {
+                curX += Width[i - 1];
             }
 
-            Button tmp = Button(curX, startY, Width, Height, 2, BLACK, WHITE, RED, RED, curText, 15);
+            Button tmp = Button(curX, startY, Width[i], buttonHeight, 2, BLACK, WHITE, RED, RED, curText[i], 15);
 
             listButton[i].push_back(tmp);
         }
