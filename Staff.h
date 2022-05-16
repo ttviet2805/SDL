@@ -49,12 +49,14 @@ void exportStudentInAClass(Class* curClass, string fileName);
 
 void viewStudentInASameYear(string schoolYear);
 
-void addStudentByCSV(string fileName);
+bool addStudentByCSV(string fileName);
 
 //---------------------------------------------------------------------------------//
 
 // Front End
 void staffEditProfile(Staff* curStaff);
+
+void staffImportDataWindow(int Type);
 
 void staffaddStudentByManual();
 

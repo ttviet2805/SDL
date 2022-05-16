@@ -287,7 +287,11 @@ void Account::userChangePassword() {
                         studentWindow(curStudent);
                     }
                     else {
+                        Staff* allStaff = nullptr;
+                        loadAllStaffData(allStaff, staffFileName);
 
+                        Staff* curStaff = findStaffByID(allStaff, curAccount->username);
+                        staffWindow(curStaff);
                     }
 
                     return;

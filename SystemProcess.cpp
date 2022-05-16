@@ -1,12 +1,14 @@
 #include "systemProcess.h"
 
 void systemProcess() {
-//    Staff* allStaff = nullptr;
-//    loadAllStaffData(allStaff, staffFileName);
-//
+    Staff* allStaff = nullptr;
+    loadAllStaffData(allStaff, staffFileName);
+
 //    staffEditProfile(allStaff);
-//
-//    exit(0);
+
+    staffImportDataWindow(0);
+
+    exit(0);
 
     Account* curAccount = loginWindow();
 

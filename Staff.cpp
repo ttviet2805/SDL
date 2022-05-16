@@ -176,14 +176,15 @@ void exportStudentInASameYear(string schoolYear, string fileName) {
     fout.close();
 }
 
-void addStudentByCSV(string fileName) {
+bool addStudentByCSV(string fileName) {
     ifstream fin;
     fin.open(fileName);
 
     if(!fin) {
         cout << "Can not open student CSV file";
-        system("pause");
-        return;
+        fin.close();
+//        system("pause");
+        return false;
     }
 
     Student* allStudent = nullptr;
@@ -216,6 +217,8 @@ void addStudentByCSV(string fileName) {
     showAllStudentInfo(allStudent);
 
     fin.close();
+
+    return true;
 }
 
 //-----------------------------------------------------------------------------------------//
@@ -684,6 +687,136 @@ void staffaddStudentByManual() {
     }
 }
 
+void staffImportDataWindow(int Type) {
+    SDL_Window* gWindow = NULL;
+    SDL_Renderer* gRenderer = NULL;
+    SDL_Event event;
+
+    string Title = Type ? "Import list students from file" : "Import score board from file";
+
+    const string backgroundPath = "Data/Image/StudentBackground.jpg";
+
+    if(!init(gWindow, gRenderer, Title)) {
+        printf("SDL could not initialize! SDL_Error: %s\n", SDL_GetError());
+    }
+    else {
+        SDL_RenderClear(gRenderer);
+
+        SDL_Texture* backgroundImage = nullptr;
+        loadImage(gRenderer, backgroundImage, backgroundPath);
+
+        Button directoryButton = Button((SCREEN_WIDTH - 600) / 2, 250, 600, 35, 2, BLACK, WHITE, WHITE, GREY, "", 20);
+        directoryButton.TypeBox = 1;
+        directoryButton.padding_hoz = 10;
+
+        TextOutput directoryText = TextOutput(BLACK, 22);
+        directoryText.loadText(gRenderer, "Directory", FONTDIR);
+
+        TextOutput warningText = TextOutput(RED, 22);
+        warningText.loadText(gRenderer, "Invalid directory!", FONTDIR);
+
+        TextOutput successText = TextOutput(RED, 22);
+        successText.loadText(gRenderer, "Successful loading!", FONTDIR);
+
+        Button loadButton = Button((SCREEN_WIDTH - 100) / 2, 375, 100, 30, 2, BLACK, LIGHTBLUE, RED, RED, "LOAD", 19);
+
+        Button backButton = Button(20, 20, 80, 30, 2, BLACK, RED, LIGHTBLUE, GREY, "Back", 20);
+
+        string dir = "";
+
+        bool quit = false;
+        int isLoad = 0;
+        while(!quit) {
+            while(SDL_PollEvent(&event) != 0) {
+                if(event.type == SDL_QUIT) {
+                    quit = true;
+                    break;
+                }
+
+                SDL_RenderClear(gRenderer);
+
+                SDL_RenderCopy(gRenderer, backgroundImage, NULL, NULL);
+
+                int backButtonState = backButton.isMouseClick(&event);
+                if(backButtonState == 1) {
+                    backButton.FillCol = backButton.PressCol;
+                    SDL_DestroyTexture(backgroundImage);
+                    backgroundImage = NULL;
+
+                    //Destroy window
+                    SDL_DestroyRenderer( gRenderer );
+                    SDL_DestroyWindow( gWindow );
+                    gWindow = NULL;
+                    gRenderer = NULL;
+
+                    // Quit
+                    TTF_Quit();
+                    IMG_Quit();
+                    SDL_Quit();
+                    return;
+                }
+                else if(backButtonState == 2) {
+                    backButton.FillCol = backButton.HoverCol;
+                }
+                else {
+                    backButton.FillCol = backButton.InitCol;
+                }
+
+                int ButtonState = loadButton.isMouseClick(&event);
+                if(ButtonState == 1) {
+                    if(Type == 0) {
+                        if(addStudentByCSV(directoryButton.Text)) {
+                            isLoad = 2;
+                        }
+                        else isLoad = 1;
+                    }
+                    else {
+
+                    }
+                }
+                else if(ButtonState == 2) {
+                    loadButton.FillCol = loadButton.HoverCol;
+                }
+                else {
+                    loadButton.FillCol = loadButton.InitCol;
+                }
+
+                // Display
+                directoryButton.Display(gRenderer);
+                loadButton.Display(gRenderer);
+                backButton.Display(gRenderer);
+
+                directoryText.Display(gRenderer, (SCREEN_WIDTH - 600) / 2, 222);
+
+                if(isLoad == 1) {
+                    warningText.Display(gRenderer, (SCREEN_WIDTH - warningText.mWidth) / 2, 345);
+                }
+                if(isLoad == 2) {
+                    successText.Display(gRenderer, (SCREEN_WIDTH - warningText.mWidth) / 2, 345);
+                }
+
+                directoryButton.isTextBox(gRenderer, &event);
+                dir = directoryButton.Text;
+
+                SDL_RenderPresent(gRenderer);
+            }
+        }
+
+        SDL_DestroyTexture(backgroundImage);
+        backgroundImage = NULL;
+
+        //Destroy window
+        SDL_DestroyRenderer( gRenderer );
+        SDL_DestroyWindow( gWindow );
+        gWindow = NULL;
+        gRenderer = NULL;
+
+        // Quit
+        IMG_Quit();
+        SDL_Quit();
+    }
+}
+
 void staffViewStudentInAClass(Class* tmpClass) {
     Student* allStudent = nullptr;
     loadAllStudentData(allStudent, studentFileName);
@@ -1037,10 +1170,17 @@ void staffWindow(Staff* curStaff) {
                             }
 
                             case 4: {
+                                Account* allAccount = nullptr;
+                                loadAllAccountData(allAccount, accountFileName);
+
+                                Account* curAccount = findAccountByID(allAccount, curStaff->Info.ID);
+
+                                curAccount->userChangePassword();
                                 return;
                             }
 
                             case 5: {
+                                systemProcess();
                                 return;
                             }
                         }
