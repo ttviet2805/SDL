@@ -1098,7 +1098,8 @@ void staffViewStudentInASameYear(string schoolYear, int page) {
         string nextText = ">";
         Button nextButton = Button(SCREEN_WIDTH / 2 + 15, 580, 40, 40, 2, GREEN, GREEN, RED, LIGHTBLUE, nextText, 20);
 
-        vector <Button> listButton[8];
+        vector <Button> listTitleButton;
+        vector <Button> listContentButton;
         int listWidth[8] = {150, 230, 150, 100, 100, 100, 70, 100};
         string listTitle[8] = {"Student ID", "First name", "Last name", "Gender", "Date of birth", "Social ID", "Class", "School year"};
 
@@ -1109,7 +1110,7 @@ void staffViewStudentInASameYear(string schoolYear, int page) {
 
             Button tmp = Button(curX, startY, Width, Height, 2, BLACK, WHITE, RED, RED, listTitle[i], 15);
 
-            listButton[i].push_back(tmp);
+            listTitleButton.push_back(tmp);
             curX += Width;
         }
 
@@ -1119,7 +1120,7 @@ void staffViewStudentInASameYear(string schoolYear, int page) {
         Student* tmpStu = curStudent;
 
         while(tmpStu) {
-            numStudent++;
+            if(tmpStu->Info.schoolyear == schoolYear) numStudent++;
             tmpStu = tmpStu->Next;
         }
 
@@ -1131,7 +1132,7 @@ void staffViewStudentInASameYear(string schoolYear, int page) {
         int startStu = page * numStudentInAPage, cnt = 0;
 
         while(curStudent && cnt < startStu) {
-            ++cnt;
+            if(curStudent->Info.schoolyear == schoolYear) ++cnt;
             curStudent = curStudent->Next;
         }
 
@@ -1149,7 +1150,7 @@ void staffViewStudentInASameYear(string schoolYear, int page) {
 
                     Button tmp = Button(curX, curY, Width, 25, 2, BLACK, WHITE, RED, RED, listContent[i], 15);
 
-                    listButton[i].push_back(tmp);
+                    listContentButton.push_back(tmp);
                     curX += Width;
                 }
             }
@@ -1168,10 +1169,11 @@ void staffViewStudentInASameYear(string schoolYear, int page) {
 
                 SDL_RenderCopy(gRenderer, backgroundImage, NULL, NULL);
 
-                for(int i = 0; i < 8; i++) {
-                    for(auto it : listButton[i]) {
-                        it.Display(gRenderer);
-                    }
+                for(auto it : listTitleButton) {
+                    it.Display(gRenderer);
+                }
+                for(auto it : listContentButton) {
+                    it.Display(gRenderer);
                 }
 
                 int backButtonState = backButton.isMouseClick(&event);
@@ -1201,28 +1203,11 @@ void staffViewStudentInASameYear(string schoolYear, int page) {
                 }
 
                 int preButtonState = preButton.isMouseClick(&event);
+                bool isChange = false;
                 if(preButtonState == 1) {
                     if(page > 0) {
-                        SDL_DestroyTexture(backgroundImage);
-                        backgroundImage = NULL;
-
-                        //Destroy window
-                        SDL_DestroyRenderer( gRenderer );
-                        SDL_DestroyWindow( gWindow );
-                        gWindow = NULL;
-                        gRenderer = NULL;
-
-                        // Quit
-                        IMG_Quit();
-                        SDL_Quit();
-
-                        for(int i = 0; i < 8; i++) {
-                            listButton[i].clear();
-                        }
-
-                        preButton.FillCol = preButton.PressCol;
-                        staffViewStudentInASameYear(schoolYear, page - 1);
-                        return;
+                        page -= 1;
+                        isChange = true;
                     }
                                     }
                 else if(preButtonState == 2) {
@@ -1234,27 +1219,9 @@ void staffViewStudentInASameYear(string schoolYear, int page) {
 
                 int nextButtonState = nextButton.isMouseClick(&event);
                 if(nextButtonState == 1) {
-                    if(page < numMaxPage) {
-                        SDL_DestroyTexture(backgroundImage);
-                        backgroundImage = NULL;
-
-                        //Destroy window
-                        SDL_DestroyRenderer( gRenderer );
-                        SDL_DestroyWindow( gWindow );
-                        gWindow = NULL;
-                        gRenderer = NULL;
-
-                        // Quit
-                        IMG_Quit();
-                        SDL_Quit();
-
-                        for(int i = 0; i < 8; i++) {
-                            listButton[i].clear();
-                        }
-
-                        nextButton.FillCol = nextButton.PressCol;
-                        staffViewStudentInASameYear(schoolYear, page + 1);
-                        return;
+                    if(page < numMaxPage - 1) {
+                        page += 1;
+                        isChange = true;
                     }
                 }
                 else if(nextButtonState == 2) {
@@ -1270,6 +1237,40 @@ void staffViewStudentInASameYear(string schoolYear, int page) {
                 nextButton.Display(gRenderer);
 
                 SDL_RenderPresent(gRenderer);
+
+                if(isChange) {
+                    listContentButton.clear();
+                    curStudent = allStudent;
+                    curY = startY;
+                    startStu = page * numStudentInAPage, cnt = 0;
+
+                    while(curStudent && cnt < startStu) {
+                        if(curStudent->Info.schoolyear == schoolYear) ++cnt;
+                        curStudent = curStudent->Next;
+                    }
+
+                    cnt = 0;
+
+                    while(curStudent && cnt < numStudentInAPage) {
+                        if(curStudent && curStudent->Info.schoolyear == schoolYear) {
+                            cnt++;
+                            string listContent[8] = {curStudent->Info.ID, curStudent->Info.firstName, curStudent->Info.lastName, curStudent->Info.Gender, curStudent->Info.Dob,  curStudent->Info.SocialID, curStudent->Info.Class, curStudent->Info.schoolyear};
+                            curX = startX;
+                            curY += 25;
+
+                            for(int i = 0; i < 8; i++) {
+                                int Width = listWidth[i], Height = 25;
+
+                                Button tmp = Button(curX, curY, Width, 25, 2, BLACK, WHITE, RED, RED, listContent[i], 15);
+
+                                listContentButton.push_back(tmp);
+                                curX += Width;
+                            }
+                        }
+
+                        curStudent = curStudent->Next;
+                    }
+                }
             }
         }
 

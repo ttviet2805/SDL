@@ -971,7 +971,7 @@ void studentViewStudentInClass(Student* curStudent, int page) {
 
                 int nextButtonState = nextButton.isMouseClick(&event);
                 if(nextButtonState == 1) {
-                    if(page < numMaxPage) {
+                    if(page < numMaxPage - 1) {
                         SDL_DestroyTexture(backgroundImage);
                         backgroundImage = NULL;
 
