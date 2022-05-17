@@ -70,4 +70,10 @@ void staffViewStudentInAClass(Class* curClass, int page);
 
 void staffViewStudentInASameYear(string schoolYear, int page);
 
+void staffViewCourseScore(Course* tmpCourse);
+
 void staffWindow(Staff* tmpStaff);
+
+void staffViewListClassWindow();
+
+void staffChooseOptionWindow(int Type);

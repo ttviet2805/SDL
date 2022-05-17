@@ -535,6 +535,8 @@ void staffaddStudentByManual() {
                     TTF_Quit();
                     IMG_Quit();
                     SDL_Quit();
+
+                    staffChooseOptionWindow(0);
                     return;
                 }
                 else if(backButtonState == 2) {
@@ -951,6 +953,9 @@ void staffImportDataWindow(int Type) {
                     TTF_Quit();
                     IMG_Quit();
                     SDL_Quit();
+
+                    if(Type == 0) staffChooseOptionWindow(0);
+                    else staffChooseOptionWindow(1);
                     return;
                 }
                 else if(backButtonState == 2) {
@@ -1133,6 +1138,7 @@ void staffViewStudentInAClass(Class* curClass, int page) {
             while(SDL_PollEvent(&event) != 0) {
                 if(event.type == SDL_QUIT) {
                     quit = true;
+                    exit(0);
                     break;
                 }
 
@@ -1535,6 +1541,160 @@ void staffViewStudentInASameYear(string schoolYear, int page) {
     }
 }
 
+void staffViewCourseScore(Course* curCourse) {
+    SDL_Window* gWindow = NULL;
+    SDL_Renderer* gRenderer = NULL;
+    SDL_Event event;
+
+    const int startX = 165, startY = 150;
+    const int buttonHeight = 25;
+
+    const string backgroundPath = "Data/Image/StudentBackground.jpg";
+
+    if(!init(gWindow, gRenderer, "View score")) {
+        printf("SDL could not initialize! SDL_Error: %s\n", SDL_GetError());
+    }
+    else {
+        bool quit = false;
+
+        SDL_Texture* backgroundImage = nullptr;
+        loadImage(gRenderer, backgroundImage, backgroundPath);
+
+        Button backButton = Button(20, 20, 80, 30, 2, BLACK, RED, LIGHTBLUE, GREY, "Back", 20);
+
+        string courseIDText = "Course ID: "  + curCourse->Info.courseID;
+        Button courseIDButton = Button((SCREEN_WIDTH - 200) / 2, 20, 200, 30, 2, BLACK, WHITE, RED, RED, courseIDText,20);
+
+        string courseNameText = "Course name: "  + curCourse->Info.courseName;
+        Button courseNameButton = Button((SCREEN_WIDTH - 600) / 2, 65, 600, 30, 2, BLACK, WHITE, RED, RED, courseNameText,20);
+
+        vector <Button> listButton[10];
+
+        int curX = startX, curY = startY;
+
+        string curText[] = {"Student ID", "Midterm", "Final", "Other", "Total", "GPA"};
+        const int Width[] = {250, 100, 100, 100, 100, 100};
+
+        for(int i = 0; i < 6; i++) {
+            if(i > 0) {
+                curX += Width[i - 1];
+            }
+
+            Button tmp = Button(curX, startY, Width[i], buttonHeight, 2, BLACK, WHITE, RED, RED, curText[i], 15);
+
+            listButton[i].push_back(tmp);
+        }
+
+        CourseScore* curScore = curCourse->courseScoreHead;
+
+        curY = startY;
+        while(curScore) {
+            curX = startX;
+            curY += buttonHeight;
+
+            for(int i = 0; i < 6; i++) {
+                if(i > 0) {
+                    curX += Width[i - 1];
+                }
+
+                string tmpText = "";
+                stringstream ss;
+
+                if(i == 0) tmpText = curScore->StudentID;
+                if(i == 1) {
+                    ss << fixed << setprecision(2) << curScore->studentScore.MidTerm << ' ';
+                    ss >> tmpText;
+                }
+                if(i == 2) {
+                    ss << fixed << setprecision(2) << curScore->studentScore.Final << ' ';
+                    ss >> tmpText;
+                }
+                if(i == 3) {
+                    ss << fixed << setprecision(2) << curScore->studentScore.Other << ' ';
+                    ss >> tmpText;
+                }
+                curScore->studentScore.calTotal();
+                if(i == 4) {
+                    ss << fixed << setprecision(2) << curScore->studentScore.MidTerm << ' ';
+                    ss >> tmpText;
+                }
+
+                Button tmp = Button(curX, curY, Width[i], buttonHeight, 2, BLACK, WHITE, RED, RED, tmpText, 15);
+                listButton[i].push_back(tmp);
+            }
+
+//            cout << curScore->StudentID << '\n';
+//            cout << curScore->studentScore.MidTerm << ' ' << curScore->studentScore.Final << ' ' << curScore->studentScore.Other << '\n';
+
+            curScore = curScore->Next;
+        }
+
+        while(!quit) {
+            while(SDL_PollEvent(&event) != 0) {
+                if(event.type == SDL_QUIT) {
+                    quit = true;
+                    break;
+                }
+
+                SDL_RenderClear(gRenderer);
+
+                SDL_RenderCopy(gRenderer, backgroundImage, NULL, NULL);
+
+                for(int i = 0; i < 6; i++) {
+                    for(auto it : listButton[i]) {
+                        it.Display(gRenderer);
+                    }
+                }
+
+                backButton.Display(gRenderer);
+                courseIDButton.Display(gRenderer);
+                courseNameButton.Display(gRenderer);
+
+                int backButtonState = backButton.isMouseClick(&event);
+                if(backButtonState == 1) {
+                    backButton.FillCol = backButton.PressCol;
+                    SDL_DestroyTexture(backgroundImage);
+                    backgroundImage = NULL;
+
+                    //Destroy window
+                    SDL_DestroyRenderer( gRenderer );
+                    SDL_DestroyWindow( gWindow );
+                    gWindow = NULL;
+                    gRenderer = NULL;
+
+                    // Quit
+                    TTF_Quit();
+                    IMG_Quit();
+                    SDL_Quit();
+                    return;
+                }
+                else if(backButtonState == 2) {
+                    backButton.FillCol = backButton.HoverCol;
+                }
+                else {
+                    backButton.FillCol = backButton.InitCol;
+                }
+
+                SDL_RenderPresent(gRenderer);
+            }
+        }
+
+        SDL_DestroyTexture(backgroundImage);
+        backgroundImage = NULL;
+
+        //Destroy window
+        SDL_DestroyRenderer( gRenderer );
+        SDL_DestroyWindow( gWindow );
+        gWindow = NULL;
+        gRenderer = NULL;
+
+        // Quit
+        TTF_Quit();
+        IMG_Quit();
+        SDL_Quit();
+    }
+}
+
 void staffWindow(Staff* curStaff) {
     SDL_Window* gWindow = NULL;
     SDL_Renderer* gRenderer = NULL;
@@ -1626,15 +1786,20 @@ void staffWindow(Staff* curStaff) {
                             }
 
                             case 1: {
-                                staffaddStudentByManual();
+                                staffChooseOptionWindow(0);
+                                staffWindow(curStaff);
                                 return;
                             }
 
                             case 2: {
+                                staffChooseOptionWindow(1);
+                                staffWindow(curStaff);
                                 return;
                             }
 
                             case 3: {
+                                staffViewListClassWindow();
+                                staffWindow(curStaff);
                                 return;
                             }
 
@@ -1677,6 +1842,323 @@ void staffWindow(Staff* curStaff) {
 
         // Quit
         TTF_Quit();
+        IMG_Quit();
+        SDL_Quit();
+    }
+}
+
+void staffViewListClassWindow() {
+    Class* allClass = nullptr;
+    loadAllClassData(allClass, classFileName);
+
+    SDL_Window* gWindow = NULL;
+    SDL_Renderer* gRenderer = NULL;
+    SDL_Event event;
+
+    const string backgroundPath = "Data/Image/StudentBackground.jpg";
+
+    if(!init(gWindow, gRenderer, "List class")) {
+        printf("SDL could not initialize! SDL_Error: %s\n", SDL_GetError());
+    }
+    else {
+        SDL_RenderClear(gRenderer);
+
+        SDL_Texture* backgroundImage = nullptr;
+        loadImage(gRenderer, backgroundImage, backgroundPath);
+
+        Class* curClass = allClass;
+        int iFirstYear = 21;
+        string sFirstYear, sSecondYear, sThirdYear, sLastYear;
+        stringstream ss;
+        ss << iFirstYear << ' ' << iFirstYear - 1 << ' ' << iFirstYear - 2 << ' ' << iFirstYear - 3 << ' ';
+        ss >> sFirstYear >> sSecondYear >> sThirdYear >> sLastYear;
+
+        int initX = 80, initY = 100;
+        int buttonWidth = 150, buttonHeight = 30;
+        int disX = (SCREEN_WIDTH - 2 * initX - 4 * buttonWidth) / 3 + buttonWidth, disY = 20 + buttonHeight;
+        vector < Button > listButton;
+        int curFirstY = initY, curSecondY = initY, curThirdY = initY, curLastY = initY;
+        while(curClass) {
+            string curYear = curClass->className.substr(0, 2);
+            Button tmpButton;
+            if(curYear == sFirstYear) {
+                tmpButton = Button(initX, curFirstY, buttonWidth, buttonHeight, 2, BLACK, DARKGREEN, RED, RED, curClass->className, 20);
+                curFirstY += disY;
+            }
+            else if(curYear == sSecondYear) {
+                tmpButton = Button(initX + disX, curSecondY, buttonWidth, buttonHeight, 2, BLACK, DARKGREEN, RED, RED, curClass->className, 20);
+                curSecondY += disY;
+            }
+            else if(curYear == sThirdYear) {
+                tmpButton = Button(initX + disX * 2, curThirdY, buttonWidth, buttonHeight, 2, BLACK, DARKGREEN, RED, RED, curClass->className, 20);
+                curThirdY += disY;
+            }
+            else if(curYear == sLastYear) {
+                tmpButton = Button(initX + disX * 3, curLastY, buttonWidth, buttonHeight, 2, BLACK, DARKGREEN, RED, RED, curClass->className, 20);
+                curLastY += disY;
+            }
+            listButton.push_back(tmpButton);
+            curClass = curClass->Next;
+        }
+
+        Button backButton = Button(20, 20, 80, 30, 2, BLACK, RED, LIGHTBLUE, GREY, "Back", 20);
+
+        bool quit = false;
+        int isLoad = 0;
+        while(!quit) {
+            while(SDL_PollEvent(&event) != 0) {
+                if(event.type == SDL_QUIT) {
+                    quit = true;
+                    exit(0);
+                    break;
+                }
+
+                SDL_RenderClear(gRenderer);
+
+                SDL_RenderCopy(gRenderer, backgroundImage, NULL, NULL);
+
+                int backButtonState = backButton.isMouseClick(&event);
+                if(backButtonState == 1) {
+                    backButton.FillCol = backButton.PressCol;
+                    SDL_DestroyTexture(backgroundImage);
+                    backgroundImage = NULL;
+
+                    //Destroy window
+                    SDL_DestroyRenderer( gRenderer );
+                    SDL_DestroyWindow( gWindow );
+                    gWindow = NULL;
+                    gRenderer = NULL;
+
+                    // Quit
+                    TTF_Quit();
+                    IMG_Quit();
+                    SDL_Quit();
+                    return;
+                }
+                else if(backButtonState == 2) {
+                    backButton.FillCol = backButton.HoverCol;
+                }
+                else {
+                    backButton.FillCol = backButton.InitCol;
+                }
+
+                for(int i = 0; i < listButton.size(); ++i) {
+                    int ButtonState = listButton[i].isMouseClick(&event);
+                    if(ButtonState == 1) {
+                        listButton[i].FillCol = listButton[i].PressCol;
+
+                        SDL_DestroyTexture(backgroundImage);
+                        backgroundImage = NULL;
+
+                        //Destroy window
+                        SDL_DestroyRenderer( gRenderer );
+                        SDL_DestroyWindow( gWindow );
+                        gWindow = NULL;
+                        gRenderer = NULL;
+
+                        // Quit
+                        IMG_Quit();
+                        SDL_Quit();
+
+                        Class* allClass = nullptr;
+                        loadAllClassData(allClass, classFileName);
+
+                        Class* curClass = findClassByID(allClass, listButton[i].Text);
+                        staffViewStudentInAClass(curClass, 0);
+                        staffViewListClassWindow();
+                        return;
+                    }
+                    else if(ButtonState == 2) {
+                        listButton[i].FillCol = listButton[i].HoverCol;
+                    }
+                    else {
+                        listButton[i].FillCol = listButton[i].InitCol;
+                    }
+                }
+
+                // Display
+                for(auto it: listButton) {
+                    it.Display(gRenderer);
+                }
+                backButton.Display(gRenderer);
+
+                SDL_RenderPresent(gRenderer);
+            }
+        }
+
+        SDL_DestroyTexture(backgroundImage);
+        backgroundImage = NULL;
+
+        //Destroy window
+        SDL_DestroyRenderer( gRenderer );
+        SDL_DestroyWindow( gWindow );
+        gWindow = NULL;
+        gRenderer = NULL;
+
+        // Quit
+        IMG_Quit();
+        SDL_Quit();
+    }
+}
+
+void staffChooseOptionWindow(int Type) {
+    SDL_Window* gWindow = NULL;
+    SDL_Renderer* gRenderer = NULL;
+    SDL_Event event;
+
+    string Title = Type ? "Add student" : "Add Score";
+
+    const string backgroundPath = "Data/Image/StudentBackground.jpg";
+
+    if(!init(gWindow, gRenderer, Title)) {
+        printf("SDL could not initialize! SDL_Error: %s\n", SDL_GetError());
+    }
+    else {
+        SDL_RenderClear(gRenderer);
+
+        SDL_Texture* backgroundImage = nullptr;
+        loadImage(gRenderer, backgroundImage, backgroundPath);
+
+        Button addManualButton, addCsvButton;
+
+        if(Type == 0) {
+            addManualButton = Button(SCREEN_WIDTH / 2 - 350, 200, 250, 200, 2, DARKGREEN, DARKGREEN, RED, RED, "Add Student By Manual", 25);
+
+            addCsvButton = Button(SCREEN_WIDTH / 2 + 100, 200, 250, 200, 2, DARKGREEN, DARKGREEN, RED, RED, "Add Student By Csv", 25);
+        }
+        else {
+            addManualButton = Button(SCREEN_WIDTH / 2 - 350, 200, 250, 200, 2, DARKGREEN, DARKGREEN, RED, RED, "Add Score by Manual", 25);
+
+            addCsvButton = Button(SCREEN_WIDTH / 2 + 100, 200, 250, 200, 2, DARKGREEN, DARKGREEN, RED, RED, "Add Score By Csv", 25);
+        }
+
+        Button backButton = Button(20, 20, 80, 30, 2, BLACK, RED, LIGHTBLUE, GREY, "Back", 20);
+
+        bool quit = false;
+        int isLoad = 0;
+        while(!quit) {
+            while(SDL_PollEvent(&event) != 0) {
+                if(event.type == SDL_QUIT) {
+                    quit = true;
+                    exit(0);
+                    break;
+                }
+
+                SDL_RenderClear(gRenderer);
+
+                SDL_RenderCopy(gRenderer, backgroundImage, NULL, NULL);
+
+                int backButtonState = backButton.isMouseClick(&event);
+                if(backButtonState == 1) {
+                    backButton.FillCol = backButton.PressCol;
+                    SDL_DestroyTexture(backgroundImage);
+                    backgroundImage = NULL;
+
+                    //Destroy window
+                    SDL_DestroyRenderer( gRenderer );
+                    SDL_DestroyWindow( gWindow );
+                    gWindow = NULL;
+                    gRenderer = NULL;
+
+                    // Quit
+                    TTF_Quit();
+                    IMG_Quit();
+                    SDL_Quit();
+
+                    return;
+                }
+                else if(backButtonState == 2) {
+                    backButton.FillCol = backButton.HoverCol;
+                }
+                else {
+                    backButton.FillCol = backButton.InitCol;
+                }
+
+                int manualButtonState = addManualButton.isMouseClick(&event);
+                if(manualButtonState == 1) {
+                    addManualButton.FillCol = addManualButton.PressCol;
+                    SDL_DestroyTexture(backgroundImage);
+                    backgroundImage = NULL;
+
+                    //Destroy window
+                    SDL_DestroyRenderer( gRenderer );
+                    SDL_DestroyWindow( gWindow );
+                    gWindow = NULL;
+                    gRenderer = NULL;
+
+                    // Quit
+                    IMG_Quit();
+                    SDL_Quit();
+
+                    if(Type == 0) {
+                        staffaddStudentByManual();
+                    }
+                    else {
+                        if(Type == 1){
+
+                        }
+                    }
+                    return;
+                }
+                else if(manualButtonState == 2) {
+                    addManualButton.FillCol = addManualButton.HoverCol;
+                }
+                else {
+                    addManualButton.FillCol = addManualButton.InitCol;
+                }
+
+                int csvButtonState = addCsvButton.isMouseClick(&event);
+                if(csvButtonState == 1) {
+                    SDL_DestroyTexture(backgroundImage);
+                    backgroundImage = NULL;
+
+                    //Destroy window
+                    SDL_DestroyRenderer( gRenderer );
+                    SDL_DestroyWindow( gWindow );
+                    gWindow = NULL;
+                    gRenderer = NULL;
+
+                    // Quit
+                    IMG_Quit();
+                    SDL_Quit();
+
+                    addCsvButton.FillCol = addCsvButton.PressCol;
+
+                    if(Type == 0) {
+                        staffImportDataWindow(0);
+                    }
+                    else {
+                        if(Type == 1) staffImportDataWindow(1);
+                    }
+
+                    return;
+                }
+                else if(csvButtonState == 2) {
+                    addCsvButton.FillCol = addCsvButton.HoverCol;
+                }
+                else {
+                    addCsvButton.FillCol = addCsvButton.InitCol;
+                }
+
+                // Display
+                addManualButton.Display(gRenderer);
+                addCsvButton.Display(gRenderer);
+                backButton.Display(gRenderer);
+
+                SDL_RenderPresent(gRenderer);
+            }
+        }
+
+        SDL_DestroyTexture(backgroundImage);
+        backgroundImage = NULL;
+
+        //Destroy window
+        SDL_DestroyRenderer( gRenderer );
+        SDL_DestroyWindow( gWindow );
+        gWindow = NULL;
+        gRenderer = NULL;
+
+        // Quit
         IMG_Quit();
         SDL_Quit();
     }

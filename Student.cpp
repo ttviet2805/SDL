@@ -396,6 +396,7 @@ void studentEditProfileWindow(Student* tmpStudent) {
                     IMG_Quit();
                     SDL_Quit();
                     studentWindow(curStudent);
+                    cout << "YES\n";
                     return;
                 }
                 else if(backButtonState == 2) {
@@ -773,7 +774,7 @@ void studentViewStudentInClass(Student* curStudent, int page) {
                     IMG_Quit();
                     SDL_Quit();
 
-//                    studentWindow(curStudent);
+                    studentWindow(curStudent);
                     return;
                 }
                 else if(backButtonState == 2) {
