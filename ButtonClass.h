@@ -22,6 +22,7 @@ struct Button {
     string Text = "";
     int TextSize = 0;
     bool TypeBox = 0;
+    SDL_Color textColor = BLACK;
 
     Button() {
         bImage = NULL;
@@ -102,7 +103,7 @@ struct Button {
                 string temStr = curLine;
                 if(temStr != "") temStr += " ";
                 temStr += curWord;
-                TextOutput tmp = TextOutput(BLACK, TextSize);
+                TextOutput tmp = TextOutput(textColor, TextSize);
                 tmp.loadText(gRenderer, temStr, FONTDIR);
                 if(tmp.mWidth > bRect.w - 2 * padding_hoz - 2 * boder) {
                     listText.push_back(curLine);
@@ -114,7 +115,7 @@ struct Button {
             }
             if(curLine != "") listText.push_back(curLine);
             for(int i = 0; i < listText.size(); ++i) {
-                TextOutput tmp = TextOutput(BLACK, TextSize);
+                TextOutput tmp = TextOutput(textColor, TextSize);
                 tmp.loadText(gRenderer, listText[i], FONTDIR);
                 totHeight += tmp.mHeight;
                 if(i + 1 < listText.size()) totHeight += 4;
@@ -123,7 +124,7 @@ struct Button {
 
             int curY = bRect.y + (bRect.h - totHeight) / 2;
             for(int i = 0; i < listText.size(); ++i) {
-                TextOutput tmp = TextOutput(BLACK, TextSize);
+                TextOutput tmp = TextOutput(textColor, TextSize);
                 tmp.loadText(gRenderer, listText[i], FONTDIR);
                 tmp.Display(gRenderer, bRect.x + bRect.w / 2 - tmp.mWidth / 2, curY);
                 curY += (tmp.mHeight + 4);
@@ -131,7 +132,7 @@ struct Button {
             }
         }
         else {
-            TextOutput tmp = TextOutput(BLACK, TextSize);
+            TextOutput tmp = TextOutput(textColor, TextSize);
             tmp.loadText(gRenderer, Text, FONTDIR);
             if(tmp.mWidth <= bRect.w - 2 * padding_hoz - 2 * boder) {
                 tmp.Display(gRenderer, bRect.x + padding_hoz, bRect.y + bRect.h / 2 - tmp.mHeight / 2);
@@ -140,7 +141,7 @@ struct Button {
                 string curStr = "";
                 int Cur = Text.size() - 1;
                 while(Cur >= 0) {
-                    TextOutput curText = TextOutput(BLACK, TextSize);
+                    TextOutput curText = TextOutput(textColor, TextSize);
                     curText.loadText(gRenderer, Text[Cur] + curStr, FONTDIR);
                     if(curText.mWidth <= bRect.w - 2 * padding_hoz - 2 * boder) {
                         curStr = Text[Cur] + curStr;
@@ -148,7 +149,7 @@ struct Button {
                     }
                     else break;
                 }
-                TextOutput curText = TextOutput(BLACK, TextSize);
+                TextOutput curText = TextOutput(textColor, TextSize);
                 curText.loadText(gRenderer, Text[Cur] + curStr, FONTDIR);
                 curText.Display(gRenderer, bRect.x + boder + padding_hoz, bRect.y + bRect.h / 2 - curText.mHeight / 2);
             }

@@ -16,6 +16,7 @@ const SDL_Color VIOLET = {143, 80, 157, 255};
 const SDL_Color GREY = {216, 216, 216, 255};
 const SDL_Color GREEN = {124, 252, 0, 255};
 const SDL_Color DARKGREEN = {0, 150, 0, 255};
+const SDL_Color PURPLE = {128, 0, 128, 255};
 
 //Font constants
 const string FONTDIR = "Data/Font/times-new-roman-14.ttf";

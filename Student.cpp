@@ -354,6 +354,7 @@ void studentEditProfileWindow(Student* tmpStudent) {
                 for(int i = 1; i < 8; i++) {
                     if(listTextbox[i].isTextBox(gRenderer, &event)) {
                         event.button.button = SDL_BUTTON_RIGHT;
+                        isSave = false;
                     }
                 }
 
@@ -912,15 +913,18 @@ void studentWindow(Student* curStudent) {
 
         vector <Button> listButton(5);
 
-        listButton[0] = Button(startX, startY, buttonWidth, buttonHeight, 2, BLACK, LIGHTBLUE, RED, RED, "PROFILE", buttonTextSize);
+        listButton[0] = Button(startX, startY, buttonWidth, buttonHeight, 2, BLACK, PURPLE, RED, RED, "PROFILE", buttonTextSize);
 
-        listButton[1] = Button(startX + buttonWidth + plusX, startY, buttonWidth, buttonHeight, 2, BLACK, LIGHTBLUE, RED, RED, "VIEW SCORE", buttonTextSize);
+        listButton[1] = Button(startX + buttonWidth + plusX, startY, buttonWidth, buttonHeight, 2, BLACK, PURPLE, RED, RED, "VIEW SCORE", buttonTextSize);
 
-        listButton[2] = Button(startX + (buttonWidth + plusX) * 2, startY, buttonWidth, buttonHeight, 2, BLACK, LIGHTBLUE, RED, RED, "VIEW STUDENT IN CLASS", buttonTextSize);
+        listButton[2] = Button(startX + (buttonWidth + plusX) * 2, startY, buttonWidth, buttonHeight, 2, BLACK, PURPLE, RED, RED, "VIEW STUDENT IN CLASS", buttonTextSize);
 
-        listButton[3] = Button(startX, startY + buttonHeight + plusY, buttonWidth, buttonHeight, 2, BLACK, LIGHTBLUE, RED, RED, "CHANGE PASSWORD", buttonTextSize);
+        listButton[3] = Button(startX, startY + buttonHeight + plusY, buttonWidth, buttonHeight, 2, BLACK, PURPLE, RED, RED, "CHANGE PASSWORD", buttonTextSize);
 
-        listButton[4] = Button(startX + buttonWidth + plusX, startY + buttonHeight + plusY, buttonWidth, buttonHeight, 2, BLACK, LIGHTBLUE, RED, RED, "LOG OUT", buttonTextSize);
+        listButton[4] = Button(startX + buttonWidth + plusX, startY + buttonHeight + plusY, buttonWidth, buttonHeight, 2, BLACK, PURPLE, RED, RED, "LOG OUT", buttonTextSize);
+
+        for(int i = 0; i < 5; i++)
+            listButton[i].textColor = WHITE;
 
         while(!quit) {
             while(SDL_PollEvent(&event) != 0) {

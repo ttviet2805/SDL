@@ -339,6 +339,7 @@ void staffEditProfile(Staff* tmpStaff) {
                 for(int i = 1; i < 2; i++) {
                     if(listTextbox[i].isTextBox(gRenderer, &event)) {
                         event.button.button = SDL_BUTTON_RIGHT;
+                        isSave = false;
                     }
                 }
 
@@ -1728,18 +1729,21 @@ void staffWindow(Staff* curStaff) {
 
         vector <Button> listButton(6);
 
-        listButton[0] = Button(startX, startY, buttonWidth, buttonHeight, 2, BLACK, LIGHTBLUE, RED, RED, "Profile", buttonTextSize);
+        listButton[0] = Button(startX, startY, buttonWidth, buttonHeight, 2, BLACK, PURPLE, RED, RED, "Profile", buttonTextSize);
 
-        listButton[1] = Button(startX + buttonWidth + plusX, startY, buttonWidth, buttonHeight, 2, BLACK, LIGHTBLUE, RED, RED, "Add Student", buttonTextSize);
+        listButton[1] = Button(startX + buttonWidth + plusX, startY, buttonWidth, buttonHeight, 2, BLACK, PURPLE, RED, RED, "Add Student", buttonTextSize);
 
-        listButton[2] = Button(startX + (buttonWidth + plusX) * 2, startY, buttonWidth, buttonHeight, 2, BLACK, LIGHTBLUE, RED, RED, "Add Score", buttonTextSize);
+        listButton[2] = Button(startX + (buttonWidth + plusX) * 2, startY, buttonWidth, buttonHeight, 2, BLACK, PURPLE, RED, RED, "Score", buttonTextSize);
 
-        listButton[3] = Button(startX, startY + buttonHeight + plusY, buttonWidth, buttonHeight, 2, BLACK, LIGHTBLUE, RED, RED, "View Student", buttonTextSize);
+        listButton[3] = Button(startX, startY + buttonHeight + plusY, buttonWidth, buttonHeight, 2, BLACK, PURPLE, RED, RED, "View Student", buttonTextSize);
 
-        listButton[4] = Button(startX + buttonWidth + plusX, startY + buttonHeight + plusY, buttonWidth, buttonHeight, 2, BLACK, LIGHTBLUE, RED, RED, "Change Password", buttonTextSize);
+        listButton[4] = Button(startX + buttonWidth + plusX, startY + buttonHeight + plusY, buttonWidth, buttonHeight, 2, BLACK, PURPLE, RED, RED, "Change Password", buttonTextSize);
 
-        listButton[5] = Button(startX + 2 * (buttonWidth + plusX), startY + buttonHeight + plusY, buttonWidth, buttonHeight, 2, BLACK, LIGHTBLUE, RED, RED, "Log Out", buttonTextSize);
+        listButton[5] = Button(startX + 2 * (buttonWidth + plusX), startY + buttonHeight + plusY, buttonWidth, buttonHeight, 2, BLACK, PURPLE, RED, RED, "Log Out", buttonTextSize);
 
+        for(int i = 0; i < 6; i++) {
+            listButton[i].textColor = WHITE;
+        }
 //        system("pause");
 
         while(!quit) {
@@ -2006,6 +2010,14 @@ void staffChooseOptionWindow(int Type) {
     SDL_Renderer* gRenderer = NULL;
     SDL_Event event;
 
+    const int buttonWidth = 270;
+    const int buttonHeight = 140;
+    const int startX = 45;
+    const int startY = 150;
+    const int plusX = 90;
+    const int plusY = 60;
+    const int buttonTextSize = 27;
+
     string Title = Type ? "Add student" : "Add Score";
 
     const string backgroundPath = "Data/Image/StudentBackground.jpg";
@@ -2019,18 +2031,24 @@ void staffChooseOptionWindow(int Type) {
         SDL_Texture* backgroundImage = nullptr;
         loadImage(gRenderer, backgroundImage, backgroundPath);
 
-        Button addManualButton, addCsvButton;
+        Button addManualButton, addCsvButton, viewScoreButton;
 
         if(Type == 0) {
-            addManualButton = Button(SCREEN_WIDTH / 2 - 350, 200, 250, 200, 2, DARKGREEN, DARKGREEN, RED, RED, "Add Student By Manual", 25);
+            addManualButton = Button(SCREEN_WIDTH / 2 - 350, 200, 250, 200, 2, BLACK, PURPLE, RED, RED, "Add Student By Manual", 25);
 
-            addCsvButton = Button(SCREEN_WIDTH / 2 + 100, 200, 250, 200, 2, DARKGREEN, DARKGREEN, RED, RED, "Add Student By Csv", 25);
+            addCsvButton = Button(SCREEN_WIDTH / 2 + 100, 200, 250, 200, 2, BLACK, PURPLE, RED, RED, "Add Student By Csv", 25);
         }
         else {
-            addManualButton = Button(SCREEN_WIDTH / 2 - 350, 200, 250, 200, 2, DARKGREEN, DARKGREEN, RED, RED, "Add Score by Manual", 25);
+            addManualButton = Button(startX, startY, buttonWidth, buttonHeight, 2, BLACK, PURPLE, RED, RED, "Add Score by Manual", 25);
 
-            addCsvButton = Button(SCREEN_WIDTH / 2 + 100, 200, 250, 200, 2, DARKGREEN, DARKGREEN, RED, RED, "Add Score By Csv", 25);
+            addCsvButton = Button(startX + buttonWidth + plusX, startY, buttonWidth, buttonHeight, 2, BLACK, PURPLE, RED, RED, "Add Score By Csv", 25);
+
+            viewScoreButton = Button(startX + (buttonWidth + plusX) * 2, startY, buttonWidth, buttonHeight, 2, BLACK, PURPLE, RED, RED, "Add Score By Csv", 25);
         }
+
+        addManualButton.textColor = WHITE;
+        addCsvButton.textColor = WHITE;
+        viewScoreButton.textColor = WHITE;
 
         Button backButton = Button(20, 20, 80, 30, 2, BLACK, RED, LIGHTBLUE, GREY, "Back", 20);
 
@@ -2143,6 +2161,7 @@ void staffChooseOptionWindow(int Type) {
                 // Display
                 addManualButton.Display(gRenderer);
                 addCsvButton.Display(gRenderer);
+                if(Type == 1) viewScoreButton.Display(gRenderer);
                 backButton.Display(gRenderer);
 
                 SDL_RenderPresent(gRenderer);
