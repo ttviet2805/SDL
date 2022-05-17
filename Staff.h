@@ -60,11 +60,13 @@ bool addStudentByCSV(string fileName);
 // Front End
 void staffEditProfile(Staff* curStaff);
 
-void staffImportDataWindow(int Type);
+void staffImportDataWindow(int Type, string courseID);
 
 void staffaddStudentByManual();
 
 void staffaddScoreByManual(Course* curCourse);
+
+void staffViewAllCourse();
 
 void staffViewStudentInAClass(Class* curClass, int page);
 
@@ -74,6 +76,10 @@ void staffViewCourseScore(Course* tmpCourse);
 
 void staffWindow(Staff* tmpStaff);
 
+void staffViewStudentWindow();
+
 void staffViewListClassWindow();
 
-void staffChooseOptionWindow(int Type);
+void staffEnterSchoolYearWindow();
+
+void staffChooseOptionWindow(int Type, string courseID);
