@@ -135,8 +135,8 @@ void exportStudentInAClass(Class* curClass, string fileName) {
         Student* curStudent = findStudentByID(allStudent, curStudentInClass->StudentID);
         StudentInfo Info = curStudent->Info;
 
-        fout << Info.ID << '\n' << Info.firstName << '\n' << Info.lastName << '\n' << Info.Gender << '\n';
-        fout << Info.Dob << '\n' << Info.SocialID << '\n' << Info.Class << '\n';
+        fout << Info.ID << ',' << Info.firstName << ',' << Info.lastName << ',' << Info.Gender << ',';
+        fout << Info.Dob << ',' << Info.SocialID << ',' << Info.Class << ',';
         fout << Info.schoolyear << '\n';
 
         curStudentInClass = curStudentInClass->Next;
@@ -173,8 +173,8 @@ void exportStudentInASameYear(string schoolYear, string fileName) {
         if(curStudent->Info.schoolyear == schoolYear) {
             StudentInfo Info = curStudent->Info;
 
-            fout << Info.ID << '\n' << Info.firstName << '\n' << Info.lastName << '\n' << Info.Gender << '\n';
-            fout << Info.Dob << '\n' << Info.SocialID << '\n' << Info.Class << '\n';
+            fout << Info.ID << ',' << Info.firstName << ',' << Info.lastName << ',' << Info.Gender << ',';
+            fout << Info.Dob << ',' << Info.SocialID << ',' << Info.Class << ',';
             fout << Info.schoolyear << '\n';
         }
 
@@ -1278,7 +1278,7 @@ void staffViewStudentInAClass(Class* curClass, int page) {
                     exportFileButton.FillCol = exportFileButton.PressCol;
                     isExport = true;
 
-                    exportStudentInAClass(curClass, exportClassFilename + curClass->className + ".txt");
+                    exportStudentInAClass(curClass, exportClassFilename + curClass->className + ".csv");
                 }
                 else if(exportState == 2) {
                     exportFileButton.FillCol = exportFileButton.HoverCol;
@@ -1576,7 +1576,7 @@ void staffViewStudentInASameYear(string schoolYear, int page) {
                     exportFileButton.FillCol = exportFileButton.PressCol;
                     isExport = true;
 
-                    exportStudentInASameYear(schoolYear, exportSchoolYearFilename + schoolYear + ".txt");
+                    exportStudentInASameYear(schoolYear, exportSchoolYearFilename + schoolYear + ".csv");
                 }
                 else if(exportState == 2) {
                     exportFileButton.FillCol = exportFileButton.HoverCol;
@@ -1822,7 +1822,6 @@ void staffViewCourseScore(Course* curCourse) {
         vector <Button> listButton[10];
 
         int curX = startX, curY = startY;
-
         string curText[] = {"Student ID", "Midterm", "Final", "Other", "Total", "GPA"};
         const int Width[] = {250, 100, 100, 100, 100, 100};
 

@@ -154,8 +154,8 @@ void Student::exportScoreBoard(string fileName) {
 
     while(curScore) {
         Course* curCourse = findCourseByID(allCourse, curScore->courseID);
-        fout << curCourse->Info.courseID << ' ' << curCourse->Info.courseName << '\n';
-        fout << curScore->studentScore.MidTerm << ' ' << curScore->studentScore.Final << ' ' << curScore->studentScore.Other << '\n';
+        fout << curCourse->Info.courseID << ',' << curCourse->Info.courseName << ',';
+        fout << curScore->studentScore.MidTerm << ',' << curScore->studentScore.Final << ',' << curScore->studentScore.Other << '\n';
 
         curScore = curScore->Next;
     }
@@ -611,7 +611,7 @@ void studentViewScore(Student* tmpStudent) {
                 if(exportState == 1) {
                     exportFileButton.FillCol = exportFileButton.PressCol;
                     isExport = true;
-                    curStudent->exportScoreBoard("Data/StudentScore/" + curStudent->Info.ID + ".txt");
+                    curStudent->exportScoreBoard(studentScoreFileName + curStudent->Info.ID + ".csv");
                 }
                 else if(exportState == 2) {
                     exportFileButton.FillCol = exportFileButton.HoverCol;
@@ -689,6 +689,13 @@ void studentViewStudentInClass(Student* curStudent, int page) {
         vector <Button> listContentButton;
         int listWidth[8] = {150, 220, 140, 100, 100, 100, 90, 100};
         string listTitle[8] = {"Student ID", "First name", "Last name", "Gender", "Date of birth", "Social ID", "Class", "School year"};
+
+        Button exportFileButton = Button(SCREEN_WIDTH - 350, 50, 300, 30, 2, BLACK, GREY, RED, LIGHTBLUE, "Export to CSV file", 20);
+
+        TextOutput exportOKButton = TextOutput(RED, 22);
+        exportOKButton.loadText(gRenderer, "You have export this students to file", FONTDIR);
+
+        bool isExport = false;
 
         int curX = startX, curY = startY;
 
@@ -818,6 +825,25 @@ void studentViewStudentInClass(Student* curStudent, int page) {
                 curClassButton.Display(gRenderer);
                 preButton.Display(gRenderer);
                 nextButton.Display(gRenderer);
+                exportFileButton.Display(gRenderer);
+
+                int exportState = exportFileButton.isMouseClick(&event);
+                if(exportState == 1) {
+                    exportFileButton.FillCol = exportFileButton.PressCol;
+                    isExport = true;
+
+                    exportStudentInAClass(curClass, exportClassFilename + curClass->className + ".csv");
+                }
+                else if(exportState == 2) {
+                    exportFileButton.FillCol = exportFileButton.HoverCol;
+                }
+                else {
+                    exportFileButton.FillCol = exportFileButton.InitCol;
+                }
+
+                if(isExport) {
+                    exportOKButton.Display(gRenderer, (SCREEN_WIDTH - exportOKButton.mWidth) / 2, 30);
+                }
 
                 SDL_RenderPresent(gRenderer);
 
@@ -913,15 +939,15 @@ void studentWindow(Student* curStudent) {
 
         vector <Button> listButton(5);
 
-        listButton[0] = Button(startX, startY, buttonWidth, buttonHeight, 2, BLACK, PURPLE, RED, RED, "PROFILE", buttonTextSize);
+        listButton[0] = Button(startX, startY, buttonWidth, buttonHeight, 2, BLACK, PURPLE, RED, RED, "Profile", buttonTextSize);
 
-        listButton[1] = Button(startX + buttonWidth + plusX, startY, buttonWidth, buttonHeight, 2, BLACK, PURPLE, RED, RED, "VIEW SCORE", buttonTextSize);
+        listButton[1] = Button(startX + buttonWidth + plusX, startY, buttonWidth, buttonHeight, 2, BLACK, PURPLE, RED, RED, "View Score", buttonTextSize);
 
-        listButton[2] = Button(startX + (buttonWidth + plusX) * 2, startY, buttonWidth, buttonHeight, 2, BLACK, PURPLE, RED, RED, "VIEW STUDENT IN CLASS", buttonTextSize);
+        listButton[2] = Button(startX + (buttonWidth + plusX) * 2, startY, buttonWidth, buttonHeight, 2, BLACK, PURPLE, RED, RED, "View Student In A Class", buttonTextSize);
 
-        listButton[3] = Button(startX, startY + buttonHeight + plusY, buttonWidth, buttonHeight, 2, BLACK, PURPLE, RED, RED, "CHANGE PASSWORD", buttonTextSize);
+        listButton[3] = Button(startX, startY + buttonHeight + plusY, buttonWidth, buttonHeight, 2, BLACK, PURPLE, RED, RED, "Change Password", buttonTextSize);
 
-        listButton[4] = Button(startX + buttonWidth + plusX, startY + buttonHeight + plusY, buttonWidth, buttonHeight, 2, BLACK, PURPLE, RED, RED, "LOG OUT", buttonTextSize);
+        listButton[4] = Button(startX + buttonWidth + plusX, startY + buttonHeight + plusY, buttonWidth, buttonHeight, 2, BLACK, PURPLE, RED, RED, "Log Out", buttonTextSize);
 
         for(int i = 0; i < 5; i++)
             listButton[i].textColor = WHITE;
