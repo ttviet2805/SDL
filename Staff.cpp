@@ -434,6 +434,8 @@ void staffaddStudentByManual() {
 
         Button backButton = Button(20, 20, 80, 30, 2, BLACK, RED, LIGHTBLUE, GREY, "Back", 20);
 
+        Button removeButton = Button(SCREEN_WIDTH - 220, 20, 80, 30, 2, BLACK, RED, LIGHTBLUE, RED, "Remove", 20);
+
         TextOutput warningText = TextOutput(RED, 22);
         warningText.loadText(gRenderer, "You have save your data", FONTDIR);
 
@@ -622,6 +624,7 @@ void staffaddStudentByManual() {
                 backButton.Display(gRenderer);
                 saveButton.Display(gRenderer);
                 addButton.Display(gRenderer);
+                removeButton.Display(gRenderer);
 
                 for(int i = 0; i < 8; i++) {
                     for(auto it : listButton[i]) {
@@ -672,6 +675,25 @@ void staffaddStudentByManual() {
                 }
                 else {
                     saveButton.FillCol = saveButton.InitCol;
+                }
+
+                int removeButtonState = removeButton.isMouseClick(&event);
+                if(removeButtonState == 1) {
+                    removeButton.FillCol = removeButton.PressCol;
+
+                    if(listButton[0].size() > 1) {
+                        for(int i = 0; i < 8; i++) {
+                            listButton[i].pop_back();
+                        }
+
+                        curY -= buttonHeight;
+                    }
+                }
+                else if(removeButtonState == 2) {
+                    removeButton.FillCol = removeButton.HoverCol;
+                }
+                else {
+                    removeButton.FillCol = removeButton.InitCol;
                 }
 
                 if(isSave) {
@@ -732,6 +754,8 @@ void staffaddScoreByManual(Course* curCourse) {
         TextOutput warningText = TextOutput(RED, 22);
         warningText.loadText(gRenderer, "You have save your data", FONTDIR);
 
+        Button removeButton = Button(SCREEN_WIDTH - 220, 20, 80, 30, 2, BLACK, RED, LIGHTBLUE, RED, "Remove", 20);
+
         bool isSave = false;
 
         vector <Button> listButton[10];
@@ -773,6 +797,7 @@ void staffaddScoreByManual(Course* curCourse) {
                 addButton.Display(gRenderer);
                 courseIDButton.Display(gRenderer);
                 courseNameButton.Display(gRenderer);
+                removeButton.Display(gRenderer);
 
                 int backButtonState = backButton.isMouseClick(&event);
                 if(backButtonState == 1) {
@@ -859,6 +884,25 @@ void staffaddScoreByManual(Course* curCourse) {
                 }
                 else {
                     saveButton.FillCol = saveButton.InitCol;
+                }
+
+                int removeButtonState = removeButton.isMouseClick(&event);
+                if(removeButtonState == 1) {
+                    removeButton.FillCol = removeButton.PressCol;
+
+                    if(listButton[0].size() > 1) {
+                        for(int i = 0; i < 4; i++) {
+                            listButton[i].pop_back();
+                        }
+
+                        curY -= buttonHeight;
+                    }
+                }
+                else if(removeButtonState == 2) {
+                    removeButton.FillCol = removeButton.HoverCol;
+                }
+                else {
+                    removeButton.FillCol = removeButton.InitCol;
                 }
 
                 if(isSave) {
