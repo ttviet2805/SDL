@@ -173,7 +173,6 @@ CourseScore* createACourseScore(string studentID, float Midterm, float Final, fl
 
 bool addCourseScoreByCSV(string courseID, string fileName) {
     ifstream fin;
-    fileName = "Data/CourseScore/CS162.csv";
     fin.open(fileName);
 
     if(!fin) {

@@ -568,6 +568,7 @@ void studentViewScore(Student* tmpStudent) {
             while(SDL_PollEvent(&event) != 0) {
                 if(event.type == SDL_QUIT) {
                     quit = true;
+                    exit(0);
                     break;
                 }
 
@@ -597,7 +598,6 @@ void studentViewScore(Student* tmpStudent) {
                     TTF_Quit();
                     IMG_Quit();
                     SDL_Quit();
-                    studentWindow(curStudent);
                     return;
                 }
                 else if(backButtonState == 2) {
@@ -687,7 +687,7 @@ void studentViewStudentInClass(Student* curStudent, int page) {
 
         vector <Button> listTitleButton;
         vector <Button> listContentButton;
-        int listWidth[8] = {150, 230, 150, 100, 100, 100, 70, 100};
+        int listWidth[8] = {150, 220, 140, 100, 100, 100, 90, 100};
         string listTitle[8] = {"Student ID", "First name", "Last name", "Gender", "Date of birth", "Social ID", "Class", "School year"};
 
         int curX = startX, curY = startY;
@@ -971,6 +971,7 @@ void studentWindow(Student* curStudent) {
 
                             case 1: {
                                 studentViewScore(curStudent);
+                                studentWindow(curStudent);
                                 return;
                             }
 

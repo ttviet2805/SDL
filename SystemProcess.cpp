@@ -1,6 +1,8 @@
 #include "systemProcess.h"
 
 void systemProcess() {
+//    staffChooseScoreOption();
+//    exit(0);
     Account* curAccount = loginWindow();
 
     if(curAccount == nullptr) {

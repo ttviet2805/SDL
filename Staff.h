@@ -83,3 +83,5 @@ void staffViewListClassWindow();
 void staffEnterSchoolYearWindow();
 
 void staffChooseOptionWindow(int Type, string courseID);
+
+void staffChooseScoreOption();
