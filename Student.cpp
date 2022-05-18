@@ -647,11 +647,11 @@ void studentViewScore(Student* tmpStudent) {
     }
 }
 
-void studentViewStudentInClass(Student* curStudent, int page) {
+void studentViewStudentInClass(Student* tmpStudent, int page) {
     Class* allClass = nullptr;
     loadAllClassData(allClass, classFileName);
 
-    Class* curClass = findClassByID(allClass, curStudent->Info.Class);
+    Class* curClass = findClassByID(allClass, tmpStudent->Info.Class);
 
     Student* allStudent = nullptr;
     loadAllStudentData(allStudent, studentFileName);
@@ -782,7 +782,7 @@ void studentViewStudentInClass(Student* curStudent, int page) {
                     IMG_Quit();
                     SDL_Quit();
 
-                    studentWindow(curStudent);
+                    studentWindow(tmpStudent);
                     return;
                 }
                 else if(backButtonState == 2) {
