@@ -1506,6 +1506,7 @@ void staffViewStudentInASameYear(string schoolYear, int page) {
             while(SDL_PollEvent(&event) != 0) {
                 if(event.type == SDL_QUIT) {
                     quit = true;
+                    exit(0);
                     break;
                 }
 
@@ -2341,6 +2342,7 @@ void staffEnterSchoolYearWindow() {
                     SDL_Quit();
 
                     staffViewStudentInASameYear(schoolYearTextbox.Text,0);
+                    staffEnterSchoolYearWindow();
                     return;
                 }
                 else if(enterButtonState == 2) {
