@@ -2448,6 +2448,9 @@ void staffViewStudentWindow() {
 
         Button backButton = Button(20, 20, 80, 30, 2, BLACK, RED, LIGHTBLUE, GREY, "Back", 20);
 
+        Button findStudentButton = Button(startX + (buttonWidth + plusX) * 2, startY, buttonWidth, buttonHeight, 2, BLACK, PURPLE, RED, RED, "Find Student Information", 25);
+        findStudentButton.textColor = WHITE;
+
         bool quit = false;
         int isLoad = 0;
         while(!quit) {
@@ -2540,9 +2543,38 @@ void staffViewStudentWindow() {
                     viewClassStudentButton.FillCol = viewClassStudentButton.InitCol;
                 }
 
+                int findStudentState = findStudentButton.isMouseClick(&event);
+                if(findStudentState == 1) {
+                    SDL_DestroyTexture(backgroundImage);
+                    backgroundImage = NULL;
+
+                    //Destroy window
+                    SDL_DestroyRenderer( gRenderer );
+                    SDL_DestroyWindow( gWindow );
+                    gWindow = NULL;
+                    gRenderer = NULL;
+
+                    // Quit
+                    IMG_Quit();
+                    SDL_Quit();
+
+                    findStudentButton.FillCol = findStudentButton.PressCol;
+                    staffFindStudentWindow(0);
+                    staffViewStudentWindow();
+                    return;
+                }
+                else if(findStudentState == 2) {
+                    findStudentButton.FillCol = findStudentButton.HoverCol;
+                }
+                else {
+                    findStudentButton.FillCol = findStudentButton.InitCol;
+                    }
+
+
                 // Display
                 viewSchoolYearStudentButton.Display(gRenderer);
                 viewClassStudentButton.Display(gRenderer);
+                findStudentButton.Display(gRenderer);
                 backButton.Display(gRenderer);
 
                 SDL_RenderPresent(gRenderer);
@@ -2729,6 +2761,7 @@ void staffChooseOptionWindow(int Type, string courseID) {
                 // Display
                 addManualButton.Display(gRenderer);
                 addCsvButton.Display(gRenderer);
+
                 if(Type == 1) {
                     int viewScoreState = viewScoreButton.isMouseClick(&event);
                     if(viewScoreState == 1) {
@@ -2820,6 +2853,9 @@ void staffChooseScoreOption() {
 
         viewClassScore = Button(startX + buttonWidth + plusX, startY, buttonWidth, buttonHeight, 2, BLACK, PURPLE, RED, RED, "View Score In Classes", 25);
 
+        Button findStudentButton = Button(startX + (buttonWidth + plusX) * 2, startY, buttonWidth, buttonHeight, 2, BLACK, PURPLE, RED, RED, "Find Student Score", 25);
+
+        findStudentButton.textColor = WHITE;
         viewCourseScore.textColor = WHITE;
         viewClassScore.textColor = WHITE;
 
@@ -2917,11 +2953,188 @@ void staffChooseScoreOption() {
                     viewClassScore.FillCol = viewClassScore.InitCol;
                 }
 
+                int findStudentState = findStudentButton.isMouseClick(&event);
+                if(findStudentState == 1) {
+                    SDL_DestroyTexture(backgroundImage);
+                    backgroundImage = NULL;
+
+                    //Destroy window
+                    SDL_DestroyRenderer( gRenderer );
+                    SDL_DestroyWindow( gWindow );
+                    gWindow = NULL;
+                    gRenderer = NULL;
+
+                    // Quit
+                    IMG_Quit();
+                    SDL_Quit();
+
+                    findStudentButton.FillCol = findStudentButton.PressCol;
+                    staffFindStudentWindow(1);
+                    staffChooseScoreOption();
+                    return;
+                }
+                else if(findStudentState == 2) {
+                    findStudentButton.FillCol = findStudentButton.HoverCol;
+                }
+                else {
+                    findStudentButton.FillCol = findStudentButton.InitCol;
+                }
+
                 // Display
                 viewCourseScore.Display(gRenderer);
                 viewClassScore.Display(gRenderer);
+                findStudentButton.Display(gRenderer);
 
                 backButton.Display(gRenderer);
+
+                SDL_RenderPresent(gRenderer);
+            }
+        }
+
+        SDL_DestroyTexture(backgroundImage);
+        backgroundImage = NULL;
+
+        //Destroy window
+        SDL_DestroyRenderer( gRenderer );
+        SDL_DestroyWindow( gWindow );
+        gWindow = NULL;
+        gRenderer = NULL;
+
+        // Quit
+        IMG_Quit();
+        SDL_Quit();
+    }
+}
+
+void staffFindStudentWindow(int Type) {
+    SDL_Window* gWindow = NULL;
+    SDL_Renderer* gRenderer = NULL;
+    SDL_Event event;
+
+    const int buttonWidth = 400;
+    const int buttonHeight = 30;
+    const int startX = (SCREEN_WIDTH - buttonWidth) / 2;
+    const int startY = 250;
+    const int plusY = 60;
+    const int buttonTextSize = 27;
+
+    const string backgroundPath = "Data/Image/StudentBackground.jpg";
+
+    if(!init(gWindow, gRenderer, "Find Student")) {
+        printf("SDL could not initialize! SDL_Error: %s\n", SDL_GetError());
+    }
+    else {
+        SDL_RenderClear(gRenderer);
+
+        SDL_Texture* backgroundImage = nullptr;
+        loadImage(gRenderer, backgroundImage, backgroundPath);
+
+        Button backButton = Button(20, 20, 80, 30, 2, BLACK, RED, LIGHTBLUE, GREY, "Back", 20);
+
+        Button findStudentButton = Button(startX, startY, buttonWidth, buttonHeight, 2, BLACK, WHITE, LIGHTBLUE, GREY, "", 20);
+
+        Button findButton = Button((SCREEN_WIDTH - 100) / 2, startY + 80, 100, 30, 2, BLACK, LIGHTBLUE, RED, GREY, "Find", 20);
+
+        TextOutput warningText = TextOutput(RED, 25);
+        warningText.loadText(gRenderer, "We do not find this student", FONTDIR);
+
+        TextOutput findStudentText = TextOutput(BLACK, 20);
+        findStudentText.loadText(gRenderer, "Student ID", FONTDIR);
+
+        bool isFind = false;
+
+        bool quit = false;
+        int isLoad = 0;
+        while(!quit) {
+            while(SDL_PollEvent(&event) != 0) {
+                if(event.type == SDL_QUIT) {
+                    quit = true;
+                    exit(0);
+                    break;
+                }
+
+                SDL_RenderClear(gRenderer);
+
+                SDL_RenderCopy(gRenderer, backgroundImage, NULL, NULL);
+
+                int backButtonState = backButton.isMouseClick(&event);
+                if(backButtonState == 1) {
+                    backButton.FillCol = backButton.PressCol;
+                    SDL_DestroyTexture(backgroundImage);
+                    backgroundImage = NULL;
+
+                    //Destroy window
+                    SDL_DestroyRenderer( gRenderer );
+                    SDL_DestroyWindow( gWindow );
+                    gWindow = NULL;
+                    gRenderer = NULL;
+
+                    // Quit
+                    TTF_Quit();
+                    IMG_Quit();
+                    SDL_Quit();
+                    return;
+                }
+                else if(backButtonState == 2) {
+                    backButton.FillCol = backButton.HoverCol;
+                }
+                else {
+                    backButton.FillCol = backButton.InitCol;
+                }
+
+                int findButtonState = findButton.isMouseClick(&event);
+                if(findButtonState == 1) {
+                    findButton.FillCol = findButton.PressCol;
+                    isFind = true;
+
+                    Student* allStudent = nullptr;
+                    loadAllStudentData(allStudent, studentFileName);
+
+                    Student* curStudent = findStudentByID(allStudent, findStudentButton.Text);
+
+                    if(curStudent) {
+                        SDL_DestroyTexture(backgroundImage);
+                        backgroundImage = NULL;
+
+                        //Destroy window
+                        SDL_DestroyRenderer( gRenderer );
+                        SDL_DestroyWindow( gWindow );
+                        gWindow = NULL;
+                        gRenderer = NULL;
+
+                        // Quit
+                        TTF_Quit();
+                        IMG_Quit();
+                        SDL_Quit();
+
+                        if(Type == 0) {
+                            studentEditProfileWindow(curStudent);
+                            staffFindStudentWindow(Type);
+                        }
+                        else {
+                            studentViewScore(curStudent);
+                            staffFindStudentWindow(Type);
+                        }
+                        return;
+                    }
+                }
+                else if(findButtonState == 2) {
+                    findButton.FillCol = findButton.HoverCol;
+                }
+                else {
+                    findButton.FillCol = findButton.InitCol;
+                }
+
+                if(isFind) {
+                    warningText.Display(gRenderer, (SCREEN_WIDTH - warningText.mWidth) / 2, startY + 120);
+                }
+
+                backButton.Display(gRenderer);
+                findStudentButton.Display(gRenderer);
+                findButton.Display(gRenderer);
+                findStudentText.Display(gRenderer, startX, startY - 25);
+
+                findStudentButton.isTextBox(gRenderer, &event);
 
                 SDL_RenderPresent(gRenderer);
             }

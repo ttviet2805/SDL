@@ -332,6 +332,7 @@ void studentEditProfileWindow(Student* tmpStudent) {
             while(SDL_PollEvent(&event) != 0) {
                 if(event.type == SDL_QUIT) {
                     quit = true;
+                    exit(0);
                     break;
                 }
 
@@ -396,7 +397,6 @@ void studentEditProfileWindow(Student* tmpStudent) {
                     TTF_Quit();
                     IMG_Quit();
                     SDL_Quit();
-                    studentWindow(curStudent);
                     cout << "YES\n";
                     return;
                 }
@@ -964,6 +964,7 @@ void studentWindow(Student* curStudent) {
             while(SDL_PollEvent(&event) != 0) {
                 if(event.type == SDL_QUIT) {
                     quit = true;
+                    exit(0);
                     break;
                 }
 
@@ -999,6 +1000,12 @@ void studentWindow(Student* curStudent) {
                         switch (i) {
                             case 0: {
                                 studentEditProfileWindow(curStudent);
+
+                                Student* allStudent = nullptr;
+                                loadAllStudentData(allStudent, studentFileName);
+
+                                curStudent = findStudentByID(allStudent, curStudent->Info.ID);
+                                studentWindow(curStudent);
                                 return;
                                 break;
                             }
