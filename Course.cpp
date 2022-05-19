@@ -162,6 +162,22 @@ void Course::viewStudentScore() {
     }
 }
 
+void Course::exportCourseScoreToCSVFile(string fileName) {
+    ofstream fout;
+    fout.open(fileName);
+
+    CourseScore* curScore = courseScoreHead;
+
+    while(curScore) {
+        fout << curScore->StudentID << ',';
+        fout << curScore->studentScore.MidTerm << ',' << curScore->studentScore.Final << ',' << curScore->studentScore.Other << '\n';
+
+        curScore = curScore->Next;
+    }
+
+    fout.close();
+}
+
 CourseScore* createACourseScore(string studentID, float Midterm, float Final, float Other) {
     CourseScore* newScore = new CourseScore;
 

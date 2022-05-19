@@ -38,7 +38,10 @@ struct Course {
     void addCourseScore(CourseScore* newScore);
 
     void viewStudentScore();
+
+    void exportCourseScoreToCSVFile(string fileName);
 };
+
 
 void loadAllCourseData(Course* &allCourse, string fileName, Student* &allStudent);
 

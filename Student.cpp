@@ -446,7 +446,7 @@ void studentViewScore(Student* tmpStudent) {
     SDL_Renderer* gRenderer = NULL;
     SDL_Event event;
 
-    const int startX = 40, startY = 100;
+    const int startX = 40, startY = 120;
     const int buttonHeight = 25;
 
     const string backgroundPath = "Data/Image/StudentBackground.jpg";
@@ -466,6 +466,12 @@ void studentViewScore(Student* tmpStudent) {
 
         TextOutput exportOKButton = TextOutput(RED, 22);
         exportOKButton.loadText(gRenderer, "You have export your score to file", FONTDIR);
+
+        string studentIDText = "ID: " + curStudent->Info.ID;
+        Button studentIDButton = Button((SCREEN_WIDTH - 200) / 2, 20, 200, 30, 2, BLACK, LIGHTBLUE, LIGHTBLUE, GREY, studentIDText, 20);
+
+        string studentNameText = "Full name: " + curStudent->Info.firstName + " " + curStudent->Info.lastName;
+        Button studentNameButton = Button((SCREEN_WIDTH - 350) / 2, 65, 350, 30, 2, BLACK, LIGHTBLUE, LIGHTBLUE, GREY, studentNameText, 20);
 
         vector <Button> listButton[10];
 
@@ -621,11 +627,13 @@ void studentViewScore(Student* tmpStudent) {
                 }
 
                 if(isExport) {
-                    exportOKButton.Display(gRenderer, (SCREEN_WIDTH - exportOKButton.mWidth) / 2, 30);
+                    exportOKButton.Display(gRenderer, SCREEN_WIDTH - 350, 20);
                 }
 
                 backButton.Display(gRenderer);
                 exportFileButton.Display(gRenderer);
+                studentIDButton.Display(gRenderer);
+                studentNameButton.Display(gRenderer);
 
                 SDL_RenderPresent(gRenderer);
             }

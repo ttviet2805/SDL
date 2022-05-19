@@ -1819,6 +1819,13 @@ void staffViewCourseScore(Course* curCourse) {
         string courseNameText = "Course name: "  + curCourse->Info.courseName;
         Button courseNameButton = Button((SCREEN_WIDTH - 600) / 2, 65, 600, 30, 2, BLACK, WHITE, RED, RED, courseNameText,20);
 
+        Button exportFileButton = Button(SCREEN_WIDTH - 330, 27, 300, 30, 2, BLACK, GREY, RED, LIGHTBLUE, "Export to CSV file", 20);
+
+        TextOutput exportOKButton = TextOutput(RED, 22);
+        exportOKButton.loadText(gRenderer, "You have export your score to file", FONTDIR);
+
+        bool isExport = false;
+
         vector <Button> listButton[10];
 
         int curX = startX, curY = startY;
@@ -1925,6 +1932,33 @@ void staffViewCourseScore(Course* curCourse) {
                 else {
                     backButton.FillCol = backButton.InitCol;
                 }
+
+                int exportState = exportFileButton.isMouseClick(&event);
+                if(exportState == 1) {
+                    exportFileButton.FillCol = exportFileButton.PressCol;
+                    isExport = true;
+
+                    Student* allStudent = nullptr;
+                    loadAllStudentData(allStudent, studentFileName);
+
+                    Course* allCourse = nullptr;
+                    loadAllCourseData(allCourse, courseFileName, allStudent);
+
+                    Course* currentCourse = findCourseByID(allCourse, curCourse->Info.courseID);
+                    currentCourse->exportCourseScoreToCSVFile(exportCourseScoreFilename + currentCourse->Info.courseID + ".csv");
+                }
+                else if(exportState == 2) {
+                    exportFileButton.FillCol = exportFileButton.HoverCol;
+                }
+                else {
+                    exportFileButton.FillCol = exportFileButton.InitCol;
+                }
+
+                if(isExport) {
+                    exportOKButton.Display(gRenderer, SCREEN_WIDTH - 340, 1);
+                }
+
+                exportFileButton.Display(gRenderer);
 
                 SDL_RenderPresent(gRenderer);
             }
@@ -2405,9 +2439,9 @@ void staffViewStudentWindow() {
 
         Button viewClassStudentButton, viewSchoolYearStudentButton;
 
-        viewSchoolYearStudentButton = Button(SCREEN_WIDTH / 2 - 350, 200, 250, 200, 2, BLACK, PURPLE, RED, RED, "View Students In Same School Year", 25);
+        viewSchoolYearStudentButton = Button(startX, startY, buttonWidth, buttonHeight, 2, BLACK, PURPLE, RED, RED, "View Students In Same School Year", 25);
 
-        viewClassStudentButton = Button(SCREEN_WIDTH / 2 + 100, 200, 250, 200, 2, BLACK, PURPLE, RED, RED, "View Students In Class", 25);
+        viewClassStudentButton = Button(startX + buttonWidth + plusX, startY, buttonWidth, buttonHeight, 2, BLACK, PURPLE, RED, RED, "View Students In Class", 25);
 
         viewClassStudentButton.textColor = WHITE;
         viewSchoolYearStudentButton.textColor = WHITE;
@@ -2559,9 +2593,9 @@ void staffChooseOptionWindow(int Type, string courseID) {
         Button addManualButton, addCsvButton, viewScoreButton, courseIDButton;
 
         if(Type == 0) {
-            addManualButton = Button(SCREEN_WIDTH / 2 - 350, 200, 250, 200, 2, BLACK, PURPLE, RED, RED, "Add Student By Manual", 25);
+            addManualButton = Button(startX, startY, buttonWidth, buttonHeight, 2, BLACK, PURPLE, RED, RED, "Add Student By Manual", 25);
 
-            addCsvButton = Button(SCREEN_WIDTH / 2 + 100, 200, 250, 200, 2, BLACK, PURPLE, RED, RED, "Add Student By Csv", 25);
+            addCsvButton = Button(startX + buttonWidth + plusX, startY, buttonWidth, buttonHeight, 2, BLACK, PURPLE, RED, RED, "Add Student By Csv", 25);
         }
         else {
             addManualButton = Button(startX, startY, buttonWidth, buttonHeight, 2, BLACK, PURPLE, RED, RED, "Add Score by Manual", 25);
@@ -2782,9 +2816,9 @@ void staffChooseScoreOption() {
 
         Button viewCourseScore, viewClassScore;
 
-        viewCourseScore = Button(SCREEN_WIDTH / 2 - 350, 200, 250, 200, 2, BLACK, PURPLE, RED, RED, "Manage Courses Score", 25);
+        viewCourseScore = Button(startX, startY, buttonWidth, buttonHeight, 2, BLACK, PURPLE, RED, RED, "Manage Courses Score", 25);
 
-        viewClassScore = Button(SCREEN_WIDTH / 2 + 100, 200, 250, 200, 2, BLACK, PURPLE, RED, RED, "View Score In Classes", 25);
+        viewClassScore = Button(startX + buttonWidth + plusX, startY, buttonWidth, buttonHeight, 2, BLACK, PURPLE, RED, RED, "View Score In Classes", 25);
 
         viewCourseScore.textColor = WHITE;
         viewClassScore.textColor = WHITE;
