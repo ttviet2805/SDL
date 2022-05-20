@@ -748,7 +748,7 @@ void staffaddScoreByManual(Course* curCourse) {
         Button addButton = Button(SCREEN_WIDTH - 120, 20, 80, 30, 2, BLACK, RED, LIGHTBLUE, RED, "Add", 20);
 
         string courseIDText = "Course ID: "  + curCourse->Info.courseID;
-        Button courseIDButton = Button((SCREEN_WIDTH - 200) / 2, 20, 200, 30, 2, BLACK, WHITE, RED, RED, courseIDText,20);
+        Button courseIDButton = Button((SCREEN_WIDTH - 350) / 2, 25, 350, 30, 2, BLACK, WHITE, RED, RED, courseIDText,20);
 
         string courseNameText = "Course name: "  + curCourse->Info.courseName;
         Button courseNameButton = Button((SCREEN_WIDTH - 600) / 2, 65, 600, 30, 2, BLACK, WHITE, RED, RED, courseNameText,20);
@@ -1814,7 +1814,7 @@ void staffViewCourseScore(Course* curCourse) {
         Button backButton = Button(20, 20, 80, 30, 2, BLACK, RED, LIGHTBLUE, GREY, "Back", 20);
 
         string courseIDText = "Course ID: "  + curCourse->Info.courseID;
-        Button courseIDButton = Button((SCREEN_WIDTH - 200) / 2, 20, 200, 30, 2, BLACK, WHITE, RED, RED, courseIDText,20);
+        Button courseIDButton = Button((SCREEN_WIDTH - 350) / 2, 20, 350, 30, 2, BLACK, WHITE, RED, RED, courseIDText,20);
 
         string courseNameText = "Course name: "  + curCourse->Info.courseName;
         Button courseNameButton = Button((SCREEN_WIDTH - 600) / 2, 65, 600, 30, 2, BLACK, WHITE, RED, RED, courseNameText,20);
@@ -1874,6 +1874,10 @@ void staffViewCourseScore(Course* curCourse) {
                 if(i == 4) {
                     ss << fixed << setprecision(2) << curScore->studentScore.MidTerm << ' ';
                     ss >> tmpText;
+                }
+                if(i == 5) {
+                    tmpText = "";
+                    tmpText += curScore->studentScore.GPA;
                 }
 
                 Button tmp = Button(curX, curY, Width[i], buttonHeight, 2, BLACK, WHITE, RED, RED, tmpText, 15);
@@ -2155,38 +2159,29 @@ void staffViewListClassWindow() {
         loadImage(gRenderer, backgroundImage, backgroundPath);
 
         Class* curClass = allClass;
-        int iFirstYear = 21;
-        string sFirstYear, sSecondYear, sThirdYear, sLastYear;
-        stringstream ss;
-        ss << iFirstYear << ' ' << iFirstYear - 1 << ' ' << iFirstYear - 2 << ' ' << iFirstYear - 3 << ' ';
-        ss >> sFirstYear >> sSecondYear >> sThirdYear >> sLastYear;
+        const int numClassPerCol = 6;
+        const int startX = 80, startY = 100;
+        const int plusX = 60, plusY = 60;
 
-        int initX = 80, initY = 100;
+        int cnt = 0, curX = startX, curY = startY;
         int buttonWidth = 150, buttonHeight = 30;
-        int disX = (SCREEN_WIDTH - 2 * initX - 4 * buttonWidth) / 3 + buttonWidth, disY = 20 + buttonHeight;
-        vector < Button > listButton;
-        int curFirstY = initY, curSecondY = initY, curThirdY = initY, curLastY = initY;
+
+        vector <Button> listButton;
+
         while(curClass) {
-            string curYear = curClass->className.substr(0, 2);
-            Button tmpButton;
-            if(curYear == sFirstYear) {
-                tmpButton = Button(initX, curFirstY, buttonWidth, buttonHeight, 2, BLACK, DARKGREEN, RED, RED, curClass->className, 20);
-                curFirstY += disY;
+            ++cnt;
+
+            if(cnt > numClassPerCol) {
+                cnt = 1;
+                curX += plusX + buttonWidth, curY = startY;
             }
-            else if(curYear == sSecondYear) {
-                tmpButton = Button(initX + disX, curSecondY, buttonWidth, buttonHeight, 2, BLACK, DARKGREEN, RED, RED, curClass->className, 20);
-                curSecondY += disY;
-            }
-            else if(curYear == sThirdYear) {
-                tmpButton = Button(initX + disX * 2, curThirdY, buttonWidth, buttonHeight, 2, BLACK, DARKGREEN, RED, RED, curClass->className, 20);
-                curThirdY += disY;
-            }
-            else if(curYear == sLastYear) {
-                tmpButton = Button(initX + disX * 3, curLastY, buttonWidth, buttonHeight, 2, BLACK, DARKGREEN, RED, RED, curClass->className, 20);
-                curLastY += disY;
-            }
-            listButton.push_back(tmpButton);
+
+            Button tmp = Button(curX, curY, buttonWidth, buttonHeight, 2, BLACK, DARKGREEN, RED, GREY, curClass->className, 20);
             curClass = curClass->Next;
+
+            curY += plusY;
+
+            listButton.push_back(tmp);
         }
 
         Button backButton = Button(20, 20, 80, 30, 2, BLACK, RED, LIGHTBLUE, GREY, "Back", 20);
@@ -2636,7 +2631,7 @@ void staffChooseOptionWindow(int Type, string courseID) {
 
             viewScoreButton = Button(startX + (buttonWidth + plusX) * 2, startY, buttonWidth, buttonHeight, 2, BLACK, PURPLE, RED, RED, "View Course Score", 25);
 
-            courseIDButton = Button((SCREEN_WIDTH - 250) / 2, 50, 250, 40, 2, BLACK, WHITE, RED, RED, courseID, 25);
+            courseIDButton = Button((SCREEN_WIDTH - 350) / 2, 40, 350, 40, 2, BLACK, WHITE, RED, RED, courseID, 20);
         }
 
         addManualButton.textColor = WHITE;

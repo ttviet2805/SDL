@@ -8,3 +8,5 @@ PE
 Physical Education
 CM101
 Communication Management
+INT1505
+Advance Computer Science

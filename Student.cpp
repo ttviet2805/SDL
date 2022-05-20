@@ -555,6 +555,8 @@ void studentViewScore(Student* tmpStudent) {
                         case 6: {
                             Width = 100;
                             curX += 100;
+                            curText = "";
+                            curText += curScore->studentScore.GPA;
                             break;
                         }
                     }
