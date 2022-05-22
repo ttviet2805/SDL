@@ -1799,6 +1799,8 @@ void staffViewCourseScore(Course* curCourse) {
 
     const int startX = 165, startY = 150;
     const int buttonHeight = 25;
+    const int numStudentInAPage = 10;
+    int numAllStudent = 0, numMaxPage = 0, page = 0;
 
     const string backgroundPath = "Data/Image/StudentBackground.jpg";
 
@@ -1824,9 +1826,15 @@ void staffViewCourseScore(Course* curCourse) {
         TextOutput exportOKButton = TextOutput(RED, 22);
         exportOKButton.loadText(gRenderer, "You have export your score to file", FONTDIR);
 
+        string preText = "<";
+        Button preButton = Button(SCREEN_WIDTH / 2 - 40 - 15, 580, 40, 40, 2, GREEN, GREEN, RED, LIGHTBLUE, preText, 20);
+
+        string nextText = ">";
+        Button nextButton = Button(SCREEN_WIDTH / 2 + 15, 580, 40, 40, 2, GREEN, GREEN, RED, LIGHTBLUE, nextText, 20);
+
         bool isExport = false;
 
-        vector <Button> listButton[10];
+        vector <Button> listButton[10], listTitleButton[10];
 
         int curX = startX, curY = startY;
         string curText[] = {"Student ID", "Midterm", "Final", "Other", "Total", "GPA"};
@@ -1839,15 +1847,28 @@ void staffViewCourseScore(Course* curCourse) {
 
             Button tmp = Button(curX, startY, Width[i], buttonHeight, 2, BLACK, WHITE, RED, RED, curText[i], 15);
 
-            listButton[i].push_back(tmp);
+            listTitleButton[i].push_back(tmp);
         }
 
         CourseScore* curScore = curCourse->courseScoreHead;
 
-        curY = startY;
         while(curScore) {
+            ++numAllStudent;
+            curScore = curScore->Next;
+        }
+
+        numMaxPage = numAllStudent / numStudentInAPage;
+        if(numAllStudent % numStudentInAPage != 0) numMaxPage++;
+
+        curScore = curCourse->courseScoreHead;
+
+        curY = startY;
+        int cnt = 0;
+
+        while(curScore && cnt < numStudentInAPage) {
             curX = startX;
             curY += buttonHeight;
+            ++cnt;
 
             for(int i = 0; i < 6; i++) {
                 if(i > 0) {
@@ -1884,11 +1905,21 @@ void staffViewCourseScore(Course* curCourse) {
                 listButton[i].push_back(tmp);
             }
 
-//            cout << curScore->StudentID << '\n';
-//            cout << curScore->studentScore.MidTerm << ' ' << curScore->studentScore.Final << ' ' << curScore->studentScore.Other << '\n';
-
             curScore = curScore->Next;
         }
+
+        SDL_RenderClear(gRenderer);
+
+        SDL_RenderCopy(gRenderer, backgroundImage, NULL, NULL);
+        for(int i = 0; i < 6; i++) {
+            for(auto it: listTitleButton[i])
+                it.Display(gRenderer);
+
+            for(auto it: listButton[i])
+                it.Display(gRenderer);
+        }
+
+        bool isChange = false;
 
         while(!quit) {
             while(SDL_PollEvent(&event) != 0) {
@@ -1898,19 +1929,11 @@ void staffViewCourseScore(Course* curCourse) {
                     break;
                 }
 
-                SDL_RenderClear(gRenderer);
-
-                SDL_RenderCopy(gRenderer, backgroundImage, NULL, NULL);
-
-                for(int i = 0; i < 6; i++) {
-                    for(auto it : listButton[i]) {
-                        it.Display(gRenderer);
-                    }
-                }
-
                 backButton.Display(gRenderer);
                 courseIDButton.Display(gRenderer);
                 courseNameButton.Display(gRenderer);
+                preButton.Display(gRenderer);
+                nextButton.Display(gRenderer);
 
                 int backButtonState = backButton.isMouseClick(&event);
                 if(backButtonState == 1) {
@@ -1960,6 +1983,109 @@ void staffViewCourseScore(Course* curCourse) {
 
                 if(isExport) {
                     exportOKButton.Display(gRenderer, SCREEN_WIDTH - 340, 1);
+                }
+
+                int preButtonState = preButton.isMouseClick(&event);
+                bool isChange = false;
+                if(preButtonState == 1) {
+                    if(page > 0) {
+                        page -= 1;
+                        isChange = true;
+                    }
+                                    }
+                else if(preButtonState == 2) {
+                    preButton.FillCol = preButton.HoverCol;
+                }
+                else {
+                    preButton.FillCol = preButton.InitCol;
+                }
+
+                int nextButtonState = nextButton.isMouseClick(&event);
+                if(nextButtonState == 1) {
+                    if(page < numMaxPage - 1) {
+                        page += 1;
+                        isChange = true;
+                    }
+                }
+                else if(nextButtonState == 2) {
+                    nextButton.FillCol = nextButton.HoverCol;
+                }
+                else {
+                    nextButton.FillCol = nextButton.InitCol;
+                }
+
+                if(isChange) {
+                    for(int i = 0; i < 6; i++)
+                        listButton[i].clear();
+
+                    isChange = false;
+
+                    curScore = curCourse->courseScoreHead;
+
+                    curY = startY;
+                    int startStudent = page * numStudentInAPage;
+                    cnt = 0;
+
+                    while(curScore && cnt < startStudent) {
+                        ++cnt;
+                        curScore = curScore->Next;
+                    }
+
+                    cnt = 0;
+
+                    while(curScore && cnt < numStudentInAPage) {
+                        curX = startX;
+                        curY += buttonHeight;
+                        ++cnt;
+
+                        for(int i = 0; i < 6; i++) {
+                            if(i > 0) {
+                                curX += Width[i - 1];
+                            }
+
+                            string tmpText = "";
+                            stringstream ss;
+
+                            if(i == 0) tmpText = curScore->StudentID;
+                            if(i == 1) {
+                                ss << fixed << setprecision(2) << curScore->studentScore.MidTerm << ' ';
+                                ss >> tmpText;
+                            }
+                            if(i == 2) {
+                                ss << fixed << setprecision(2) << curScore->studentScore.Final << ' ';
+                                ss >> tmpText;
+                            }
+                            if(i == 3) {
+                                ss << fixed << setprecision(2) << curScore->studentScore.Other << ' ';
+                                ss >> tmpText;
+                            }
+                            curScore->studentScore.calTotal();
+                            if(i == 4) {
+                                ss << fixed << setprecision(2) << curScore->studentScore.MidTerm << ' ';
+                                ss >> tmpText;
+                            }
+                            if(i == 5) {
+                                tmpText = "";
+                                tmpText += curScore->studentScore.GPA;
+                            }
+
+                            Button tmp = Button(curX, curY, Width[i], buttonHeight, 2, BLACK, WHITE, RED, RED, tmpText, 15);
+                            listButton[i].push_back(tmp);
+                        }
+
+                        curScore = curScore->Next;
+                    }
+
+                    SDL_RenderClear(gRenderer);
+
+                    SDL_RenderCopy(gRenderer, backgroundImage, NULL, NULL);
+                    for(int i = 0; i < 6; i++) {
+                        for(auto it: listTitleButton[i])
+                            it.Display(gRenderer);
+
+                        for(auto it: listButton[i])
+                            it.Display(gRenderer);
+                    }
                 }
 
                 exportFileButton.Display(gRenderer);

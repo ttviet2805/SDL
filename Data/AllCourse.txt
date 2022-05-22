@@ -1,12 +1,12 @@
-CS162
-Introduction to Computer Science
-LAWS
-Introduction to Laws
-MTH212
-Calculus II
-PE
-Physical Education
-CM101
-Communication Management
-INT1505
-Advance Computer Science
+PHI1002_26
+CNXHK
+INT2215_22
+LTNC
+MAT1042_24
+GT2
+INT1050_23
+Toan roi rac
+EPN1095_22
+Vat ly dai cuong 1
+PES1017_23
+Bong da
